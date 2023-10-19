@@ -2,7 +2,9 @@
   "name": "findum",
   "version": "0.1.0",
   "description": "A monorepo of the findum platform",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,ts,mjs,cjs,json}\""
+  },
   "author": "Ansat Euler <iffypixy@gmail.com>",
   "license": "MIT",
   "devDependencies": {
