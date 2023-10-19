@@ -4,5 +4,10 @@
   "description": "A web client repository of the findum platform",
   "scripts": {},
   "author": "Ansat Euler <iffypixy@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@commitlint/cli": "^17.8.0",
+    "@commitlint/config-conventional": "^17.8.0",
+    "husky": "^8.0.3"
+  }
 }
