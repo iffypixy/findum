@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A monorepo of the findum platform",
   "scripts": {
-    "format": "prettier --write \"**/*.{js,ts,jsx,tsx,mjs,cjs,json,css,scss,sass}\""
+    "format": "prettier --write \"**/*.{js,ts,jsx,tsx,mjs,cjs,json,css,scss,sass,html}\""
   },
   "author": "Ansat Euler <iffypixy@gmail.com>",
   "license": "MIT",
