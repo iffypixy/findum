@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  plugins: ["@typescript-eslint", "react", "react-hooks", "jsx-a11y", "import"],
+  plugins: ["@typescript-eslint", "react", "react-hooks", "jsx-a11y"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     sourceType: "module",
@@ -9,8 +9,6 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended",
