@@ -1,7 +1,7 @@
 {
   "name": "findum",
   "version": "0.1.0",
-  "description": "A web client repository of the findum platform",
+  "description": "A monorepo of the findum platform",
   "scripts": {},
   "author": "Ansat Euler <iffypixy@gmail.com>",
   "license": "MIT",
