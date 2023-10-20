@@ -20,6 +20,9 @@ export default {
         max: "320px",
       },
     },
+    fontFamily: {
+      body: '"Inter", sans-serif',
+    },
   },
   plugins: [],
 };
