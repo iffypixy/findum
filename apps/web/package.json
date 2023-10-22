@@ -12,7 +12,8 @@
     "class-variance-authority": "^0.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "wouter": "^2.12.1"
+    "wouter": "^2.12.1",
+    "zustand": "^4.4.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
