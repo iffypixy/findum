@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontSize: {
+        inherit: "inherit",
+      },
       colors: {
         main: {
           200: "var(--color-main-200)",
