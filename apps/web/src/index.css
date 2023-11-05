@@ -52,6 +52,10 @@
   }
 
   html {
+    @media screen(2xl) {
+      font-size: 95%;
+    }
+
     @media screen(xl) {
       font-size: 85%;
     }
