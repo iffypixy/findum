@@ -40,19 +40,19 @@ export default {
     },
     screens: {
       "2xl": {
-        max: "1280px",
+        max: "1480px",
       },
       xl: {
-        max: "1024px",
+        max: "1200px",
       },
       lg: {
-        max: "768px",
+        max: "992px",
       },
       md: {
-        max: "480px",
+        max: "768px",
       },
       sm: {
-        max: "320px",
+        max: "576px",
       },
     },
     fontFamily: {
