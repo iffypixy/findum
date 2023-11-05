@@ -32,7 +32,7 @@ export default {
           contrast: "var(--color-accent-contrast)",
         },
         paper: {
-          brand: "var(--color-paper-brand)",
+          brand: "rgb(var(--color-paper-brand) / <alpha-value>)",
           DEFAULT: "var(--color-paper)",
           contrast: "rgb(var(--color-paper-contrast) / <alpha-value>)",
         },
