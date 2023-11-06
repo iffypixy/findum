@@ -1,7 +1,7 @@
 import {forwardRef} from "react";
 import {cx} from "class-variance-authority";
 
-import {PropsWithClassName} from "@shared/lib";
+import {PropsWithClassName} from "@shared/lib/types";
 
 interface CheckboxProps extends PropsWithClassName, RawCheckboxProps {
   label?: string;
