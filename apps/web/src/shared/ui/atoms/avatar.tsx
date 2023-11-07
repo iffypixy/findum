@@ -1,6 +1,6 @@
 import {cx} from "class-variance-authority";
 
-import {PropsWithClassName} from "@shared/lib";
+import {PropsWithClassName} from "@shared/lib/types";
 
 interface AvatarProps extends PropsWithClassName {
   src: string;
