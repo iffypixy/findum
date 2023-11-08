@@ -2,7 +2,7 @@ import {forwardRef, useState} from "react";
 import {cx} from "class-variance-authority";
 import {RiAttachment2} from "react-icons/ri";
 
-import {Nullable, PropsWithClassName} from "@shared/lib";
+import {Nullable, PropsWithClassName} from "@shared/lib/types";
 
 interface InputProps extends PropsWithClassName, React.ComponentProps<"input"> {
   error?: string;
@@ -35,7 +35,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     return (
-      <div className={cx("flex flex-col space-y-1", className)}>
+      <div className={cx("flex flex-col space-y-1 h-24", className)}>
         {label ? (
           <label className="flex flex-col space-y-1 text-left">
             <span className="text-paper-contrast/80">{label}</span>
@@ -46,7 +46,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           input
         )}
 
-        {error && <span>{error}</span>}
+        {error && <span className="text-error text-sm">{error}</span>}
       </div>
     );
   },
@@ -81,7 +81,7 @@ export const UploadField = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cx(
-          "relative block cursor-pointer overflow-hidden space-y-1",
+          "relative block cursor-pointer overflow-hidden space-y-1 h-24",
           className,
         )}
       >
@@ -101,7 +101,7 @@ export const UploadField = forwardRef<HTMLInputElement, InputProps>(
           <RiAttachment2 className="w-6 h-6 fill-main" />
         </div>
 
-        {error && <span>{error}</span>}
+        {error && <span className="text-error text-sm">{error}</span>}
       </div>
     );
   },
