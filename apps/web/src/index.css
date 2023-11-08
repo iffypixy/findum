@@ -102,4 +102,5 @@
   --color-paper: #ffffff;
   --color-paper-brand: 241 245 249;
   --color-paper-contrast: 0 0 0;
+  --color-error: 255 51 51;
 }

@@ -36,6 +36,9 @@ export default {
           DEFAULT: "var(--color-paper)",
           contrast: "rgb(var(--color-paper-contrast) / <alpha-value>)",
         },
+        error: {
+          DEFAULT: "rgb(var(--color-error) / <alpha-value>)",
+        },
       },
     },
     screens: {
