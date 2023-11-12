@@ -35,7 +35,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     return (
-      <div className={cx("flex flex-col space-y-1 h-24", className)}>
+      <div className={cx("h-24 flex flex-col space-y-1", className)}>
         {label ? (
           <label className="flex flex-col space-y-1 text-left">
             <span className="text-paper-contrast/80">{label}</span>
