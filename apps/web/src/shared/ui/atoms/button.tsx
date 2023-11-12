@@ -1,13 +1,12 @@
 import {cx} from "class-variance-authority";
 import {twMerge} from "tailwind-merge";
 
-import {PropsWithClassName} from "@shared/lib";
+import {PropsWithClassName} from "@shared/lib/types";
 
 interface ButtonProps
   extends PropsWithClassName,
-    React.ComponentProps<"button"> {
-  children?: React.ReactNode;
-}
+    React.ComponentProps<"button">,
+    React.PropsWithChildren {}
 
 export const Button: React.FC<ButtonProps> = ({
   className,
@@ -17,7 +16,13 @@ export const Button: React.FC<ButtonProps> = ({
   <button
     {...props}
     className={twMerge(
-      cx("text-accent-contrast bg-accent rounded-xl py-2 px-7", className),
+      cx(
+        "text-accent-contrast bg-accent rounded-xl py-2 px-7",
+        {
+          "opacity-70": props.disabled,
+        },
+        className,
+      ),
     )}
   >
     {children}
