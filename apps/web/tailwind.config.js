@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -36,7 +37,7 @@ export default {
         },
         paper: {
           brand: "rgb(var(--color-paper-brand) / <alpha-value>)",
-          DEFAULT: "var(--color-paper)",
+          DEFAULT: "rgb(var(--color-paper) / <alpha-value>)",
           contrast: "rgb(var(--color-paper-contrast) / <alpha-value>)",
         },
         error: {
@@ -65,5 +66,5 @@ export default {
       body: '"Inter", sans-serif',
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")],
 };
