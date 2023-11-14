@@ -1,0 +1,29 @@
+.rdp {
+  --rdp-cell-size: 2rem;
+  --rdp-accent-color: var(--color-accent-500);
+}
+
+.rdp-cell {
+  font-size: 0.75rem;
+}
+
+.rdp-head_cell {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-paper-contrast);
+  opacity: 0.6;
+}
+
+.rdp-day_selected {
+  background-color: var(--rdp-accent-color) !important;
+}
+
+.rdp-caption_label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.rdp-nav_icon {
+  width: 0.5rem;
+  height: auto;
+}
