@@ -99,7 +99,7 @@
   --color-accent-800: #292d8c;
   --color-accent-900: #181c74;
   --color-accent-contrast: #ffffff;
-  --color-paper: #ffffff;
+  --color-paper: 255 255 255;
   --color-paper-brand: 241 245 249;
   --color-paper-contrast: 0 0 0;
   --color-error: 255 51 51;
