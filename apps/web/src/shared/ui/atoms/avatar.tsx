@@ -9,6 +9,6 @@ interface AvatarProps extends PropsWithClassName {
 
 export const Avatar: React.FC<AvatarProps> = ({src, alt, className}) => (
   <div className={cx("w-12 h-12 rounded-full overflow-hidden", className)}>
-    <img className="w-[100%] h-full" src={src} alt={alt} />
+    <img className="w-[100%] h-full object-cover" src={src} alt={alt} />
   </div>
 );
