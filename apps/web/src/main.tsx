@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import * as Toast from "@radix-ui/react-toast";
 
@@ -9,11 +8,9 @@ import "./index.css";
 const root = document.getElementById("root")!;
 
 ReactDOM.createRoot(root).render(
-  <React.StrictMode>
-    <Toast.Provider swipeDirection="right">
-      <Toast.Viewport className="fixed top-0 right-0 p-10" />
+  <Toast.Provider swipeDirection="right">
+    <Toast.Viewport className="fixed top-0 right-0 p-10" />
 
-      <App />
-    </Toast.Provider>
-  </React.StrictMode>,
+    <App />
+  </Toast.Provider>,
 );

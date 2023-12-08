@@ -1,124 +1,95 @@
-import {BsPerson} from "react-icons/bs";
-import {BsPlus} from "react-icons/bs";
-import {BiSortUp} from "react-icons/bi";
-import {PiNotePencilDuotone} from "react-icons/pi";
 import {IoAddCircleOutline} from "react-icons/io5";
+import {useLocation} from "wouter";
 
-import {Avatar, Button, H1, H4, Header, Navbar, Sidebar} from "@shared/ui";
+import {Button, ContentTemplate, H1, H5} from "@shared/ui";
+import {ProjectCard} from "@features/projects";
+import {PropsWithChildren} from "react";
 
 const avatar = "https://shorturl.at/ikvZ0";
 
 export const HomePage: React.FC = () => {
+  const [, navigate] = useLocation();
+
   return (
-    <div className="w-screen h-screen flex">
-      <Navbar />
+    <ContentTemplate>
+      <div className="w-[100%] h-[100%] bg-paper-brand flex flex-col overflow-x-auto">
+        <div className="w-[100%] bg-paper shadow-sm py-14 px-10">
+          <Container>
+            <H1 className="mb-4 font-secondary">Hi, Omar</H1>
+            <span className="text-paper-contrast/40 text-xl">
+              Product designer{" "}
+            </span>
+          </Container>
+        </div>
 
-      <div className="w-[75%] h-[100%] bg-paper-brand">
-        <Header />
+        <div className="w-[100%] p-10">
+          <Container>
+            <div className="space-y-14">
+              <div className="flex justify-between">
+                <Button
+                  onClick={() => {
+                    navigate("/projects/create");
+                  }}
+                  className="w-[45%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-6"
+                >
+                  <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
+                  <span className="text-xl font-medium">Create a project</span>
+                </Button>
 
-        <main>
-          <div className="w-[100%] bg-paper shadow-sm py-14 px-10">
-            <H1 className="mb-4">Hi, Omar</H1>
-            <span className="text-paper-contrast/40">Product designer </span>
-          </div>
+                <Button
+                  onClick={() => {
+                    navigate("/projects");
+                  }}
+                  className="w-[45%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-6"
+                >
+                  <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
+                  <span className="text-xl font-medium">Find a project</span>
+                </Button>
+              </div>
 
-          <div className="w-[100%] space-y-14 p-10">
-            <div className="flex justify-between space-x-12">
-              <Button className="w-[100%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-5">
-                <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
-                <span>Create a project</span>
-              </Button>
+              <div className="flex flex-col space-y-4">
+                <H5 className="font-normal">Best recent startup projects</H5>
 
-              <Button className="w-[100%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-5">
-                <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
-                <span>Find a project</span>
-              </Button>
-            </div>
-
-            <div className="flex flex-col space-y-4">
-              <H4>Best recent startup projects</H4>
-
-              <div className="flex space-x-12">
-                {Array.from({length: 2}).map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="w-[100%] flex flex-col bg-paper rounded-lg shadow-sm"
-                  >
-                    <div className="flex items-center justify-between p-8">
-                      <div className="flex items-center space-x-8">
-                        <Avatar
-                          src={avatar}
-                          alt="Startup project avatar"
-                          className="w-20 h-auto"
-                        />
-
-                        <div className="flex flex-col space-y-2">
-                          <span className="text-main text-xl font-bold">
-                            Findum app
-                          </span>
-
-                          <div className="flex flex-col">
-                            <div className="flex items-center space-x-2 text-paper-contrast/60">
-                              <BsPerson className="w-4 h-auto" />
-
-                              <span>0/4</span>
-                            </div>
-
-                            <div className="flex items-center space-x-2 text-paper-contrast/60">
-                              <BiSortUp className="w-4 h-auto" />
-                              <span>invested</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col justify-between items-end h-[100%]">
-                        <button className="bg-transparent outline-none">
-                          <PiNotePencilDuotone className="w-6 h-auto text-main" />
-                        </button>
-
-                        <span className="text-sm text-paper-contrast/60">
-                          show all
-                        </span>
-                      </div>
+                <div className="flex justify-between flex-wrap items-center">
+                  {Array.from({length: 5}).map((_, idx) => (
+                    <div key={idx} className="w-[45%] my-4">
+                      <ProjectCard
+                        id="@projectid"
+                        owner={{
+                          avatar,
+                          firstName: "Omar",
+                          lastName: "Aliev",
+                        }}
+                        startDate={new Date()}
+                        endDate={new Date()}
+                        description="Roles and responsibilities include managing Java/Java EE application development while providing expertise in the entire software development lifecycle, from concept and design to testing. Java developer responsibilities include designing, developing, and delivering high-volume, low-latency applications for mission-critical systems."
+                        name="Findum #2"
+                        avatar={avatar}
+                        slots={[
+                          {
+                            specialist: "Newbie",
+                            benefits: "A lot of experience.",
+                            requirements: "Be motivated.",
+                          },
+                        ]}
+                        members={[
+                          {avatar, specialist: "Full-stack dev."},
+                          {avatar, specialist: "Project manager"},
+                          {avatar, specialist: "Designer"},
+                        ]}
+                      />
                     </div>
-
-                    <div className="w-[100%] h-[1px] bg-accent" />
-
-                    <div className="flex items-center space-x-6 p-8">
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="w-12 h-12 flex items-center justify-center bg-accent-300 rounded-full">
-                          <BsPlus className="w-8 h-auto text-accent-contrast" />
-                        </div>
-
-                        <span className="text-xs">UX/UI designer</span>
-                      </div>
-
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="w-12 h-12 flex items-center justify-center bg-accent-300 rounded-full">
-                          <BsPlus className="w-8 h-auto text-accent-contrast" />
-                        </div>
-
-                        <span className="text-xs">Frontend dev.</span>
-                      </div>
-
-                      <div className="flex flex-col items-center space-y-2">
-                        <div className="w-12 h-12 flex items-center justify-center bg-accent-300 rounded-full">
-                          <BsPlus className="w-8 h-auto text-accent-contrast" />
-                        </div>
-
-                        <span className="text-xs">Project manager</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </main>
+          </Container>
+        </div>
       </div>
-
-      <Sidebar />
-    </div>
+    </ContentTemplate>
   );
 };
+
+const Container: React.FC<PropsWithChildren> = ({children}) => (
+  <div className="max-w-[90rem] m-auto">{children}</div>
+);

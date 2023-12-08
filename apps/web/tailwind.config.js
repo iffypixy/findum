@@ -64,6 +64,7 @@ export default {
     },
     fontFamily: {
       body: '"Inter", sans-serif',
+      secondary: '"Montserrat", sans-serif',
     },
   },
   plugins: [require("tailwind-scrollbar")],

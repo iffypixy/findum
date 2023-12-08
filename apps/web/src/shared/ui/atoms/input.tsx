@@ -21,7 +21,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           {...props}
           ref={ref}
           className={cx(
-            "w-full h-12 placeholder:text-paper-contrast/40 border border-paper-contrast/40 focus:border-accent rounded-lg outline-none py-2 px-4",
+            "w-full h-12 bg-transparent placeholder:text-paper-contrast/40 border border-paper-contrast/40 focus:border-accent rounded-md outline-none p-2 disabled:border-paper-contrast/20 disabled:text-paper-contrast/20",
             {
               "pr-8": !!suffix,
             },
@@ -81,7 +81,7 @@ export const UploadField = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cx(
-          "relative block cursor-pointer overflow-hidden space-y-1 h-24",
+          "relative block cursor-pointer bg-transparent overflow-hidden space-y-1 h-24",
           className,
         )}
       >
@@ -95,7 +95,7 @@ export const UploadField = forwardRef<HTMLInputElement, InputProps>(
           input
         )}
 
-        <div className="min-w-[15rem] h-12 flex border justify-between items-center border-paper-contrast/40 rounded-lg py-2 px-4">
+        <div className="min-w-[15rem] h-12 flex border justify-between items-center border-paper-contrast/40 rounded-md p-2">
           {text}
 
           <RiAttachment2 className="w-6 h-6 fill-main" />

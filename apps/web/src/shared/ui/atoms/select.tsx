@@ -9,7 +9,7 @@ interface SelectRootProps
   extends React.ComponentProps<typeof S.Root>,
     PropsWithClassName,
     PropsWithChildren {
-  placeholder?: string;
+  placeholder?: React.ReactNode;
   label?: string;
   error?: string;
 }
@@ -26,15 +26,19 @@ const Root: React.FC<SelectRootProps> = ({
     <S.Root {...props}>
       <S.Trigger
         className="
-          w-[100%] flex flex-col space-y-1 rounded-lg border border-paper-contrast/40 focus:border-accent data-[placeholder]:text-paper-contrast/40"
+          w-[100%] flex items-center rounded-lg border border-paper-contrast/40 focus:border-accent data-[placeholder]:text-paper-contrast/40"
       >
-        <span className="w-[100%] h-12 flex justify-between items-center rounded-lg py-2 px-4">
+        <span className="w-[100%] h-12 flex justify-between items-center rounded-md p-2 [&>span]:my-auto">
           <S.Value placeholder={placeholder} />
         </span>
+
+        <S.Icon className="-translate-x-2">
+          <Icon.Chevron.Down className="w-6 h-auto" />
+        </S.Icon>
       </S.Trigger>
 
       <S.Portal>
-        <S.Content className="w-fit bg-paper rounded-md border border-paper-contrast shadow-md">
+        <S.Content className="w-fit bg-paper rounded-md border border-paper-contrast shadow-md z-[60]">
           <S.ScrollUpButton className="flex items-center justify-center bg-paper text-paper-contrast cursor-default">
             <Icon.Chevron.Up className="w-[1.5rem] h-auto" />
           </S.ScrollUpButton>

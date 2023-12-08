@@ -29,5 +29,5 @@ export const ThemeManager: React.FC<ThemeToggleProps> = ({children}) => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
-  return children;
+  return <>{children}</>;
 };

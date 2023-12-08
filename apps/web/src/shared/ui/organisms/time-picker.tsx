@@ -4,14 +4,14 @@ import {useState} from "react";
 import {cx} from "class-variance-authority";
 import {twMerge} from "tailwind-merge";
 
-import {Nullable} from "@shared/lib/types";
+import {Nullable, PropsWithClassName} from "@shared/lib/types";
 
 interface Time {
   hour: Nullable<string>;
   minute: Nullable<string>;
 }
 
-interface TimePickerProps {
+interface TimePickerProps extends PropsWithClassName {
   label?: string;
   error?: string;
   onSelect?: (time: Time) => void;
@@ -23,6 +23,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   error,
   onSelect,
   initialValue,
+  className,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -41,7 +42,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       <span
         className={twMerge(
           cx(
-            "flex items-center border border-paper-contrast/25 rounded-md space-x-2 transition p-2",
+            "relative flex items-center border border-paper-contrast/25 rounded-md space-x-2 transition p-2",
             {
               "border-accent": open,
             },
@@ -63,7 +64,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
         <BiTimeFive
           className={twMerge(
-            cx("w-5 h-auto text-paper-contrast/25", {
+            cx("w-5 h-auto text-paper-contrast/25 absolute right-2 top-2.5", {
               "text-accent": open,
             }),
           )}
@@ -74,7 +75,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <div className="flex flex-col space-y-1">
+      <div className={cx("flex flex-col space-y-1", className)}>
         {label ? (
           <label className="flex flex-col space-y-1 text-left">
             <span className="text-paper-contrast/80">{label}</span>
@@ -89,7 +90,12 @@ export const TimePicker: React.FC<TimePickerProps> = ({
       </div>
 
       <Popover.Portal>
-        <Popover.Content side="bottom" align="start" sideOffset={15}>
+        <Popover.Content
+          side="bottom"
+          align="start"
+          sideOffset={15}
+          className="z-[999]"
+        >
           <div className="flex flex-col bg-paper rounded-md shadow-md space-y-1">
             <div className="flex h-[15rem] text-sm text-paper-contrast/80 space-x-2 p-2">
               <ul className="flex flex-col overflow-auto scrollbar-none space-y-1">

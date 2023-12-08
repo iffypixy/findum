@@ -6,3 +6,4 @@ export {Link} from "./link";
 export {Textarea} from "./textarea";
 export * from "./heading";
 export {Select} from "./select";
+export {Switch} from "./switch";

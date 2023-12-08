@@ -51,6 +51,14 @@
       url("./shared/assets/fonts/Inter-Black.woff2") format("woff2");
   }
 
+  @font-face {
+    font-family: "Montserrat";
+    font-weight: 600;
+    src:
+      local("Montserrat"),
+      url("./shared/assets/fonts/Montserrat-SemiBold.ttf") format("woff2");
+  }
+
   html {
     @media screen(2xl) {
       font-size: 95%;
