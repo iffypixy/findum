@@ -15,7 +15,7 @@ import {createPortal} from "react-dom";
 const avatar = "https://shorturl.at/ikvZ0";
 
 export const Navbar: React.FC = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const [location] = useLocation();
 
