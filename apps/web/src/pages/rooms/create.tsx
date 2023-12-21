@@ -513,7 +513,25 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
           <div className="flex justify-between items-center">
             <Button>Cancel</Button>
 
-            <Button type="submit">To payment</Button>
+            <Button
+              type="submit"
+              onClick={() => {
+                window.Robokassa.StartPayment({
+                  MerchantLogin: "Test1999",
+                  Pass1: "Пароль#1",
+                  OutSum: 100,
+                  InvId: 678678,
+                  Description: "Оплата заказа в Тестовом магазине ROBOKASSA",
+                  Shp_Item: "1",
+                  Culture: "ru",
+                  Encoding: "utf-8",
+                  SignatureValue: "dsfsdf",
+                  IsTest: 1,
+                });
+              }}
+            >
+              To payment
+            </Button>
           </div>
         </form>
       </div>

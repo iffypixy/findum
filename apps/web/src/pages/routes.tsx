@@ -1,4 +1,4 @@
-import {Route, Switch} from "wouter";
+import {Switch} from "wouter";
 
 import {HomePage} from "./home";
 import {SignInPage} from "./sign-in";
@@ -14,22 +14,23 @@ import {ForgotPasswordPage} from "./forgot-password";
 import {ResetPasswordPage} from "./reset-password";
 import {FaqPage} from "./faq";
 import {EditProjectPage} from "./rooms/edit";
+import {PrivateRoute, PublicOnlyRoute} from "@shared/lib/routing";
 
 export const Routes: React.FC = () => (
   <Switch>
-    <Route path="/" component={HomePage} />
-    <Route path="/sign-in" component={SignInPage} />
-    <Route path="/sign-up" component={SignUpPage} />
-    <Route path="/chat" component={ChatPage} />
-    <Route path="/friends" component={FriendsPage} />
-    <Route path="/settings" component={SettingsPage} />
-    <Route path="/projects" component={RoomsPage} />
-    <Route path="/projects/create" component={CreateRoomPage} />
-    <Route path="/projects/:id/edit" component={EditProjectPage} />
-    <Route path="/projects/:id" component={RoomPage} />
-    <Route path="/profiles/:id" component={ProfilePage} />
-    <Route path="/forgot-password" component={ForgotPasswordPage} />
-    <Route path="/reset-password" component={ResetPasswordPage} />
-    <Route path="/faq" component={FaqPage} />
+    <PrivateRoute path="/" component={HomePage} />
+    <PublicOnlyRoute path="/sign-in" component={SignInPage} />
+    <PublicOnlyRoute path="/sign-up" component={SignUpPage} />
+    <PrivateRoute path="/chat" component={ChatPage} />
+    <PrivateRoute path="/friends" component={FriendsPage} />
+    <PrivateRoute path="/settings" component={SettingsPage} />
+    <PrivateRoute path="/projects" component={RoomsPage} />
+    <PrivateRoute path="/projects/create" component={CreateRoomPage} />
+    <PrivateRoute path="/projects/:id/edit" component={EditProjectPage} />
+    <PrivateRoute path="/projects/:id" component={RoomPage} />
+    <PrivateRoute path="/profiles/:id" component={ProfilePage} />
+    <PrivateRoute path="/forgot-password" component={ForgotPasswordPage} />
+    <PrivateRoute path="/reset-password" component={ResetPasswordPage} />
+    <PrivateRoute path="/faq" component={FaqPage} />
   </Switch>
 );

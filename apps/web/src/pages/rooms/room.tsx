@@ -145,7 +145,7 @@ export const RoomPage: React.FC = () => {
   });
 
   const isOwner = false;
-  const isMember = isOwner || true;
+  const isMember = isOwner || false;
 
   const isVisitor = !isOwner && !isMember;
 

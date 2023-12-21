@@ -1,21 +1,26 @@
+import {PropsWithChildren} from "react";
 import {IoAddCircleOutline} from "react-icons/io5";
 import {useLocation} from "wouter";
+import {useKeycloak} from "@react-keycloak/web";
 
 import {Button, ContentTemplate, H1, H5} from "@shared/ui";
 import {ProjectCard} from "@features/projects";
-import {PropsWithChildren} from "react";
 
 const avatar = "https://shorturl.at/ikvZ0";
 
 export const HomePage: React.FC = () => {
   const [, navigate] = useLocation();
 
+  const {keycloak} = useKeycloak();
+
   return (
     <ContentTemplate>
       <div className="w-[100%] h-[100%] bg-paper-brand flex flex-col overflow-x-auto">
         <div className="w-[100%] bg-paper shadow-sm py-14 px-10">
           <Container>
-            <H1 className="mb-4 font-secondary">Hi, Omar</H1>
+            <H1 className="mb-4 font-secondary">
+              Hi, {keycloak.tokenParsed!.given_name}
+            </H1>
             <span className="text-paper-contrast/40 text-xl">
               Product designer{" "}
             </span>
