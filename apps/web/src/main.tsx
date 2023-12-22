@@ -12,7 +12,10 @@ import "./index.css";
 const root = document.getElementById("root")!;
 
 ReactDOM.createRoot(root).render(
-  <ReactKeycloakProvider authClient={keycloak}>
+  <ReactKeycloakProvider
+    authClient={keycloak}
+    initOptions={{checkLoginIframe: false}}
+  >
     <RobokassaLoader>
       <Toast.Provider swipeDirection="right">
         <Toast.Viewport className="fixed top-0 right-0 p-10" />
