@@ -1,21 +1,20 @@
-import {useEffect} from "react";
-import {Redirect, Route, RouteProps} from "wouter";
+import {Route, RouteProps} from "wouter";
 import {useKeycloak} from "@react-keycloak/web";
+import {useSelector} from "react-redux";
+
+import {authModel} from "@features/auth";
 
 export const PrivateRoute: React.FC<RouteProps> = (props) => {
-  const {initialized, keycloak} = useKeycloak();
+  const {keycloak} = useKeycloak();
 
-  useEffect(() => {
-    if (initialized) {
-      if (!keycloak.authenticated) {
-        keycloak.login();
-      }
-    }
-  }, [initialized, keycloak]);
+  const authenticated = useSelector(authModel.selectors.authenticated);
 
-  if (!initialized) return null;
+  console.log(authenticated);
 
-  if (!keycloak.authenticated) return <Redirect to="/sign-in" />;
+  if (!keycloak.authenticated) {
+    window.location.href = keycloak.createLoginUrl();
+    return null;
+  }
 
   return <Route {...props} />;
 };
