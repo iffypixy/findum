@@ -22,6 +22,8 @@ import {cities} from "@shared/lib/cities";
 import {Nullable} from "@shared/lib/types";
 import {Modal, WrappedModalProps} from "@shared/lib/modal";
 import {AvatarEditor} from "@shared/lib/avatars";
+import {useDispatch} from "@shared/lib/store";
+import {projectsModel} from "@features/projects";
 
 interface CreateRoomForm {
   name: string;
@@ -43,6 +45,8 @@ interface AvatarEditorData {
 }
 
 export const CreateRoomPage: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [isCreateCardModalOpen, setIsCreateCardModalOpen] = useState(false);
   const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
 
@@ -56,16 +60,22 @@ export const CreateRoomPage: React.FC = () => {
     avatar: null,
   });
 
-  const {register, control, watch, handleSubmit, setValue} =
-    useForm<CreateRoomForm>({
-      defaultValues: {
-        name: "",
-        description: "",
-        startDate: null,
-        endDate: null,
-        avatar: null,
-      },
-    });
+  const {
+    register,
+    control,
+    watch,
+    handleSubmit,
+    setValue,
+    formState: {isValid},
+  } = useForm<CreateRoomForm>({
+    defaultValues: {
+      name: "",
+      description: "",
+      startDate: null,
+      endDate: null,
+      avatar: null,
+    },
+  });
 
   const avatar = watch("avatar");
   const startDate = watch("startDate");
@@ -102,7 +112,26 @@ export const CreateRoomPage: React.FC = () => {
 
           <form
             onSubmit={handleSubmit((form) => {
-              console.log(form);
+              if (
+                !form.name ||
+                !form.description ||
+                !form.location ||
+                !form.startDate ||
+                !form.endDate
+              )
+                return;
+
+              dispatch(
+                projectsModel.actions.createProject({
+                  name: form.name,
+                  description: form.description,
+                  address: {country: "Kazakhstan", city: form.location},
+                  startDay: form.startDate,
+                  finishDay: form.endDate,
+                  goal: "some kinda goal",
+                  founderId: 16,
+                }),
+              );
             })}
             className="bg-paper-brand"
           >
@@ -144,12 +173,12 @@ export const CreateRoomPage: React.FC = () => {
               <div className="flex items-center space-x-14">
                 <div className="flex flex-col w-[100%] space-y-4">
                   <TextField
-                    {...register("name")}
+                    {...register("name", {required: true})}
                     placeholder="Name"
                     className="h-auto"
                   />
                   <Textarea
-                    {...register("description")}
+                    {...register("description", {required: true})}
                     placeholder="Description"
                   />
                 </div>
@@ -159,6 +188,7 @@ export const CreateRoomPage: React.FC = () => {
                     <Controller
                       name="startDate"
                       control={control}
+                      rules={{required: true}}
                       render={({field}) => (
                         <DatePicker
                           label="Start date"
@@ -171,6 +201,7 @@ export const CreateRoomPage: React.FC = () => {
                     <Controller
                       name="endDate"
                       control={control}
+                      rules={{required: true}}
                       render={({field}) => (
                         <DatePicker
                           label="End date"
@@ -184,6 +215,7 @@ export const CreateRoomPage: React.FC = () => {
                   <Controller
                     name="location"
                     control={control}
+                    rules={{required: true}}
                     render={({field}) => (
                       <Select.Root
                         placeholder="Location"
@@ -204,7 +236,7 @@ export const CreateRoomPage: React.FC = () => {
               <div className="flex flex-col space-y-4">
                 <div className="flex justify-between">
                   <div className="flex flex-col space-y-2">
-                    <H6>Cards (1/3)</H6>
+                    <H6>Cards</H6>
 
                     <span className="text-sm text-paper-contrast/40">
                       You may create up to 3 cards in one room
@@ -224,7 +256,7 @@ export const CreateRoomPage: React.FC = () => {
                 <div className="w-[100%] h-[2px] bg-paper-contrast/25" />
 
                 <div className="flex justify-between flex-wrap -my-4">
-                  {Array.from({length: 5}).map((_, idx) => (
+                  {Array.from({length: 0}).map((_, idx) => (
                     <div
                       key={idx}
                       className="w-[47.5%] min-h-[12rem] bg-paper rounded-lg shadow-md relative p-6 my-4"
@@ -270,7 +302,9 @@ export const CreateRoomPage: React.FC = () => {
                 <div className="w-[100%] flex justify-end">
                   <div className="flex items-center space-x-4">
                     <Button>Cancel</Button>
-                    <Button type="submit">Create room</Button>
+                    <Button type="submit" disabled={!isValid}>
+                      Create room
+                    </Button>
                   </div>
                 </div>
               </div>

@@ -1,8 +1,6 @@
 import {Switch} from "wouter";
 
 import {HomePage} from "./home";
-import {SignInPage} from "./sign-in";
-import {SignUpPage} from "./sign-up";
 import {ChatPage} from "./chat";
 import {FriendsPage} from "./friends";
 import {SettingsPage} from "./settings";
@@ -14,13 +12,13 @@ import {ForgotPasswordPage} from "./forgot-password";
 import {ResetPasswordPage} from "./reset-password";
 import {FaqPage} from "./faq";
 import {EditProjectPage} from "./rooms/edit";
-import {PrivateRoute, PublicOnlyRoute} from "@shared/lib/routing";
+import {PrivateRoute} from "@shared/lib/routing";
 
 export const Routes: React.FC = () => (
   <Switch>
     <PrivateRoute path="/" component={HomePage} />
-    <PublicOnlyRoute path="/sign-in" component={SignInPage} />
-    <PublicOnlyRoute path="/sign-up" component={SignUpPage} />
+    {/* <PublicOnlyRoute path="/sign-in" component={SignInPage} />
+    <PublicOnlyRoute path="/sign-up" component={SignUpPage} /> */}
     <PrivateRoute path="/chat" component={ChatPage} />
     <PrivateRoute path="/friends" component={FriendsPage} />
     <PrivateRoute path="/settings" component={SettingsPage} />

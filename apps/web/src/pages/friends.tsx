@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import {cx} from "class-variance-authority";
 import {BiMessageSquareDetail, BiSearch, BiTrash} from "react-icons/bi";
@@ -15,6 +15,11 @@ import {
   TextField,
 } from "@shared/ui";
 import header from "@shared/assets/profile-header.png";
+import {useDispatch} from "@shared/lib/store";
+import {friendsModel} from "@features/friends";
+import {unwrapResult} from "@reduxjs/toolkit";
+import {useSelector} from "react-redux";
+import {authModel} from "@features/auth";
 
 const avatar = "https://shorturl.at/ikvZ0";
 
@@ -23,7 +28,21 @@ type Tab = "my-friends" | "new-friends";
 export const FriendsPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>("my-friends");
 
-  const hasFriends = Math.floor(Math.random() * 10) % 2 === 0;
+  const dispatch = useDispatch();
+
+  const credentials = useSelector(authModel.selectors.credentials);
+
+  const [potentialFriends, setPotentialFriends] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    dispatch(friendsModel.actions.fetchPotentialFriends())
+      .unwrap()
+      .then((data) => {
+        setPotentialFriends(data);
+      });
+  }, [dispatch]);
+
+  const hasFriends = credentials?.friends.length === 0;
 
   return (
     <ContentTemplate>

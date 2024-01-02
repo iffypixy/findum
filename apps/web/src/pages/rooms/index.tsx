@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import {cx} from "class-variance-authority";
 import {BiSearch} from "react-icons/bi";
@@ -7,16 +7,64 @@ import {BsPlus} from "react-icons/bs";
 
 import {Button, ContentTemplate, H4, H5, Select, TextField} from "@shared/ui";
 import {cities} from "@shared/lib/cities";
-import {MyProjectCard, ProjectCard} from "@features/projects";
+import {MyProjectCard, ProjectCard, projectsModel} from "@features/projects";
+import {useDispatch} from "@shared/lib/store";
+import {useSelector} from "react-redux";
 
 const avatar = "https://shorturl.at/ikvZ0";
 
 type Tab = "my-projects" | "all-projects";
 
 export const RoomsPage: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [, navigate] = useLocation();
 
   const [currentTab, setCurrentTab] = useState<Tab>("my-projects");
+
+  const [specialist, setSpecialist] = useState("");
+  const [location, setLocation] = useState<string | null>(null);
+
+  const all = useSelector(projectsModel.selectors.all);
+  const owned = useSelector(projectsModel.selectors.owned);
+  const member = useSelector(projectsModel.selectors.member);
+  const total = useSelector(projectsModel.selectors.total);
+
+  useEffect(() => {
+    dispatch(projectsModel.actions.fetchOwnedProjects());
+    dispatch(projectsModel.actions.fetchMemberProjects());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (currentTab === "all-projects") {
+      if (!all)
+        dispatch(
+          projectsModel.actions.fetchAllProjects({
+            page: 1,
+            size: 8,
+          }),
+        );
+    }
+  }, [dispatch, currentTab, all]);
+
+  useEffect(() => {
+    if (currentTab === "all-projects") {
+      dispatch(
+        projectsModel.actions.fetchAllProjects({
+          page: 1,
+          size: 100,
+          city: location || undefined,
+          role: specialist || undefined,
+        }),
+      );
+    }
+  }, [location, specialist, currentTab, dispatch]);
+
+  useEffect(() => {
+    if (currentTab === "all-projects") {
+      if (!total) dispatch(projectsModel.actions.fetchTotalAmountOfProjects());
+    }
+  }, [dispatch, currentTab, total]);
 
   const hasProjects = true;
 
@@ -117,7 +165,7 @@ export const RoomsPage: React.FC = () => {
             className="flex-1 bg-paper-brand overflow-y-auto"
           >
             <div className="absolute -top-5 right-10 flex flex-col items-start -space-y-1">
-              <span className="font-semibold text-2xl">85 rooms</span>
+              <span className="font-semibold text-2xl">{total} rooms</span>
               <span className="text-paper-contrast/60">were created</span>
             </div>
 
@@ -127,11 +175,19 @@ export const RoomsPage: React.FC = () => {
                   suffix={<BiSearch className="w-6 h-auto" />}
                   placeholder="Specialist"
                   className="w-[25rem] h-auto"
+                  value={specialist}
+                  onChange={(event) => {
+                    setSpecialist(event.currentTarget.value);
+                  }}
                 />
 
                 <Select.Root
                   placeholder="Location"
                   className="w-[15rem] h-auto"
+                  value={location || undefined}
+                  onValueChange={(value) => {
+                    setLocation(value);
+                  }}
                 >
                   {cities.map((city) => (
                     <Select.Item value={city}>{city}</Select.Item>

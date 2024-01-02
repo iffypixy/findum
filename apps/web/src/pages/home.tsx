@@ -1,17 +1,27 @@
-import {PropsWithChildren} from "react";
+import {PropsWithChildren, useEffect} from "react";
 import {IoAddCircleOutline} from "react-icons/io5";
 import {useLocation} from "wouter";
 import {useKeycloak} from "@react-keycloak/web";
 
 import {Button, ContentTemplate, H1, H5} from "@shared/ui";
-import {ProjectCard} from "@features/projects";
+import {ProjectCard, projectsModel} from "@features/projects";
+import {useDispatch} from "@shared/lib/store";
+import {request} from "@shared/lib/request";
 
 const avatar = "https://shorturl.at/ikvZ0";
 
 export const HomePage: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [, navigate] = useLocation();
 
   const {keycloak} = useKeycloak();
+
+  useEffect(() => {
+    dispatch(projectsModel.actions.fetchFeaturedProjects());
+
+    request({method: "GET", url: "/rooms-service/user"});
+  }, [dispatch]);
 
   return (
     <ContentTemplate>
