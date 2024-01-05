@@ -33,7 +33,7 @@ model Location {
 model Profile {
   id String @id @default(uuid())
   roles String[] @db.VarChar(64)
-  cv String @db.VarChar(512)
+  cv String? @db.VarChar(512)
 
   user User @relation(fields: [userId], references: [id])
   userId String @unique
