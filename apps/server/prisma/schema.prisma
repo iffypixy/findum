@@ -109,7 +109,6 @@ model ProjectCard {
   slots Int @db.Integer()
   createdAt DateTime @default(now())
 
-
   project Project @relation(fields: [projectId], references: [id])
   projectId String
 
