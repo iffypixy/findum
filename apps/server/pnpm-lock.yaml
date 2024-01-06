@@ -32,6 +32,9 @@ dependencies:
   connect-redis:
     specifier: ^7.1.0
     version: 7.1.0(express-session@1.17.3)
+  dotenv:
+    specifier: ^16.3.1
+    version: 16.3.1
   express-session:
     specifier: ^1.17.3
     version: 1.17.3
