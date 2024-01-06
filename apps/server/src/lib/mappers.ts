@@ -1,11 +1,6 @@
-import {Profile, Location, Prisma} from "@prisma/client";
+import {Profile, Location} from "@prisma/client";
 
-export type CompleteUser = Prisma.UserGetPayload<{
-  include: {
-    location: true;
-    profile: true;
-  };
-}>;
+import {CompleteUser} from "./types";
 
 const user = (u: CompleteUser) => ({
   id: u.id,
@@ -34,6 +29,7 @@ const credentials = (u: CompleteUser) => ({
   lastName: u.lastName,
   email: u.email,
   avatar: u.avatar,
+  isVerified: u.isVerified,
   profile: u.profile && profile(u.profile),
   location: u.location && location(u.location),
 });
