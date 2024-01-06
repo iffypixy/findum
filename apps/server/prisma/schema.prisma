@@ -82,7 +82,7 @@ model Project {
   id String @id @default(uuid())
   name String @db.VarChar(128)
   description String @db.Text()
-  avatar String @db.VarChar(512)
+  avatar String? @db.VarChar(512)
   startDate DateTime
   endDate DateTime?
   createdAt DateTime @default(now())
