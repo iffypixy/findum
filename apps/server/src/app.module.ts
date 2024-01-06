@@ -1,8 +1,9 @@
 import {Module} from "@nestjs/common";
-import {ConfigModule} from "@nestjs/config";
+import {ConfigModule, ConfigService} from "@nestjs/config";
 
-import {PrismaModule} from "@lib/prisma";
 import {config} from "@config/index";
+import {PrismaModule} from "@lib/prisma";
+import {RedisModule} from "@lib/redis";
 
 @Module({
   imports: [
@@ -12,6 +13,14 @@ import {config} from "@config/index";
       envFilePath: ".env",
     }),
     PrismaModule.forRoot(),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        host: config.get<string>("redis.host"),
+        port: config.get<number>("redis.port"),
+      }),
+    }),
   ],
   controllers: [],
   providers: [],
