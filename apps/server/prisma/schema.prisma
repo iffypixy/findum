@@ -21,6 +21,20 @@ model User {
   locationId String
 
   profile Profile?
+
+  relationshipsAsUser1 Relationship[] @relation("RelationshipUser1")
+  relationshipsAsUser2 Relationship[] @relation("RelationshipUser2")
+
+  projects Project[]
+
+  projectMembers ProjectMember[]
+
+  projectRequests ProjectRequest[]
+
+  privateChatsAsUser1 PrivateChat[] @relation("PrivateChatUser1")
+  privateChatsAsUser2 PrivateChat[] @relation("PrivateChatUser2")
+
+  chatMessages ChatMessage[]
 }
 
 model Location {
@@ -29,6 +43,8 @@ model Location {
   city String @db.VarChar(64)
 
   users User[]
+
+  projects Project[]
 }
 
 model Profile {
@@ -38,4 +54,175 @@ model Profile {
 
   user User @relation(fields: [userId], references: [id])
   userId String @unique
+}
+
+model Relationship {
+  id String @id @default(uuid())
+  status RelationshipStatus @default(NONE)
+
+  user1     User     @relation("RelationshipUser1", fields: [user1Id], references: [id])
+  user1Id   String
+  user2     User     @relation("RelationshipUser2", fields: [user2Id], references: [id])
+  user2Id   String
+}
+
+enum RelationshipStatus {
+  NONE
+  FRIEND_REQ_1_2
+  FRIEND_REQ_2_1
+  FRIENDS
+}
+
+enum ReviewRating {
+  LIKE
+  DISLIKE
+}
+
+model Project {
+  id String @id @default(uuid())
+  name String @db.VarChar(128)
+  description String @db.Text()
+  avatar String @db.VarChar(512)
+  startDate DateTime
+  endDate DateTime
+
+  founder User @relation(fields: [founderId], references: [id])
+  founderId String
+
+  location Location @relation(fields: [locationId], references: [id])
+  locationId String
+
+  members ProjectMember[]
+
+  cards ProjectCard[]
+
+  tasks ProjectTask[]
+
+  chat ProjectChat?
+
+  reviews Review[]
+}
+
+model ProjectCard {
+  id String @id @default(uuid())
+  slots Int @db.Integer()
+
+  project Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  members ProjectMember[]
+}
+
+model ProjectMember {
+  id String @id @default(uuid())
+  role String @db.VarChar(128)
+  benefits String @db.VarChar(512)
+  requirements String @db.VarChar(512)
+  isOccupied Boolean @db.Boolean() @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  project Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  card ProjectCard @relation(fields: [cardId], references: [id])
+  cardId String
+
+  requests ProjectRequest[]
+
+  tasks ProjectTask[]
+
+  review Review?
+}
+
+model ProjectRequest {
+  id String @id @default(uuid())
+
+  user User @relation(fields: [userId], references: [id])
+  userId String
+
+  member ProjectMember @relation(fields: [memberId], references: [id])
+  memberId String
+}
+
+model ProjectTask {
+  id String @id @default(uuid())
+  title String @db.VarChar(64)
+  description String @db.VarChar(512)
+  deadline DateTime
+  priority ProjectTaskPriority
+  status ProjectTaskStatus
+
+  project Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  member ProjectMember @relation(fields: [memberId], references: [id])
+  memberId String
+}
+
+enum ProjectTaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ProjectTaskStatus {
+  ASSIGNED
+  IN_PROGRESS
+  DONE
+}
+
+model Chat {
+  id String @id @default(uuid())
+
+  projectChat ProjectChat?
+  privateChat PrivateChat?
+  messages ChatMessage[]
+}
+
+model ProjectChat {
+  id String @id @default(uuid())
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  chatId String @unique
+
+  project Project @relation(fields: [projectId], references: [id])
+  projectId String @unique
+}
+
+model PrivateChat {
+  id String @id @default(uuid())
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  chatId String @unique
+
+  user1 User @relation("PrivateChatUser1", fields: [user1Id], references: [id])
+  user1Id String
+
+  user2 User @relation("PrivateChatUser2", fields: [user2Id], references: [id])
+  user2Id String
+}
+
+model ChatMessage {
+  id String @id @default(uuid())
+  text String @db.VarChar(512)
+
+  sender User @relation(fields: [senderId], references: [id])
+  senderId String
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  chatId String
+}
+
+model Review {
+  id String @id @default(uuid())
+  rating ReviewRating
+  description String @db.VarChar(512)
+
+  project Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  member ProjectMember @relation(fields: [memberId], references: [id])
+  memberId String @unique
 }
