@@ -84,7 +84,7 @@ model Project {
   description String @db.Text()
   avatar String @db.VarChar(512)
   startDate DateTime
-  endDate DateTime
+  endDate DateTime?
   createdAt DateTime @default(now())
 
   founder User @relation(fields: [founderId], references: [id])
