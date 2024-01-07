@@ -20,10 +20,10 @@ import {mappers} from "@lib/mappers";
 import {PrismaService} from "@lib/prisma";
 import {PAYMENT_TYPES, robokassa} from "@lib/robokassa";
 import {SocketService} from "@lib/socket";
+import {NOTIFICATION_EVENTS} from "@lib/notifications";
 
 import * as dtos from "./dtos";
 import {MAXIMUM_CARD_SLOTS} from "./project.constants";
-import {NOTIFICATION_EVENTS} from "@lib/notification";
 
 @Controller("projects")
 export class ProjectController {
