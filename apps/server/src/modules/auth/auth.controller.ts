@@ -58,9 +58,7 @@ export class AuthController {
     let location = await this.prisma.location.findFirst({
       where: {
         country: dto.location.country,
-        AND: {
-          city: dto.location.city,
-        },
+        city: dto.location.city,
       },
     });
 
@@ -84,9 +82,7 @@ export class AuthController {
         password: hash,
         avatar: dto.avatar,
         isVerified: false,
-        location: {
-          connect: location,
-        },
+        locationId: location.id,
       },
     });
 
