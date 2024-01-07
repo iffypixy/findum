@@ -19,7 +19,13 @@ import {AppGateway} from "./app.gateway";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config.redis, config.session, config.robokassa, config.client],
+      load: [
+        config.redis,
+        config.session,
+        config.robokassa,
+        config.client,
+        config.s3,
+      ],
       envFilePath: ".env",
     }),
     PrismaModule.forRoot(),
