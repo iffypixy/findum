@@ -10,7 +10,7 @@ import {AuthModule} from "@modules/auth";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config.redis, config.session],
+      load: [config.redis, config.session, config.robokassa],
       envFilePath: ".env",
     }),
     PrismaModule.forRoot(),
