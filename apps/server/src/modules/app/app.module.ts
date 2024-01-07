@@ -14,6 +14,7 @@ import {ProjectModule} from "@modules/project";
 import {UserModule} from "@modules/user";
 
 import {AppGateway} from "./app.gateway";
+import {UploadModule} from "@modules/upload";
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import {AppGateway} from "./app.gateway";
     PaymentModule,
     ProfileModule,
     UserModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [AppGateway],
