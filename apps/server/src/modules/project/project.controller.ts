@@ -19,15 +19,18 @@ import {nanoid} from "nanoid";
 import {mappers} from "@lib/mappers";
 import {PrismaService} from "@lib/prisma";
 import {PAYMENT_TYPES, robokassa} from "@lib/robokassa";
+import {SocketService} from "@lib/socket";
 
 import * as dtos from "./dtos";
 import {MAXIMUM_CARD_SLOTS} from "./project.constants";
+import {NOTIFICATION_EVENTS} from "@lib/notification";
 
 @Controller("projects")
 export class ProjectController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly ws: SocketService,
   ) {}
 
   @Get("cards/featured")
@@ -197,6 +200,12 @@ export class ProjectController {
         userId: session.userId,
       },
     });
+
+    this.ws.server
+      .to(member.project.founderId)
+      .emit(NOTIFICATION_EVENTS.PROJECT_REQUEST_SENT, {
+        member,
+      });
   }
 
   @Get(":id")
@@ -590,6 +599,12 @@ export class ProjectController {
       },
     });
 
+    this.ws.server
+      .to(request.member.userId)
+      .emit(NOTIFICATION_EVENTS.REQUEST_ACCEPTED, {
+        project,
+      });
+
     return {
       member,
     };
@@ -631,6 +646,12 @@ export class ProjectController {
         id: request.id,
       },
     });
+
+    this.ws.server
+      .to(request.member.userId)
+      .emit(NOTIFICATION_EVENTS.REQUEST_DECLINED, {
+        project,
+      });
   }
 
   @Delete(":projectId/members/:memberId")
@@ -669,6 +690,12 @@ export class ProjectController {
         userId: null,
       },
     });
+
+    this.ws.server
+      .to(member.userId)
+      .emit(NOTIFICATION_EVENTS.KICKED_FROM_PROJECT, {
+        project,
+      });
   }
 
   @Post(":projectId/members/:memberId/reviews")
@@ -706,6 +733,10 @@ export class ProjectController {
         memberId: member.id,
         projectId: project.id,
       },
+    });
+
+    this.ws.server.to(member.userId).emit(NOTIFICATION_EVENTS.REVIEW_GIVEN, {
+      review,
     });
 
     return {
@@ -781,6 +812,9 @@ export class ProjectController {
       where: {
         id: taskId,
       },
+      include: {
+        member: true,
+      },
     });
 
     if (!task) throw new NotFoundException("Project task not found");
@@ -790,6 +824,12 @@ export class ProjectController {
         id: task.id,
       },
     });
+
+    this.ws.server
+      .to(task.member.userId)
+      .emit(NOTIFICATION_EVENTS.TASK_ACCEPTED, {
+        task,
+      });
   }
 
   @Put(":projectId/tasks/:taskId")
