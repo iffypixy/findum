@@ -4,6 +4,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import {config} from "@config/index";
 import {PrismaModule} from "@lib/prisma";
 import {RedisModule} from "@lib/redis";
+import {AuthModule} from "@modules/auth";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import {RedisModule} from "@lib/redis";
         port: config.get<number>("redis.port"),
       }),
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],
