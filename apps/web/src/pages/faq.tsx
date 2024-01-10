@@ -7,23 +7,31 @@ export const FaqPage: React.FC = () => {
         <li className="flex justify-between items-center border-b border-paper-contrast/30 last:border-none p-6">
           <div className="flex flex-col">
             <span className="text-lg font-semibold">Document #1</span>
-            <span className="text-paper-contrast/40">
-              Hides email & location
-            </span>
+            <span className="text-paper-contrast/40">Payment policy</span>
           </div>
 
-          <Button>Download</Button>
+          <a
+            href="https://storage.yandexcloud.net/s3metaorta/payment%20policy.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button>Download</Button>
+          </a>
         </li>
 
         <li className="flex justify-between items-center border-b border-paper-contrast/30 last:border-none p-6">
           <div className="flex flex-col">
             <span className="text-lg font-semibold">Document #2</span>
-            <span className="text-paper-contrast/40">
-              Hides email & location
-            </span>
+            <span className="text-paper-contrast/40">Privacy policy</span>
           </div>
 
-          <Button>Download</Button>
+          <a
+            href="https://storage.yandexcloud.net/s3metaorta/privacy%20policy.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button>Download</Button>
+          </a>
         </li>
       </ul>
     </ContentTemplate>

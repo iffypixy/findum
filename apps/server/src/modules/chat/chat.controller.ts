@@ -13,13 +13,48 @@ import {PrismaService} from "@lib/prisma";
 export class ChatController {
   constructor(private readonly prisma: PrismaService) {}
 
-  @Get("/")
-  async getChats(@Session() session: SessionWithData) {
+  @Get("private")
+  async getPrivateChats(@Session() session: SessionWithData) {
     let chats = await this.prisma.chat.findMany({
       where: {
         privateChat: {
           OR: [{user1Id: session.userId}, {user2Id: session.userId}],
         },
+      },
+      include: {
+        privateChat: {
+          include: {
+            user1: true,
+            user2: true,
+          },
+        },
+        messages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
+      },
+    });
+
+    chats = chats.map((c) => ({
+      ...c,
+      partner:
+        c.privateChat.user1Id === session.userId
+          ? c.privateChat.user2
+          : c.privateChat.user1,
+      lastMessage: c.messages[0],
+    }));
+
+    return {
+      chats,
+    };
+  }
+
+  @Get("project")
+  async getProjectChats(@Session() session: SessionWithData) {
+    let chats = await this.prisma.chat.findMany({
+      where: {
         projectChat: {
           project: {
             OR: [
@@ -42,12 +77,19 @@ export class ChatController {
           },
           take: 1,
         },
+        projectChat: {
+          include: {
+            project: true,
+          },
+        },
       },
     });
 
     chats = chats.map((c) => ({
       ...c,
       lastMessage: c.messages[0],
+      project: c.projectChat.project,
+      projectChat: undefined,
     }));
 
     return {
@@ -63,23 +105,29 @@ export class ChatController {
     const chat = await this.prisma.chat.findFirst({
       where: {
         id,
-        privateChat: {
-          OR: [{user1Id: session.userId}, {user2Id: session.userId}],
-        },
-        projectChat: {
-          project: {
-            OR: [
-              {founderId: session.userId},
-              {
-                members: {
-                  some: {
-                    userId: session.userId,
-                  },
-                },
-              },
-            ],
+        OR: [
+          {
+            privateChat: {
+              OR: [{user1Id: session.userId}, {user2Id: session.userId}],
+            },
           },
-        },
+          {
+            projectChat: {
+              project: {
+                OR: [
+                  {founderId: session.userId},
+                  {
+                    members: {
+                      some: {
+                        userId: session.userId,
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
       },
     });
 
@@ -96,6 +144,130 @@ export class ChatController {
 
     return {
       messages,
+    };
+  }
+
+  @Get("private/:partnerId")
+  async getPrivateChat(
+    @Param("partnerId") partnerId: string,
+    @Session() session: SessionWithData,
+  ) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: partnerId,
+      },
+    });
+
+    if (!user) throw new NotFoundException("Partner not found");
+
+    let chat = await this.prisma.chat.findFirst({
+      where: {
+        privateChat: {
+          OR: [
+            {user1Id: partnerId, user2Id: session.userId},
+            {user1Id: session.userId, user2Id: partnerId},
+          ],
+        },
+      },
+    });
+
+    if (!chat) {
+      // @ts-ignore
+      chat = await this.prisma.chat.create({
+        data: {},
+      });
+
+      await this.prisma.privateChat.create({
+        data: {
+          user1Id: session.userId,
+          user2Id: partnerId,
+          chatId: chat.id,
+        },
+      });
+
+      return {
+        chat: {
+          id: chat.id,
+          partner: user,
+          lastMessage: null,
+          messages: [],
+        },
+      };
+    }
+
+    const messages = await this.prisma.chatMessage.findMany({
+      where: {
+        chatId: chat.id,
+      },
+      include: {
+        sender: true,
+      },
+      take: 1,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return {
+      chat: {
+        id: chat.id,
+        partner: user,
+        lastMessage: messages[0],
+      },
+    };
+  }
+
+  @Get("project/:projectId")
+  async getProjectChat(
+    @Param("projectId") projectId: string,
+    @Session() session: SessionWithData,
+  ) {
+    const chat = await this.prisma.chat.findFirst({
+      where: {
+        projectChat: {
+          project: {
+            id: projectId,
+            OR: [
+              {
+                members: {
+                  some: {
+                    userId: session.userId,
+                  },
+                },
+              },
+              {
+                founderId: session.userId,
+              },
+            ],
+          },
+        },
+      },
+      include: {
+        projectChat: {
+          include: {
+            project: true,
+          },
+        },
+      },
+    });
+
+    if (!chat) throw new NotFoundException("Project chat not found");
+
+    const messages = await this.prisma.chatMessage.findMany({
+      where: {
+        chatId: chat.id,
+      },
+      include: {
+        sender: true,
+      },
+    });
+
+    return {
+      chat: {
+        id: chat.id,
+        project: chat.projectChat.project,
+        messages,
+      },
     };
   }
 }

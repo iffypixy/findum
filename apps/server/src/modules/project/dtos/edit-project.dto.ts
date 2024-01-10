@@ -1,5 +1,10 @@
 import {Type} from "class-transformer";
-import {IsDate, IsOptional, IsString, ValidateNested} from "class-validator";
+import {
+  IsDateString,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 class Location {
   @IsOptional()
@@ -25,11 +30,11 @@ export class EditProjectDto {
   avatar: string;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   startDate: Date;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   endDate: Date;
 
   @IsOptional()

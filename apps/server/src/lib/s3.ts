@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 AWS.config.update({
+  signatureVersion: "v4",
   region: "ru-central1",
   credentials: new AWS.Credentials({
     accessKeyId: process.env.S3_PUBLIC_KEY,
@@ -12,5 +13,5 @@ AWS.config.update({
 });
 
 export const s3 = new AWS.S3({
-  endpoint: new AWS.Endpoint("storage.yandexcloud.net"),
+  endpoint: new AWS.Endpoint("https://storage.yandexcloud.net"),
 });

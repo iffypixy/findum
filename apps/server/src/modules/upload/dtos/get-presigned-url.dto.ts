@@ -1,8 +1,6 @@
-import {IsIn} from "class-validator";
-
-import {mimes} from "@lib/mimes";
+import {IsString} from "class-validator";
 
 export class GetPresignedUrlDto {
-  @IsIn(mimes.image)
+  @IsString()
   contentType: string;
 }

@@ -1,49 +1,59 @@
 import {PayloadAction, createReducer} from "@reduxjs/toolkit";
 
-import {Nullable} from "@shared/lib/types";
+import {Credentials, Fetchable, Nullable} from "@shared/lib/types";
 
 import * as actions from "./actions";
 
-export interface Credentials {
-  id: number;
-  firstName: string;
-  lastName: string;
-  location: string;
-  city: string;
-  friends: any[];
-}
-
 interface AuthState {
-  credentials: Nullable<Credentials>;
-  authenticated: boolean;
-  token: Nullable<string>;
+  credentials: Fetchable<Nullable<Credentials>>;
+  isAuthenticated: boolean;
 }
 
 export const reducer = createReducer<AuthState>(
   {
-    credentials: null,
-    authenticated: false,
-    token: null,
+    credentials: {
+      data: null,
+      isFetching: true,
+    },
+    isAuthenticated: false,
   },
   (builder) =>
     builder
+      .addCase(actions.fetchCredentials.pending.type, (state) => {
+        state.credentials.isFetching = true;
+      })
       .addCase(
         actions.fetchCredentials.fulfilled.type,
+        (state, action: PayloadAction<actions.FetchCredentialsRes>) => {
+          state.credentials.data = action.payload.credentials;
+          state.credentials.isFetching = false;
+
+          state.isAuthenticated = true;
+        },
+      )
+      .addCase(actions.fetchCredentials.rejected.type, (state) => {
+        state.credentials.isFetching = false;
+      })
+      .addCase(
+        actions.register.fulfilled.type,
+        (state, action: PayloadAction<actions.RegisterRes>) => {
+          state.credentials.data = action.payload.credentials;
+        },
+      )
+      .addCase(
+        actions.login.fulfilled.type,
+        (state, action: PayloadAction<actions.LoginRes>) => {
+          state.credentials.data = action.payload.credentials;
+        },
+      )
+      .addCase(actions.logout.fulfilled.type, (state) => {
+        state.credentials.data = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(
+        actions.setCredentials.type,
         (state, action: PayloadAction<Credentials>) => {
-          state.credentials = action.payload;
-          state.authenticated = true;
-        },
-      )
-      .addCase(
-        actions.setAuthenticated.type,
-        (state, action: PayloadAction<boolean>) => {
-          state.authenticated = action.payload;
-        },
-      )
-      .addCase(
-        actions.setToken.type,
-        (state, action: PayloadAction<string>) => {
-          state.token = action.payload;
+          state.credentials.data = action.payload;
         },
       ),
 );

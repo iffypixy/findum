@@ -28,7 +28,7 @@ export class ProfileController {
 
     await this.prisma.profile.update({
       where: {
-        id: session.userId,
+        userId: session.userId,
       },
       data: dataProfile,
     });

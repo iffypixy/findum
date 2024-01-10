@@ -18,6 +18,15 @@ export class PaymentController {
             slots: data.slots,
           },
         });
+      } else if (data.type === PAYMENT_TYPES.PROJECT_CARD_SLOTS) {
+        await this.prisma.projectCard.update({
+          where: {
+            id: data.cardId,
+          },
+          data: {
+            slots: data.slots,
+          },
+        });
       }
     });
   }

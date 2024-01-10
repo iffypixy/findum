@@ -3,6 +3,8 @@ import * as Tabs from "@radix-ui/react-tabs";
 import {cx} from "class-variance-authority";
 import {Controller, useForm} from "react-hook-form";
 import {twMerge} from "tailwind-merge";
+import {useSelector} from "react-redux";
+import {useTranslation} from "react-i18next";
 
 import {
   Avatar,
@@ -15,22 +17,25 @@ import {
   TextField,
   Upload,
 } from "@shared/ui";
-import {Nullable} from "@shared/lib/types";
-import {cities} from "@shared/lib/cities";
+import {Location, Nullable} from "@shared/lib/types";
+import {countries} from "@shared/lib/location";
 import {Modal, WrappedModalProps} from "@shared/lib/modal";
 import {AvatarEditor} from "@shared/lib/avatars";
+import {authModel} from "@features/auth";
+import {api} from "@shared/api";
+import {navigate} from "wouter/use-location";
+import toast from "react-hot-toast";
+import {useDispatch} from "@shared/lib/store";
+import {setCredentials} from "@features/auth/model/actions";
 
 type Tab = "profile" | "general";
 
 interface ProfileSettingsForm {
-  avatar: Nullable<File>;
+  avatar: string;
   firstName: string;
   lastName: string;
-  location: Nullable<string>;
-  role1: string;
-  role2: string;
-  role3: string;
-  resume: Nullable<File>;
+  location: Location;
+  cv: Nullable<string>;
 }
 
 interface AvatarEditorData {
@@ -40,6 +45,8 @@ interface AvatarEditorData {
 
 export const SettingsPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>("profile");
+
+  const credentials = useSelector(authModel.selectors.credentials);
 
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
@@ -52,16 +59,20 @@ export const SettingsPage: React.FC = () => {
   const {control, register, handleSubmit, watch, setValue} =
     useForm<ProfileSettingsForm>({
       defaultValues: {
-        firstName: "Omar",
-        lastName: "Moldaschev",
-        location: "Astana",
-        role1: "Software Engineer",
-        role2: "Project manager",
-        role3: "Data analyst",
+        firstName: credentials.data?.firstName,
+        lastName: credentials.data?.lastName,
+        location: credentials.data?.location,
+        avatar: credentials.data?.avatar,
+        cv: credentials.data?.profile.cv,
       },
     });
 
+  const dispatch = useDispatch();
+
   const avatar = watch("avatar");
+  const cv = watch("cv");
+
+  const {t} = useTranslation();
 
   return (
     <>
@@ -83,21 +94,38 @@ export const SettingsPage: React.FC = () => {
               Profile
             </Tabs.Trigger>
 
-            <Tabs.Trigger
+            {/* <Tabs.Trigger
               value="general"
               className={cx("bg-paper rounded-t-lg px-10 py-2", {
                 "bg-paper-brand": currentTab === "general",
               })}
             >
               General
-            </Tabs.Trigger>
+            </Tabs.Trigger> */}
           </Tabs.List>
 
           <Tabs.Content value="profile" className="flex-1">
             <div className="h-[100%] bg-paper-brand p-14">
               <form
                 onSubmit={handleSubmit((form) => {
-                  console.log(form);
+                  api.profile
+                    .editProfile({
+                      firstName: form.firstName,
+                      lastName: form.lastName,
+                      avatar: form.avatar,
+                      cv: form.cv || undefined,
+                      location: form.location,
+                    })
+                    .then((res) => {
+                      navigate("/");
+
+                      dispatch(setCredentials(res.data.credentials));
+
+                      toast.success("Successfully updated profile :)");
+                    })
+                    .catch(() => {
+                      toast.error("Something's wrong :(");
+                    });
                 })}
                 className="flex flex-col space-y-6"
               >
@@ -110,7 +138,7 @@ export const SettingsPage: React.FC = () => {
                         const file = event.currentTarget.files![0];
 
                         if (file) {
-                          setAvatarEditor({open: true, avatar: file});
+                          setAvatarEditor({avatar: file!, open: true});
                         }
                       }}
                     >
@@ -121,7 +149,7 @@ export const SettingsPage: React.FC = () => {
                       >
                         {avatar ? (
                           <Avatar
-                            src={URL.createObjectURL(avatar)}
+                            src={avatar}
                             alt="Project's avatar"
                             className="w-[100%] h-auto"
                           />
@@ -148,29 +176,9 @@ export const SettingsPage: React.FC = () => {
                     </div>
 
                     <TextField
-                      value="omar.moldashev@gmail.com"
+                      value={credentials.data?.email}
                       disabled
                       className="w-[100%] h-auto"
-                    />
-
-                    <Controller
-                      name="location"
-                      control={control}
-                      render={({field}) => (
-                        <Select.Root
-                          name="location"
-                          onValueChange={field.onChange}
-                          value={field.value || undefined}
-                          placeholder="Select location"
-                          className="h-auto"
-                        >
-                          {cities.map((city) => (
-                            <Select.Item key={city} value={city}>
-                              {city}
-                            </Select.Item>
-                          ))}
-                        </Select.Root>
-                      )}
                     />
 
                     <div className="flex space-x-4">
@@ -184,16 +192,17 @@ export const SettingsPage: React.FC = () => {
                         onClick={() => {
                           setIsChangePasswordModalOpen(true);
                         }}
+                        type="button"
                         className="w-[50%]"
                       >
-                        Change password
+                        {t("common.change-password")}
                       </Button>
                     </div>
                   </div>
 
-                  <div className="w-[50%] flex flex-col space-y-12">
-                    <div className="flex flex-col space-y-8">
-                      <div className="flex flex-col space-y-2">
+                  <div className="w-[50%] flex flex-col space-y-12 -mt-8">
+                    <div className="flex flex-col space-y-4">
+                      {/* <div className="flex flex-col space-y-2">
                         <span>* Choose your role in the team</span>
 
                         <div className="flex flex-col space-y-6">
@@ -217,46 +226,87 @@ export const SettingsPage: React.FC = () => {
                             className="w-[calc(50%-0.5rem)] h-auto"
                           />
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="flex flex-col space-y-2">
-                        <span>* Upload your CV in order to join to teams</span>
+                        <span>{t("common.upload-cv-to")}</span>
 
                         <div className="flex items-center space-x-4">
                           <Controller
-                            name="resume"
+                            name="cv"
                             control={control}
                             render={({field}) => (
                               <>
                                 <TextField
-                                  value={field.value?.name}
-                                  placeholder="resume.pdf"
+                                  placeholder={
+                                    !credentials.data?.profile.cv && !cv
+                                      ? "No resume"
+                                      : "resume.pdf"
+                                  }
                                   disabled
                                   className="w-[50%] h-auto"
                                 />
 
                                 <Upload
+                                  accept="application/pdf"
                                   onChange={({currentTarget}) => {
                                     const file = currentTarget.files![0];
 
                                     if (file) {
-                                      field.onChange(file);
+                                      api.upload
+                                        .uploadImage({image: file})
+                                        .then((data) => {
+                                          if (data) {
+                                            field.onChange(data.url);
+                                          }
+                                        });
                                     }
                                   }}
                                   className="w-[50%] flex"
                                 >
-                                  <Button className="w-[100%]">Upload</Button>
+                                  <Button className="w-[100%]">
+                                    {t("common.upload")}
+                                  </Button>
                                 </Upload>
                               </>
                             )}
                           />
                         </div>
                       </div>
+
+                      <div className="flex flex-col space-y-4">
+                        <Controller
+                          name="location.country"
+                          control={control}
+                          render={({field}) => (
+                            <Select.Root
+                              name="location.country"
+                              onValueChange={field.onChange}
+                              value={field.value || undefined}
+                              placeholder="Select country"
+                              className="h-auto"
+                            >
+                              {countries.map((country) => (
+                                <Select.Item key={country} value={country}>
+                                  {country}
+                                </Select.Item>
+                              ))}
+                            </Select.Root>
+                          )}
+                        />
+
+                        <TextField
+                          {...register("location.city")}
+                          className="w-[50%] h-auto"
+                        />
+                      </div>
                     </div>
 
                     <div className="flex space-x-4">
-                      <Button className="w-[50%]">Cancel</Button>
-                      <Button className="w-[50%]">Save all changes</Button>
+                      <Button className="w-[50%]">{t("common.cancel")}</Button>
+                      <Button className="w-[50%]">
+                        {t("common.save-all-changes")}
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -303,7 +353,9 @@ export const SettingsPage: React.FC = () => {
           open={avatarEditor.open}
           onSave={(blob) => {
             if (blob) {
-              setValue("avatar", blob as File);
+              api.upload.uploadImage({image: blob as File}).then(({url}) => {
+                setValue("avatar", url);
+              });
             }
 
             setAvatarEditor({open: false, avatar: null});
@@ -331,7 +383,7 @@ interface ChangePasswordForm {
 }
 
 const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
-  const {register, handleSubmit} = useForm<ChangePasswordForm>({
+  const {register, handleSubmit, watch} = useForm<ChangePasswordForm>({
     defaultValues: {
       currentPassword: "",
       password1: "",
@@ -339,20 +391,34 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
     },
   });
 
+  const {t} = useTranslation();
+
+  const currentp = watch("currentPassword");
+  const p1 = watch("password1");
+  const p2 = watch("password2");
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className="min-w-[30rem] flex flex-col rounded-lg shadow-md bg-paper space-y-8 p-12">
         <div className="flex flex-col space-y-2">
-          <H4>Change your password</H4>
+          <H4>{t("common.change-password-title")}</H4>
 
           <span className="text-paper-contrast/60">
-            Enter current and new password
+            {t("common.change-password-subtitle")}
           </span>
         </div>
 
         <form
           onSubmit={handleSubmit((form) => {
-            console.log(form);
+            if (form.password1 === form.password2)
+              api.profile
+                .changePassword({
+                  currentPassword: form.currentPassword,
+                  newPassword: form.password1,
+                })
+                .finally(() => {
+                  onClose();
+                });
           })}
           className="flex flex-col space-y-6"
         >
@@ -360,21 +426,21 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
             <TextField
               {...register("currentPassword")}
               type="password"
-              label="Current password"
+              label={t("common.current-password")}
               placeholder="Enter your current password"
             />
 
             <TextField
               {...register("password1")}
               type="password"
-              label="New password"
+              label={t("common.new-password")}
               placeholder="Enter your new password"
             />
 
             <TextField
               {...register("password2")}
               type="password"
-              label="Confirm new password"
+              label={t("common.confirm-new-password")}
               placeholder="Enter your new password"
             />
           </div>
@@ -386,11 +452,15 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
               }}
               className="w-[50%]"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
 
-            <Button type="submit" className="w-[50%]">
-              Save changes
+            <Button
+              disabled={!!(p1 !== p2 || !currentp)}
+              type="submit"
+              className="w-[50%]"
+            >
+              {t("common.save-all-changes")}
             </Button>
           </div>
         </form>

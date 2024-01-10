@@ -12,7 +12,7 @@ import "react-day-picker/dist/style.css";
 import "./index.css";
 
 interface DatePickerProps
-  extends Omit<DayPickerSingleProps, "selected" | "onSelect" | "mode"> {
+  extends Omit<DayPickerSingleProps, "onSelect" | "mode"> {
   label?: string;
   error?: string;
   initialValue?: Date;
@@ -25,11 +25,12 @@ export const DatePicker: React.FC<DatePickerProps & PropsWithClassName> = ({
   initialValue,
   onSelect,
   className,
+  selected: selcted,
   ...props
 }) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Nullable<Date>>(
-    initialValue || null,
+    selcted || initialValue || null,
   );
 
   const display = selected && dayjs(selected).format("DD.MM.YYYY");
@@ -92,6 +93,7 @@ export const DatePicker: React.FC<DatePickerProps & PropsWithClassName> = ({
             {...props}
             mode="single"
             selected={selected || undefined}
+            required={!!initialValue}
             onSelect={(date) => {
               setSelected(date!);
 

@@ -1,39 +1,22 @@
 import {useEffect} from "react";
-import {useKeycloak} from "@react-keycloak/web";
+import {useSelector} from "react-redux";
 
-import {api} from "@shared/api";
-import {request} from "@shared/lib/request";
+import {useDispatch} from "@shared/lib/store";
 
-import {useAuthStore} from "../store";
+import {model} from "../model";
 
 export const CredentialsLoader: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const {keycloak, initialized} = useKeycloak();
+  const dispatch = useDispatch();
 
-  const store = useAuthStore((state) => state);
+  const credentials = useSelector(model.selectors.credentials);
 
   useEffect(() => {
-    if (initialized) {
-      if (keycloak.authenticated) {
-        const header = `Bearer ${keycloak.token}`;
+    if (!credentials.data) dispatch(model.actions.fetchCredentials());
+  }, []);
 
-        localStorage.setItem("token", header);
-
-        request.defaults.headers["Authorization"] = header;
-
-        if (!store.credentials) {
-          api.getMe().then(({data}) => {
-            store.setCredentials(data);
-          });
-        }
-      } else {
-        keycloak.login();
-      }
-    }
-  }, [initialized, keycloak, store]);
-
-  if (!initialized) return null;
+  if (credentials.isFetching) return null;
 
   return <>{children}</>;
 };

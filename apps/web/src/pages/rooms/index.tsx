@@ -4,14 +4,14 @@ import {cx} from "class-variance-authority";
 import {BiSearch} from "react-icons/bi";
 import {useLocation} from "wouter";
 import {BsPlus} from "react-icons/bs";
+import {useTranslation} from "react-i18next";
 
 import {Button, ContentTemplate, H4, H5, Select, TextField} from "@shared/ui";
-import {cities} from "@shared/lib/cities";
+import {countries} from "@shared/lib/location";
 import {MyProjectCard, ProjectCard, projectsModel} from "@features/projects";
 import {useDispatch} from "@shared/lib/store";
 import {useSelector} from "react-redux";
-
-const avatar = "https://shorturl.at/ikvZ0";
+import {useDebouncedValue} from "@shared/lib/debounce";
 
 type Tab = "my-projects" | "all-projects";
 
@@ -23,42 +23,51 @@ export const RoomsPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>("my-projects");
 
   const [specialist, setSpecialist] = useState("");
-  const [location, setLocation] = useState<string | null>(null);
+
+  const [country, setCountry] = useState<string | undefined>(undefined);
+  const [city, setCity] = useState<string>("");
+
+  const {t} = useTranslation();
 
   const all = useSelector(projectsModel.selectors.all);
-  const owned = useSelector(projectsModel.selectors.owned);
+  const founder = useSelector(projectsModel.selectors.founder);
   const member = useSelector(projectsModel.selectors.member);
   const total = useSelector(projectsModel.selectors.total);
 
   useEffect(() => {
-    dispatch(projectsModel.actions.fetchOwnedProjects());
-    dispatch(projectsModel.actions.fetchMemberProjects());
-  }, [dispatch]);
+    dispatch(projectsModel.actions.fetchProjectsAsFounder());
+    dispatch(projectsModel.actions.fetchProjectsAsMember());
+    dispatch(projectsModel.actions.fetchTotalAmountOfProjects());
+  }, []);
+
+  const citySearch = useDebouncedValue(city, 500);
+  const countrySearch = useDebouncedValue(country, 500);
+  const specialistSearch = useDebouncedValue(specialist, 500);
 
   useEffect(() => {
     if (currentTab === "all-projects") {
       if (!all)
         dispatch(
-          projectsModel.actions.fetchAllProjects({
+          projectsModel.actions.fetchProjectCards({
             page: 1,
-            size: 8,
+            limit: 100,
           }),
         );
     }
-  }, [dispatch, currentTab, all]);
+  }, [currentTab]);
 
   useEffect(() => {
     if (currentTab === "all-projects") {
       dispatch(
-        projectsModel.actions.fetchAllProjects({
+        projectsModel.actions.fetchProjectCards({
           page: 1,
-          size: 100,
-          city: location || undefined,
-          role: specialist || undefined,
+          limit: 100,
+          location: {country: countrySearch, city: citySearch} || undefined,
+          role: specialistSearch || undefined,
         }),
       );
     }
-  }, [location, specialist, currentTab, dispatch]);
+  }, [citySearch, countrySearch, specialistSearch, currentTab]);
 
   useEffect(() => {
     if (currentTab === "all-projects") {
@@ -71,11 +80,11 @@ export const RoomsPage: React.FC = () => {
   const tabs = [
     {
       id: "my-projects",
-      title: "My projects",
+      title: t("common.my-projects"),
     },
     {
       id: "all-projects",
-      title: "All projects",
+      title: t("common.all-projects"),
     },
   ];
 
@@ -90,8 +99,9 @@ export const RoomsPage: React.FC = () => {
           className="h-[100%] flex flex-col relative"
         >
           <Tabs.List className="px-14">
-            {tabs.map((tab) => (
+            {tabs.map((tab, idx) => (
               <Tabs.Trigger
+                key={idx}
                 value={tab.id}
                 className={cx("bg-paper rounded-t-lg px-10 py-2", {
                   "bg-paper-brand": currentTab === tab.id,
@@ -113,7 +123,7 @@ export const RoomsPage: React.FC = () => {
                 }}
                 className="inline-flex items-center space-x-3"
               >
-                <span>Create project</span>
+                <span>{t("common.create-project")}</span>
 
                 <span className="border border-accent-contrast rounded-full">
                   <BsPlus className="w-4 h-auto text-accent-contrast" />
@@ -124,35 +134,52 @@ export const RoomsPage: React.FC = () => {
             {hasProjects ? (
               <div className="flex flex-col space-y-10 p-14">
                 <div className="flex flex-col space-y-2">
-                  <H5>Owner</H5>
+                  <H5>{t("common.founder")}</H5>
 
-                  <div className="flex items-center space-x-8 overflow-x-auto py-4">
-                    {Array.from({length: 6}).map((_, idx) => (
-                      <MyProjectCard
-                        key={idx}
-                        name="Findum"
-                        avatar={avatar}
-                        members={[{avatar}, {avatar}]}
-                      />
-                    ))}
-                  </div>
+                  {founder.data?.length === 0 ? (
+                    <span className="text-paper-contrast/75 mt-6">
+                      {t("common.no-projects")}
+                    </span>
+                  ) : (
+                    <div className="flex items-center space-x-8 overflow-x-auto py-4">
+                      {founder.data?.map((project) => (
+                        <MyProjectCard
+                          key={project.id}
+                          id={project.id}
+                          name={project.name}
+                          isFounder={true}
+                          requests={(project as any).requests}
+                          avatar={project.avatar}
+                          members={[]}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="w-[100%] min-h-[2px] bg-paper-contrast/20" />
 
                 <div className="flex flex-col space-y-2">
-                  <H5>Rooms</H5>
+                  <H5>{t("common.projects")}</H5>
 
-                  <div className="flex items-center space-x-8 overflow-x-auto py-4">
-                    {Array.from({length: 6}).map((_, idx) => (
-                      <MyProjectCard
-                        key={idx}
-                        name="Findum"
-                        avatar={avatar}
-                        members={[{avatar}, {avatar}]}
-                      />
-                    ))}
-                  </div>
+                  {member.data?.length === 0 ? (
+                    <span className="text-paper-contrast/75 mt-6">
+                      {t("common.no-projects")}
+                    </span>
+                  ) : (
+                    <div className="flex items-center space-x-8 overflow-x-auto py-4">
+                      {member.data?.map((project) => (
+                        <MyProjectCard
+                          key={project.id}
+                          id={project.id}
+                          isFounder={false}
+                          name={project.name}
+                          avatar={project.avatar}
+                          members={[]}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -165,15 +192,19 @@ export const RoomsPage: React.FC = () => {
             className="flex-1 bg-paper-brand overflow-y-auto"
           >
             <div className="absolute -top-5 right-10 flex flex-col items-start -space-y-1">
-              <span className="font-semibold text-2xl">{total} rooms</span>
-              <span className="text-paper-contrast/60">were created</span>
+              <span className="font-semibold text-2xl">
+                {total.data} {t("common.projects-were-created1")}
+              </span>
+              <span className="text-paper-contrast/60">
+                {t("common.projects-were-created2")}
+              </span>
             </div>
 
             <div className="flex flex-col space-y-8 p-14">
               <div className="flex flex-col space-y-4">
                 <TextField
                   suffix={<BiSearch className="w-6 h-auto" />}
-                  placeholder="Specialist"
+                  placeholder={t("common.specialist")}
                   className="w-[25rem] h-auto"
                   value={specialist}
                   onChange={(event) => {
@@ -182,51 +213,74 @@ export const RoomsPage: React.FC = () => {
                 />
 
                 <Select.Root
-                  placeholder="Location"
+                  placeholder={t("common.country")}
                   className="w-[15rem] h-auto"
-                  value={location || undefined}
+                  value={country || undefined}
                   onValueChange={(value) => {
-                    setLocation(value);
+                    setCountry(value);
                   }}
                 >
-                  {cities.map((city) => (
-                    <Select.Item value={city}>{city}</Select.Item>
+                  {countries.map((country, idx) => (
+                    <Select.Item key={idx} value={country}>
+                      {country}
+                    </Select.Item>
                   ))}
                 </Select.Root>
+
+                <TextField
+                  placeholder={t("common.city")}
+                  className="w-[25rem] h-auto"
+                  value={city}
+                  onChange={(event) => {
+                    setCity(event.currentTarget.value);
+                  }}
+                />
               </div>
 
-              <div className="flex items-center flex-wrap justify-between -m-6">
-                {Array.from({length: 7}).map((_, idx) => (
-                  <div className="w-[45%] m-6">
-                    <ProjectCard
-                      key={idx}
-                      id="@projectid"
-                      owner={{
-                        avatar,
-                        firstName: "Omar",
-                        lastName: "Aliev",
-                      }}
-                      startDate={new Date()}
-                      endDate={new Date()}
-                      description="Roles and responsibilities include managing Java/Java EE application development while providing expertise in the entire software development lifecycle, from concept and design to testing. Java developer responsibilities include designing, developing, and delivering high-volume, low-latency applications for mission-critical systems."
-                      name="Findum #2"
-                      avatar={avatar}
-                      slots={[
-                        {
-                          specialist: "Newbie",
-                          requirements: "Be smart.",
-                          benefits: "A lot of money.",
-                        },
-                      ]}
-                      members={[
-                        {avatar, specialist: "Full-stack dev."},
-                        {avatar, specialist: "Project manager"},
-                        {avatar, specialist: "Designer"},
-                      ]}
-                    />
-                  </div>
-                ))}
-              </div>
+              {all.data?.length === 0 ? (
+                <span className="text-paper-contrast/75 mt-6">
+                  {t("common.no-project-cards")}
+                </span>
+              ) : (
+                <div className="flex items-center flex-wrap justify-between -m-6">
+                  {all.data
+                    ?.filter((c) => c.members.some((m) => !m.isOccupied))
+                    .map((card, idx) => (
+                      <div className="w-[45%] m-6" key={idx}>
+                        <ProjectCard
+                          key={idx}
+                          id={card.id}
+                          projectId={card.project.id}
+                          owner={card.project.founder}
+                          startDate={new Date(card.project.startDate)}
+                          endDate={
+                            card.project.endDate &&
+                            new Date(card.project.endDate)
+                          }
+                          description={card.project.description}
+                          name={card.project.name}
+                          avatar={card.project.avatar}
+                          slots={card.members
+                            .filter((m) => !m.isOccupied)
+                            .map((m) => ({
+                              id: m.id,
+                              specialist: m.role,
+                              benefits: m.benefits,
+                              requirements: m.requirements,
+                            }))}
+                          members={card.members
+                            .filter((m) => m.isOccupied)
+                            .map((m) => ({
+                              id: m.id,
+                              userId: m.user.id,
+                              avatar: m.user.avatar,
+                              specialist: m.role,
+                            }))}
+                        />
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </Tabs.Content>
         </Tabs.Root>

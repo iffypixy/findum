@@ -1,27 +1,29 @@
-import {PropsWithChildren, useEffect} from "react";
+import {PropsWithChildren, useEffect, useState} from "react";
 import {IoAddCircleOutline} from "react-icons/io5";
 import {useLocation} from "wouter";
-import {useKeycloak} from "@react-keycloak/web";
+import {useSelector} from "react-redux";
+import {useTranslation} from "react-i18next";
 
 import {Button, ContentTemplate, H1, H5} from "@shared/ui";
-import {ProjectCard, projectsModel} from "@features/projects";
-import {useDispatch} from "@shared/lib/store";
-import {request} from "@shared/lib/request";
-
-const avatar = "https://shorturl.at/ikvZ0";
+import {api} from "@shared/api";
+import {Nullable, ProjectCard as IProjectCard} from "@shared/lib/types";
+import {ProjectCard} from "@features/projects";
+import {authModel} from "@features/auth";
 
 export const HomePage: React.FC = () => {
-  const dispatch = useDispatch();
-
   const [, navigate] = useLocation();
 
-  const {keycloak} = useKeycloak();
+  const {t} = useTranslation();
+
+  const credentials = useSelector(authModel.selectors.credentials);
+
+  const [cards, setCards] = useState<Nullable<IProjectCard[]>>(null);
 
   useEffect(() => {
-    dispatch(projectsModel.actions.fetchFeaturedProjects());
-
-    request({method: "GET", url: "/rooms-service/user"});
-  }, [dispatch]);
+    api.projects
+      .getFeaturedProjectCards()
+      .then(({data}) => setCards(data.cards));
+  }, []);
 
   return (
     <ContentTemplate>
@@ -29,11 +31,10 @@ export const HomePage: React.FC = () => {
         <div className="w-[100%] bg-paper shadow-sm py-14 px-10">
           <Container>
             <H1 className="mb-4 font-secondary">
-              Hi, {keycloak.tokenParsed!.given_name}
+              {t("home.greeting")}
+              {credentials.data?.firstName}
             </H1>
-            <span className="text-paper-contrast/40 text-xl">
-              Product designer{" "}
-            </span>
+            <span className="text-paper-contrast/40 text-xl"></span>
           </Container>
         </div>
 
@@ -48,7 +49,9 @@ export const HomePage: React.FC = () => {
                   className="w-[45%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-6"
                 >
                   <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
-                  <span className="text-xl font-medium">Create a project</span>
+                  <span className="text-xl font-medium">
+                    {t("home.buttons.create-project")}
+                  </span>
                 </Button>
 
                 <Button
@@ -58,43 +61,48 @@ export const HomePage: React.FC = () => {
                   className="w-[45%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-6"
                 >
                   <IoAddCircleOutline className="w-[1.5em] h-auto" />{" "}
-                  <span className="text-xl font-medium">Find a project</span>
+                  <span className="text-xl font-medium">
+                    {t("home.buttons.find-projects")}
+                  </span>
                 </Button>
               </div>
 
               <div className="flex flex-col space-y-4">
-                <H5 className="font-normal">Best recent startup projects</H5>
+                <H5 className="font-normal">{t("home.title")}</H5>
 
                 <div className="flex justify-between flex-wrap items-center">
-                  {Array.from({length: 5}).map((_, idx) => (
-                    <div key={idx} className="w-[45%] my-4">
-                      <ProjectCard
-                        id="@projectid"
-                        owner={{
-                          avatar,
-                          firstName: "Omar",
-                          lastName: "Aliev",
-                        }}
-                        startDate={new Date()}
-                        endDate={new Date()}
-                        description="Roles and responsibilities include managing Java/Java EE application development while providing expertise in the entire software development lifecycle, from concept and design to testing. Java developer responsibilities include designing, developing, and delivering high-volume, low-latency applications for mission-critical systems."
-                        name="Findum #2"
-                        avatar={avatar}
-                        slots={[
-                          {
-                            specialist: "Newbie",
-                            benefits: "A lot of experience.",
-                            requirements: "Be motivated.",
-                          },
-                        ]}
-                        members={[
-                          {avatar, specialist: "Full-stack dev."},
-                          {avatar, specialist: "Project manager"},
-                          {avatar, specialist: "Designer"},
-                        ]}
-                      />
-                    </div>
-                  ))}
+                  {cards
+                    ?.filter((c) => c.members.some((m) => !m.isOccupied))
+                    ?.map((card, idx) => (
+                      <div key={idx} className="w-[45%] my-4">
+                        <ProjectCard
+                          id={card.id}
+                          projectId={card.project.id}
+                          owner={card.project.founder}
+                          startDate={card.project.startDate}
+                          endDate={card.project.endDate}
+                          description={card.project.description}
+                          name={card.project.name}
+                          avatar={card.project.avatar}
+                          slots={card.members
+                            .filter((m) => !m.isOccupied)
+                            .map((m) => ({
+                              id: m.id,
+                              specialist: m.role,
+                              benefits: m.benefits,
+                              requirements: m.requirements,
+                            }))}
+                          members={card.members
+                            .filter((m) => m.isOccupied)
+                            .map((m) => ({
+                              userId: m.user.id,
+                              id: m.id,
+                              avatar: m.user.avatar,
+                              specialist: m.role,
+                            }))}
+                        />
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

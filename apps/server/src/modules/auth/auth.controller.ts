@@ -8,13 +8,15 @@ import {
   Post,
   Query,
   Req,
+  Res,
   Session,
   UseGuards,
 } from "@nestjs/common";
 import bcrypt from "bcryptjs";
-import {Request} from "express";
+import {Request, Response} from "express";
 import {SessionWithData} from "express-session";
 import {nanoid} from "nanoid";
+import {ConfigService} from "@nestjs/config";
 
 import {PrismaService} from "@lib/prisma";
 import {mappers} from "@lib/mappers";
@@ -32,6 +34,7 @@ export class AuthController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly config: ConfigService,
   ) {}
 
   @HttpCode(201)
@@ -80,15 +83,16 @@ export class AuthController {
         lastName: dto.lastName,
         email: dto.email,
         password: hash,
-        avatar: dto.avatar,
         isVerified: false,
         locationId: location.id,
+        avatar:
+          "https://storage.yandexcloud.net/s3metaorta/photo_2024-01-09%2017.01.19.jpeg",
       },
     });
 
     const profile = await this.prisma.profile.create({
       data: {
-        roles: [dto.profile.role1, dto.profile.role2, dto.profile.role3],
+        cv: null,
         userId: user.id,
       },
     });
@@ -99,7 +103,7 @@ export class AuthController {
     await this.redis.expire(verificationId, VERIFICATION_EXPIRY);
 
     const baseUrl = url.getBaseUrl(req);
-    const verificationUrl = `${baseUrl}/auth/verify/${verificationId}`;
+    const verificationUrl = `${baseUrl}/api/auth/verify/${verificationId}`;
 
     emtransporter.sendMail({
       to: dto.email,
@@ -149,7 +153,11 @@ export class AuthController {
   }
 
   @Get("verify/:id")
-  async verifyEmail(@Param("id") id: string) {
+  async verifyEmail(
+    @Param("id") id: string,
+    @Res() res: Response,
+    @Session() session: SessionWithData,
+  ) {
     const userId = await this.redis.get(id);
 
     const exception = new BadRequestException("Invalid verification id");
@@ -164,14 +172,23 @@ export class AuthController {
 
     if (!user) throw exception;
 
-    await this.prisma.user.update({
+    const updated = await this.prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
         isVerified: true,
       },
+      include: {
+        profile: true,
+        location: true,
+      },
     });
+
+    session.user = updated;
+    session.userId = updated.id;
+
+    res.redirect(this.config.get("client.origin"));
   }
 
   @UseGuards(IsAuthenticated)
@@ -220,7 +237,7 @@ export class AuthController {
     await this.redis.expire(id, VERIFICATION_EXPIRY);
 
     const baseUrl = url.getBaseUrl(req);
-    const verificationUrl = `${baseUrl}/auth/verify/${id}`;
+    const verificationUrl = `${baseUrl}/api/auth/verify/${id}`;
 
     emtransporter.sendMail({
       to: session.user.email,

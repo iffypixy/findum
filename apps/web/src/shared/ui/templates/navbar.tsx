@@ -7,15 +7,20 @@ import {AiOutlineRight} from "react-icons/ai";
 import {Link, useLocation} from "wouter";
 import {cx} from "class-variance-authority";
 import {twMerge} from "tailwind-merge";
+import {createPortal} from "react-dom";
+import {useSelector} from "react-redux";
+import {useTranslation} from "react-i18next";
 
 import {Avatar, Icon} from "@shared/ui";
 import logo from "@shared/assets/logo.png";
-import {createPortal} from "react-dom";
-
-const avatar = "https://shorturl.at/ikvZ0";
+import {authModel} from "@features/auth";
 
 export const Navbar: React.FC = () => {
+  const {t} = useTranslation();
+
   const [open, setOpen] = useState(false);
+
+  const credentials = useSelector(authModel.selectors.credentials);
 
   const [location] = useLocation();
 
@@ -73,11 +78,11 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div className="flex flex-col space-y-6">
-          <Link href="/profiles/@">
+          <Link href={`/profiles/${credentials.data?.id}`}>
             {/*eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
             <a>
               <Avatar
-                src={avatar}
+                src={credentials.data?.avatar || ""}
                 alt="Profile picture"
                 className="w-28 h-28"
               />
@@ -85,8 +90,10 @@ export const Navbar: React.FC = () => {
           </Link>
 
           <div className="flex flex-col space-y-1 text-main-contrast">
-            <span className="text-lg font-bold">Omar Moldashev</span>
-            <span className="text-sm">omar.moldashev@gmail.com</span>
+            <span className="text-lg font-bold">
+              {credentials.data?.firstName} {credentials.data?.lastName}
+            </span>
+            <span className="text-sm">{credentials.data?.email}</span>
           </div>
         </div>
 
@@ -97,19 +104,17 @@ export const Navbar: React.FC = () => {
               className={cx(
                 "flex items-center justify-between cursor-pointer text-main-contrast rounded-md p-2",
                 {
-                  "bg-main-400": location === "/chat",
+                  "bg-main-400": location.startsWith("/chat"),
                 },
               )}
             >
               <span className="flex items-center space-x-4">
                 <AiOutlineMail className="w-5 h-auto" />
 
-                <span>Messages</span>
+                <span>{t("common.messages")}</span>
               </span>
 
-              <span className="w-5 h-5 rounded-full flex items-center justify-center bg-accent text-sm cursor-pointer">
-                3
-              </span>
+              <AiOutlineRight className="cursor-pointer" />
             </a>
           </Link>
 
@@ -126,12 +131,10 @@ export const Navbar: React.FC = () => {
               <span className="flex items-center space-x-4">
                 <BsPerson className="w-5 h-auto" />
 
-                <span>Friends</span>
+                <span>{t("common.friends")}</span>
               </span>
 
-              <span className="w-5 h-5 rounded-full flex items-center justify-center bg-accent text-sm cursor-pointer">
-                3
-              </span>
+              <AiOutlineRight className="cursor-pointer" />
             </a>
           </Link>
 
@@ -148,12 +151,10 @@ export const Navbar: React.FC = () => {
               <span className="text-main-contrast flex items-center space-x-4">
                 <Icon.Rooms className="w-5 h-auto" />
 
-                <span>Projects</span>
+                <span>{t("common.projects")}</span>
               </span>
 
-              <span className="w-5 h-5 rounded-full flex items-center justify-center bg-accent text-sm cursor-pointer">
-                3
-              </span>
+              <AiOutlineRight className="cursor-pointer" />
             </a>
           </Link>
 
@@ -170,14 +171,14 @@ export const Navbar: React.FC = () => {
               <span className="flex items-center space-x-4">
                 <FiSettings className="w-5 h-auto" />
 
-                <span>Settings</span>
+                <span>{t("common.settings")}</span>
               </span>
 
               <AiOutlineRight className="cursor-pointer" />
             </a>
           </Link>
 
-          <Link href="faq">
+          <Link href="/faq">
             {/*eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
             <a
               className={cx(
@@ -190,7 +191,7 @@ export const Navbar: React.FC = () => {
               <span className="flex items-center space-x-4">
                 <BsQuestionOctagon className="w-5 h-auto" />
 
-                <span>FAQ</span>
+                <span>{t("common.faq")}</span>
               </span>
 
               <AiOutlineRight className="cursor-pointer" />

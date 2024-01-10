@@ -27,9 +27,6 @@ const completeUser = (u: CompleteUser) => ({
 });
 
 const profile = (p: Profile) => ({
-  role1: p.roles[0],
-  role2: p.roles[1],
-  role3: p.roles[2],
   cv: p.cv,
 });
 
@@ -81,6 +78,8 @@ const relationship = ({
   self: s,
   relationship: r,
 }: RelationshipDtoParams): RelationshipStatusDto => {
+  if (!r) return "NONE";
+
   if (r.status === "NONE") return r.status;
   else if (r.status === "FRIEND_REQ_1_2") {
     if (s === r.user1Id) return "FRIEND_REQUEST_SENT";
@@ -116,7 +115,7 @@ const projectMember = (m: CompleteProjectMember) => ({
   benefits: m.benefits,
   requirements: m.requirements,
   isOccupied: m.isOccupied,
-  user: user(m.user),
+  user: m.user && user(m.user),
   role: m.role,
   createdAt: m.createdAt,
 });

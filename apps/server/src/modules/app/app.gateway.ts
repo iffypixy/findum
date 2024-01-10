@@ -5,7 +5,14 @@ import {Server} from "socket.io";
 import {session} from "@lib/session";
 import {SocketService} from "@lib/socket";
 
-@WebSocketGateway()
+console.log(process.env.CLIENT_ORIGIN);
+
+@WebSocketGateway({
+  cors: {
+    credentials: true,
+    origin: process.env.CLIENT_ORIGIN,
+  },
+})
 export class AppGateway implements OnGatewayInit {
   constructor(private readonly socketService: SocketService) {}
 

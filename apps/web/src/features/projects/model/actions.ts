@@ -1,88 +1,86 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-
+import {api} from "@shared/api";
 import {
-  CreateProjectData,
-  GetProjectsData,
-  GetProjectsResponse,
-  Project,
-  api,
-} from "@shared/api";
-import {RootState} from "@shared/lib/store";
+  CreateProjectParams,
+  CreateProjectResponse,
+  GetCardsParams,
+  GetCardsResponse,
+  GetFeaturedProjectCardsResponse,
+  GetProjectsAsFounderResponse,
+  GetProjectsAsMemberResponse,
+  GetTotalAmountOfProjectsResponse,
+} from "@shared/api/projects";
 
 const prefix = "projects";
 
-export interface FetchAllProjectsReq extends GetProjectsData {}
-export interface FetchAllProjectsRes extends GetProjectsResponse {}
+export type FetchFeaturedProjectCardsRes = GetFeaturedProjectCardsResponse;
+export type FetchFeaturedProjectCardsReq = void;
 
-export const fetchAllProjects = createAsyncThunk<
-  FetchAllProjectsRes,
-  FetchAllProjectsReq
->(`${prefix}/fetchAllProjects`, async (options) => {
-  const {data} = await api.getProjects(options);
-
-  return data;
-});
-
-export interface FetchFeaturedProjectsReq extends GetProjectsData {}
-export interface FetchFeaturedProjectsRes extends GetProjectsResponse {}
-
-export const fetchFeaturedProjects = createAsyncThunk<
-  FetchFeaturedProjectsRes,
-  void
->(`${prefix}/fetchFeaturedProjects`, async () => {
-  const {data} = await api.getProjects({size: 6, page: 1});
+export const fetchFeaturedProjectCards = createAsyncThunk<
+  FetchFeaturedProjectCardsRes,
+  FetchFeaturedProjectCardsReq
+>(`${prefix}/fetchFeaturedProjectCards`, async () => {
+  const {data} = await api.projects.getFeaturedProjectCards();
 
   return data;
 });
 
-export interface FetchOwnedProjectsReq extends GetProjectsData {}
-export interface FetchOwnedProjectsRes extends GetProjectsResponse {}
+export type FetchProjectCardsReq = GetCardsParams;
+export type FetchProjectCardsRes = GetCardsResponse;
 
-export const fetchOwnedProjects = createAsyncThunk(
-  `${prefix}/fetchOwnedProjects`,
-  async (_, thunk) => {
-    const state = thunk.getState() as RootState;
+export const fetchProjectCards = createAsyncThunk<
+  FetchProjectCardsRes,
+  FetchProjectCardsReq
+>(`${prefix}/fetchProjectCards`, async (payload) => {
+  const {data} = await api.projects.getCards(payload);
 
-    const {data} = await api.getProjectsByFounderId({
-      founderId: state.auth.credentials!.id,
-    });
+  return data;
+});
 
-    return data.content;
-  },
-);
+export type FetchProjectsAsFounderReq = void;
+export type FetchProjectsAsFounderRes = GetProjectsAsFounderResponse;
 
-export interface FetchMemberProjectsReq extends GetProjectsData {}
-export interface FetchMemberProjectsRes extends GetProjectsResponse {}
+export const fetchProjectsAsFounder = createAsyncThunk<
+  FetchProjectsAsFounderRes,
+  FetchProjectsAsFounderReq
+>(`${prefix}/fetchProjectsAsFounder`, async () => {
+  const {data} = await api.projects.getProjectsAsFounder();
 
-export const fetchMemberProjects = createAsyncThunk(
-  `${prefix}/fetchMemberProjects`,
-  async (_, thunk) => {
-    const state = thunk.getState() as RootState;
+  return data;
+});
 
-    const {data} = await api.getProjectsByMemberId({
-      memberId: state.auth.credentials!.id,
-    });
+export type FetchProjectsAsMemberReq = void;
+export type FetchProjectsAsMemberRes = GetProjectsAsMemberResponse;
 
-    return data;
-  },
-);
+export const fetchProjectsAsMember = createAsyncThunk<
+  FetchProjectsAsMemberRes,
+  FetchProjectsAsMemberReq
+>(`${prefix}/fetchProjectsAsMember`, async () => {
+  const {data} = await api.projects.getProjectsAsMember();
 
-interface CreateProjectReq extends CreateProjectData {}
+  return data;
+});
 
-export const createProject = createAsyncThunk<Project, CreateProjectReq>(
-  `${prefix}/createProject`,
-  async (req) => {
-    const {data} = await api.createProject(req);
-
-    return data;
-  },
-);
+export type FetchTotalAmountOfProjectsReq = void;
+export type FetchTotalAmountOfProjectsRes = GetTotalAmountOfProjectsResponse;
 
 export const fetchTotalAmountOfProjects = createAsyncThunk(
   `${prefix}/fetchTotalAmountOfProjects`,
   async () => {
-    const {data} = await api.getTotalAmountOfProjects();
+    const {data} = await api.projects.getTotalNumberOfProjects();
 
     return data;
   },
 );
+
+export type CreateProjectReq = CreateProjectParams;
+export type CreateProjectRes = CreateProjectResponse;
+
+export const createProject = createAsyncThunk<
+  CreateProjectRes,
+  CreateProjectReq
+>(`${prefix}/createProject`, async (payload) => {
+  const {data} = await api.projects.createProject(payload);
+
+  return data;
+});

@@ -1,7 +1,8 @@
 import {Controller, useForm} from "react-hook-form";
 import {twMerge} from "tailwind-merge";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {BsPlus} from "react-icons/bs";
+import {useLocation} from "wouter";
 
 import {
   Button,
@@ -18,23 +19,28 @@ import {
   Radio,
   Avatar,
 } from "@shared/ui";
-import {cities} from "@shared/lib/cities";
-import {Nullable} from "@shared/lib/types";
+import {countries} from "@shared/lib/location";
+import {Location, Nullable, Project, ProjectMember} from "@shared/lib/types";
 import {Modal, WrappedModalProps} from "@shared/lib/modal";
 import {AvatarEditor} from "@shared/lib/avatars";
+import {useParams} from "wouter";
+import {api} from "@shared/api";
+import toast from "react-hot-toast";
 
 interface CreateRoomForm {
   name: string;
   description: string;
   startDate: Nullable<Date>;
   endDate: Nullable<Date>;
-  avatar: Nullable<File>;
-  location: Nullable<string>;
+  avatar: Nullable<string>;
+  location: Nullable<Location>;
 }
 
 interface AddSlotsModalData {
   open: boolean;
   availableSlots: Nullable<number>;
+  cardId: Nullable<string>;
+  projectId: Nullable<string>;
 }
 
 interface AvatarEditorData {
@@ -44,11 +50,31 @@ interface AvatarEditorData {
 
 export const EditProjectPage: React.FC = () => {
   const [isCreateCardModalOpen, setIsCreateCardModalOpen] = useState(false);
-  const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
+  const [addPersonModal, setAddPersonModal] = useState<{
+    open: boolean;
+    cardId: Nullable<string>;
+    projectId: Nullable<string>;
+  }>({
+    open: false,
+    cardId: null,
+    projectId: null,
+  });
+
+  const {id} = useParams() as {id: string};
+
+  const [project, setProject] = useState<Nullable<Project>>(null);
+
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    api.projects.getProject({id}).then(({data}) => setProject(data.project));
+  }, []);
 
   const [addSlotsModal, setAddSlotsModal] = useState<AddSlotsModalData>({
     open: false,
     availableSlots: null,
+    cardId: null,
+    projectId: null,
   });
 
   const [avatarEditor, setAvatarEditor] = useState<AvatarEditorData>({
@@ -58,18 +84,21 @@ export const EditProjectPage: React.FC = () => {
 
   const {register, control, watch, handleSubmit, setValue} =
     useForm<CreateRoomForm>({
-      defaultValues: {
-        name: "",
-        description: "",
-        startDate: null,
-        endDate: null,
-        avatar: null,
+      values: {
+        name: project?.name || "",
+        description: project?.description || "",
+        startDate: project?.startDate || null,
+        endDate: project?.endDate || null,
+        avatar: project?.avatar || null,
+        location: project?.location || null,
       },
     });
 
   const avatar = watch("avatar");
   const startDate = watch("startDate");
   const endDate = watch("endDate");
+
+  if (!project) return null;
 
   return (
     <>
@@ -79,7 +108,9 @@ export const EditProjectPage: React.FC = () => {
           open={avatarEditor.open}
           onSave={(blob) => {
             if (blob) {
-              setValue("avatar", blob as File);
+              api.upload.uploadImage({image: blob as File}).then(({url}) => {
+                setValue("avatar", url);
+              });
             }
 
             setAvatarEditor({open: false, avatar: null});
@@ -102,7 +133,25 @@ export const EditProjectPage: React.FC = () => {
 
           <form
             onSubmit={handleSubmit((form) => {
-              console.log(form);
+              api.projects
+                .editProject({
+                  id: project.id,
+                  description: form.description,
+                  avatar: form.avatar!,
+                  endDate: form.endDate || undefined,
+                  startDate: form.startDate || undefined,
+                  location: form.location || undefined,
+                  name: form.name,
+                })
+
+                .then(() => {
+                  navigate(`/projects/${project.id}`);
+
+                  toast.success("Successfully created a project :)");
+                })
+                .catch(() => {
+                  toast.error("Something's wrong :(");
+                });
             })}
             className="bg-paper-brand"
           >
@@ -128,7 +177,7 @@ export const EditProjectPage: React.FC = () => {
                       >
                         {avatar ? (
                           <Avatar
-                            src={URL.createObjectURL(avatar)}
+                            src={avatar}
                             alt="Project's avatar"
                             className="w-[100%] h-auto"
                           />
@@ -156,47 +205,60 @@ export const EditProjectPage: React.FC = () => {
 
                 <div className="flex flex-col w-[100%] space-y-4">
                   <div className="flex items-center space-x-4">
-                    <Controller
-                      name="startDate"
-                      control={control}
-                      render={({field}) => (
-                        <DatePicker
-                          label="Start date"
-                          toDate={endDate || undefined}
-                          onSelect={(date) => field.onChange(date)}
-                        />
-                      )}
-                    />
+                    {project && (
+                      <Controller
+                        name="startDate"
+                        control={control}
+                        render={({field}) => (
+                          <DatePicker
+                            initialValue={project.startDate}
+                            label="Start date"
+                            toDate={endDate || project.endDate}
+                            onSelect={(date) => field.onChange(date)}
+                          />
+                        )}
+                      />
+                    )}
 
-                    <Controller
-                      name="endDate"
-                      control={control}
-                      render={({field}) => (
-                        <DatePicker
-                          label="End date"
-                          fromDate={startDate || undefined}
-                          onSelect={(date) => field.onChange(date)}
-                        />
-                      )}
-                    />
+                    {project && (
+                      <Controller
+                        name="endDate"
+                        control={control}
+                        render={({field}) => (
+                          <DatePicker
+                            initialValue={project.endDate}
+                            label="End date"
+                            fromDate={startDate || project.startDate}
+                            onSelect={(date) => field.onChange(date)}
+                          />
+                        )}
+                      />
+                    )}
                   </div>
 
                   <Controller
-                    name="location"
+                    name="location.country"
                     control={control}
                     render={({field}) => (
                       <Select.Root
-                        placeholder="Location"
+                        placeholder="Country"
                         onValueChange={field.onChange}
                         value={field.value || undefined}
+                        className="h-auto"
                       >
-                        {cities.map((city) => (
-                          <Select.Item key={city} value={city}>
-                            {city}
+                        {countries.map((country) => (
+                          <Select.Item key={country} value={country}>
+                            {country}
                           </Select.Item>
                         ))}
                       </Select.Root>
                     )}
+                  />
+
+                  <TextField
+                    {...register("location.city")}
+                    placeholder="City"
+                    className="h-auto"
                   />
                 </div>
               </div>
@@ -204,37 +266,51 @@ export const EditProjectPage: React.FC = () => {
               <div className="flex flex-col space-y-4">
                 <div className="flex justify-between">
                   <div className="flex flex-col space-y-2">
-                    <H6>Cards (1/3)</H6>
+                    <H6>Cards ({project.cards.length}/4)</H6>
 
                     <span className="text-sm text-paper-contrast/40">
-                      You may create up to 3 cards in one room
+                      You may create up to 4 cards in one room
                     </span>
                   </div>
 
-                  <Button
-                    onClick={() => {
-                      setIsCreateCardModalOpen(true);
-                    }}
-                    className="h-fit"
-                  >
-                    Create card
-                  </Button>
+                  {project.cards.length < 4 && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setIsCreateCardModalOpen(true);
+                      }}
+                      className="h-fit"
+                    >
+                      Create card
+                    </Button>
+                  )}
                 </div>
 
                 <div className="w-[100%] h-[2px] bg-paper-contrast/25" />
 
                 <div className="flex justify-between flex-wrap -my-4">
-                  {Array.from({length: 5}).map((_, idx) => (
+                  {project.cards.map((card, idx) => (
                     <div
                       key={idx}
                       className="w-[47.5%] min-h-[12rem] bg-paper rounded-lg shadow-md relative p-6 my-4"
                     >
-                      {Math.ceil(Math.random() * 10) % 2 === 0 ? (
+                      {card.members.map((m) => (
+                        <Button key={m.id} disabled className="m-1">
+                          {m.role}
+                        </Button>
+                      ))}
+
+                      {card.members.length < card.slots ? (
                         <Button
+                          type="button"
                           onClick={() => {
-                            setIsAddPersonModalOpen(true);
+                            setAddPersonModal({
+                              open: true,
+                              cardId: card.id,
+                              projectId: project.id,
+                            });
                           }}
-                          className="inline-flex items-center text-sm"
+                          className="inline-flex items-center m-1"
                         >
                           <span>Add person</span>
 
@@ -242,15 +318,18 @@ export const EditProjectPage: React.FC = () => {
                             <BsPlus className="w-5 h-auto" />
                           </span>
                         </Button>
-                      ) : (
+                      ) : card.slots < 4 ? (
                         <Button
+                          type="button"
                           onClick={() => {
                             setAddSlotsModal({
                               open: true,
-                              availableSlots: 3,
+                              availableSlots: 4 - card.slots,
+                              cardId: card.id,
+                              projectId: project.id,
                             });
                           }}
-                          className="inline-flex items-center text-sm"
+                          className="inline-flex items-center m-1"
                         >
                           <span>Add slots</span>
 
@@ -258,10 +337,10 @@ export const EditProjectPage: React.FC = () => {
                             <BsPlus className="w-5 h-auto" />
                           </span>
                         </Button>
-                      )}
+                      ) : null}
 
                       <span className="text-sm text-paper-contrast/40 font-semibold absolute right-4 bottom-4">
-                        (0/4)
+                        ({card.members.length}/{card.slots})
                       </span>
                     </div>
                   ))}
@@ -280,6 +359,8 @@ export const EditProjectPage: React.FC = () => {
       </ContentTemplate>
 
       <CreateCardModal
+        number={project.cards.length + 1}
+        projectId={project.id}
         open={isCreateCardModalOpen}
         onClose={() => {
           setIsCreateCardModalOpen(false);
@@ -287,19 +368,45 @@ export const EditProjectPage: React.FC = () => {
       />
 
       <AddPersonModal
-        open={isAddPersonModalOpen}
+        open={addPersonModal.open}
+        cardId={addPersonModal.cardId!}
+        projectId={addPersonModal.projectId!}
+        onFinish={(m) => {
+          setProject({
+            ...project,
+            cards: project.cards.map((c) =>
+              addPersonModal.cardId === c.id
+                ? {...c, members: [...c.members, m]}
+                : c,
+            ),
+          });
+
+          setAddPersonModal({
+            open: false,
+            cardId: null,
+            projectId: null,
+          });
+        }}
         onClose={() => {
-          setIsAddPersonModalOpen(false);
+          setAddPersonModal({
+            open: false,
+            cardId: null,
+            projectId: null,
+          });
         }}
       />
 
       <AddSlotsModal
         availableSlots={addSlotsModal.availableSlots!}
+        cardId={addSlotsModal.cardId!}
+        projectId={addSlotsModal.projectId!}
         open={addSlotsModal.open}
         onClose={() => {
           setAddSlotsModal({
             open: false,
             availableSlots: null,
+            cardId: null,
+            projectId: null,
           });
         }}
       />
@@ -307,16 +414,28 @@ export const EditProjectPage: React.FC = () => {
   );
 };
 
+interface CreateCardModalProps {
+  number: number;
+  projectId: string;
+}
+
 interface CreateCardForm {
   members: Nullable<string>;
 }
 
-const CreateCardModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
+const CreateCardModal: React.FC<WrappedModalProps & CreateCardModalProps> = ({
+  onClose,
+  open,
+  projectId,
+  number,
+}) => {
   const {control, handleSubmit} = useForm<CreateCardForm>({
     defaultValues: {
       members: null,
     },
   });
+
+  const prices = [0, 2100, 5000, 10000];
 
   return (
     <Modal onClose={onClose} open={open}>
@@ -325,17 +444,26 @@ const CreateCardModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
 
         <form
           onSubmit={handleSubmit((form) => {
-            console.log(form);
+            api.projects
+              .createProjectCard({
+                projectId: projectId,
+                slots: +form.members!,
+              })
+              .then(({data}) => {
+                window.location.replace(data.paymentUrl);
+              });
           })}
           className="flex flex-col space-y-16"
         >
           <div className="flex flex-col space-y-6">
             <div className="flex justify-between items-center">
               <span className="text-paper-contrast/75 font-semibold">
-                Creating 1st card
+                Creating card number {number}
               </span>
 
-              <span className="text-accent text-lg font-bold">free</span>
+              <span className="text-accent text-lg font-bold">
+                {number === 1 ? "free" : `${prices[number - 1]} KZT`}
+              </span>
             </div>
 
             <Controller
@@ -387,14 +515,21 @@ const CreateCardModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
   );
 };
 
+interface AddPersonModalProps extends WrappedModalProps {
+  cardId: string;
+  projectId: string;
+}
+
 interface AddPersonForm {
   specialist: string;
   requirements: string;
   benefits: string;
 }
 
-const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
-  const {register} = useForm<AddPersonForm>({
+const AddPersonModal: React.FC<
+  AddPersonModalProps & {onFinish: (member: ProjectMember) => void}
+> = ({open, onClose, ...props}) => {
+  const {register, handleSubmit} = useForm<AddPersonForm>({
     defaultValues: {
       specialist: "",
       requirements: "",
@@ -414,7 +549,27 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
           </p>
         </div>
 
-        <form className="flex flex-col space-y-10">
+        <form
+          onSubmit={handleSubmit((form) => {
+            api.projects
+              .createProjectMember({
+                benefits: form.benefits,
+                requirements: form.requirements,
+                role: form.specialist,
+                cardId: props.cardId,
+                projectId: props.projectId,
+              })
+              .then(({data}) => {
+                toast.success("You successfully created a project member");
+
+                props.onFinish(data.member);
+              })
+              .catch(() => {
+                toast.error("Something's wrong");
+              });
+          })}
+          className="flex flex-col space-y-10"
+        >
           <div className="flex flex-col space-y-4">
             <TextField
               {...register("specialist")}
@@ -436,7 +591,7 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
+            <Button type="button">Cancel</Button>
             <Button type="submit">Confirm</Button>
           </div>
         </form>
@@ -447,6 +602,8 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
 
 interface AddSlotsModalProps extends WrappedModalProps {
   availableSlots: number;
+  cardId: string;
+  projectId: string;
 }
 
 interface AddSlotsForm {
@@ -457,6 +614,7 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
   open,
   onClose,
   availableSlots,
+  ...props
 }) => {
   const {control, handleSubmit} = useForm<AddSlotsForm>({
     defaultValues: {
@@ -471,7 +629,17 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
 
         <form
           onSubmit={handleSubmit((form) => {
-            console.log(form);
+            if (form.slots) {
+              api.projects
+                .addCardSlots({
+                  cardId: props.cardId,
+                  projectId: props.projectId,
+                  slots: +form.slots!,
+                })
+                .then(({data}) => {
+                  window.location.href = data.paymentUrl;
+                });
+            }
           })}
           className="flex flex-col space-y-14"
         >
@@ -511,25 +679,11 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
-
-            <Button
-              type="submit"
-              onClick={() => {
-                window.Robokassa.StartPayment({
-                  MerchantLogin: "demo",
-                  OutSum: "11.00",
-                  InvId: 10,
-                  Description: "Оплата заказа в Тестовом магазине ROBOKASSA",
-                  Shp_Item: "1",
-                  Culture: "ru",
-                  Encoding: "utf-8",
-                  SignatureValue: "3925b771e47d405cbcbb492daa936824",
-                });
-              }}
-            >
-              To payment
+            <Button type="button" onClick={onClose}>
+              Cancel
             </Button>
+
+            <Button type="submit">To payment</Button>
           </div>
         </form>
       </div>

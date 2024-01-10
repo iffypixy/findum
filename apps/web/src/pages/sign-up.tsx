@@ -6,20 +6,24 @@ import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 
-import {Button, H2, TextField, UploadField, Select, Link, H3} from "@shared/ui";
-import {cities} from "@shared/lib/cities";
-import {AuthenticationTemplate} from "@features/auth";
+import {Button, H2, TextField, Select, Link, H3} from "@shared/ui";
+import {countries} from "@shared/lib/location";
+import {AuthenticationTemplate, authModel} from "@features/auth";
+import {useDispatch} from "@shared/lib/store";
+import {Location} from "@shared/lib/types";
 
 interface SignUpForm {
   stage1: Stage1Form;
   stage2: Stage2Form;
-  stage3: Stage3Form;
 }
 
 export const SignUpPage: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [stage, setStage] = useState(0);
   const [form, setForm] = useState<Partial<SignUpForm>>({});
-  const [signedUp] = useState(false);
+
+  const [signedUp, setSignedUp] = useState(false);
 
   return (
     <AuthenticationTemplate>
@@ -39,7 +43,7 @@ export const SignUpPage: React.FC = () => {
             <span
               className={twMerge(
                 cx(
-                  "inline-flex justify-center w-[33.3%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
+                  "inline-flex justify-center w-[50%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
                   {
                     "text-main border-main": stage === 0,
                   },
@@ -52,7 +56,7 @@ export const SignUpPage: React.FC = () => {
             <span
               className={twMerge(
                 cx(
-                  "inline-flex justify-center w-[33.3%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
+                  "inline-flex justify-center w-[50%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
                   {
                     "text-main border-main": stage === 1,
                   },
@@ -60,19 +64,6 @@ export const SignUpPage: React.FC = () => {
               )}
             >
               Step 2
-            </span>
-
-            <span
-              className={twMerge(
-                cx(
-                  "inline-flex justify-center w-[33.3%] py-[2%] border-b-2 text-main-500/30 text-lg font-semibold border-main/30",
-                  {
-                    "text-main border-main": stage === 2,
-                  },
-                ),
-              )}
-            >
-              Step 3
             </span>
           </div>
 
@@ -89,15 +80,17 @@ export const SignUpPage: React.FC = () => {
               onSubmit={(data) => {
                 setStage(2);
 
-                setForm({...form, stage2: data});
-              }}
-            />
-          ) : stage === 2 ? (
-            <Stage3
-              onSubmit={(data) => {
-                setForm({...form, stage3: data});
-
-                console.log(form);
+                dispatch(
+                  authModel.actions.register({
+                    email: data.email,
+                    firstName: form.stage1!.firstName,
+                    lastName: form.stage1!.lastName,
+                    location: form.stage1!.location,
+                    password: data.password1,
+                  }),
+                ).then(() => {
+                  setSignedUp(true);
+                });
               }}
             />
           ) : null}
@@ -119,14 +112,17 @@ type InterimFormProps<T> = {
 interface Stage1Form {
   firstName: string;
   lastName: string;
-  location: string;
+  location: Location;
 }
 
 const validationSchemas = {
   stage1: z.object({
     firstName: z.string().min(2).max(64),
     lastName: z.string().min(2).max(64),
-    location: z.string().min(2).max(64),
+    location: z.object({
+      country: z.string().min(2).max(64),
+      city: z.string().min(2).max(64),
+    }),
   }),
   stage2: z
     .object({
@@ -138,12 +134,12 @@ const validationSchemas = {
       message: "Passwords do not match",
       path: ["password2"],
     }),
-  stage3: z.object({
-    role1: z.string().min(1).max(64),
-    role2: z.string().min(1).max(64),
-    role3: z.string().min(1).max(64),
-    cv: z.instanceof(File),
-  }),
+  // stage3: z.object({
+  //   role1: z.string().min(1).max(64),
+  //   role2: z.string().min(1).max(64),
+  //   role3: z.string().min(1).max(64),
+  //   cv: z.instanceof(File),
+  // }),
 };
 
 const Stage1: React.FC<InterimFormProps<Stage1Form>> = (props) => {
@@ -182,25 +178,32 @@ const Stage1: React.FC<InterimFormProps<Stage1Form>> = (props) => {
         />
 
         <Controller
-          name="location"
+          name="location.country"
           control={control}
           render={({field}) => (
             <Select.Root
-              placeholder="Select a location"
-              label="Location"
+              placeholder="Select country"
+              label="Country"
               onValueChange={field.onChange}
               {...field}
             >
-              {cities.map((city) => (
-                <Select.Item value={city}>{city}</Select.Item>
+              {countries.map((country) => (
+                <Select.Item value={country}>{country}</Select.Item>
               ))}
             </Select.Root>
           )}
         />
+
+        <TextField
+          label="City"
+          placeholder="Select city"
+          type="text"
+          {...register("location.city")}
+        />
       </div>
 
       <Button type="submit" disabled={!isValid}>
-        Next (1/3)
+        Next (1/2)
       </Button>
     </form>
   );
@@ -230,9 +233,7 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
   return (
     <form
       onSubmit={handleSubmit((form) => {
-        if (isValid) {
-          props.onSubmit(form);
-        }
+        if (isValid) props.onSubmit(form);
       })}
       className="flex flex-col space-y-4"
     >
@@ -250,6 +251,7 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
           type={showPassword.password1 ? "text" : "password"}
           suffix={
             <button
+              type="button"
               onClick={() => {
                 setShowPassword({
                   ...showPassword,
@@ -273,6 +275,7 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
           type={showPassword.password2 ? "text" : "password"}
           suffix={
             <button
+              type="button"
               onClick={() => {
                 setShowPassword({
                   ...showPassword,
@@ -292,86 +295,84 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
       </div>
 
       <Button type="submit" disabled={!isValid}>
-        Next (2/3)
-      </Button>
-    </form>
-  );
-};
-
-interface Stage3Form {
-  role1: string;
-  role2: string;
-  role3: string;
-  cv: File;
-}
-
-const Stage3: React.FC<InterimFormProps<Stage3Form>> = (props) => {
-  const {
-    handleSubmit,
-    register,
-    control,
-    formState: {isValid},
-  } = useForm<Stage3Form>({
-    mode: "onChange",
-    resolver: zodResolver(validationSchemas.stage3),
-  });
-
-  return (
-    <form
-      onSubmit={handleSubmit((form) => {
-        console.log(form);
-
-        if (isValid) {
-          props.onSubmit(form);
-        }
-      })}
-      className="flex flex-col space-y-4"
-    >
-      <div>
-        <TextField
-          {...register("role1")}
-          label="1st role"
-          placeholder="1st role"
-          type="text"
-        />
-
-        <TextField
-          {...register("role2")}
-          label="2nd role"
-          placeholder="2nd role"
-          type="text"
-        />
-
-        <TextField
-          {...register("role3")}
-          label="3rd role"
-          placeholder="3rd role"
-          type="text"
-        />
-
-        <Controller
-          name="cv"
-          control={control}
-          render={({field}) => (
-            <UploadField
-              {...field}
-              value={undefined}
-              label="CV (.pdf)"
-              placeholder="cv.pdf"
-              onChange={(event) => {
-                field.onChange(event.target.files![0]);
-              }}
-            />
-          )}
-        />
-      </div>
-
-      <Button type="submit" disabled={!isValid}>
         Sign up
       </Button>
     </form>
   );
 };
+
+// interface Stage3Form {
+//   role1: string;
+//   role2: string;
+//   role3: string;
+//   cv: File;
+// }
+
+// const Stage3: React.FC<InterimFormProps<Stage3Form>> = (props) => {
+//   const {
+//     handleSubmit,
+//     register,
+//     control,
+//     formState: {isValid},
+//   } = useForm<Stage3Form>({
+//     mode: "onChange",
+//     resolver: zodResolver(validationSchemas.stage3),
+//   });
+
+//   return (
+//     <form
+//       onSubmit={handleSubmit((form) => {
+//         if (isValid) {
+//           props.onSubmit(form);
+//         }
+//       })}
+//       className="flex flex-col space-y-4"
+//     >
+//       <div>
+//         <TextField
+//           {...register("role1")}
+//           label="1st role"
+//           placeholder="1st role"
+//           type="text"
+//         />
+
+//         <TextField
+//           {...register("role2")}
+//           label="2nd role"
+//           placeholder="2nd role"
+//           type="text"
+//         />
+
+//         <TextField
+//           {...register("role3")}
+//           label="3rd role"
+//           placeholder="3rd role"
+//           type="text"
+//         />
+
+//         <Controller
+//           name="cv"
+//           control={control}
+//           render={({field}) => (
+//             <UploadField
+//               {...field}
+//               value={undefined}
+//               label="CV (.pdf)"
+//               placeholder="cv.pdf"
+//               onChange={(event) => {
+//                 field.onChange(event.target.files![0]);
+//               }}
+//             />
+//           )}
+//         />
+//       </div>
+
+//       <Button type="submit" disabled={!isValid}>
+//         Sign up
+//       </Button>
+//     </form>
+//   );
+// };
 
 const SignUpConfirmation: React.FC = () => {
   return (
@@ -382,8 +383,6 @@ const SignUpConfirmation: React.FC = () => {
           Check your mailbox
         </span>
       </div>
-
-      <Button className="w-fit">Back</Button>
     </div>
   );
 };

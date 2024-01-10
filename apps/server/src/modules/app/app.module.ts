@@ -15,6 +15,7 @@ import {UserModule} from "@modules/user";
 
 import {AppGateway} from "./app.gateway";
 import {UploadModule} from "@modules/upload";
+import {AppController} from "./app.controller";
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import {UploadModule} from "@modules/upload";
     UserModule,
     UploadModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [AppGateway],
 })
 export class AppModule {}

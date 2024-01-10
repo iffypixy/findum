@@ -1,5 +1,4 @@
 export {GetCardsDto} from "./get-cards.dto";
-export {SendProjectRequestDto} from "./send-project-request.dto";
 export {CreateProjectDto} from "./create-project.dto";
 export {EditProjectDto} from "./edit-project.dto";
 export {CreateCardDto} from "./create-card.dto";

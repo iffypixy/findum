@@ -15,10 +15,14 @@ import {PrismaService} from "@lib/prisma";
 import {mappers} from "@lib/mappers";
 
 import * as dtos from "./dtos";
+import {SocketService} from "@lib/socket";
 
 @Controller("friends")
 export class FriendController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ws: SocketService,
+  ) {}
 
   @Post("requests/send")
   async sendFriendRequest(
@@ -107,6 +111,12 @@ export class FriendController {
       }
     }
 
+    this.ws.server
+      .to(this.ws.getSocketsByUserId(recipient.id).map((s) => s.id))
+      .emit("friend-request-sent", {
+        user: session.user,
+      });
+
     return {
       relationship: mappers.relationship({
         self: session.userId,
@@ -159,6 +169,12 @@ export class FriendController {
       },
     });
 
+    this.ws.server
+      .to(this.ws.getSocketsByUserId(sender.id).map((s) => s.id))
+      .emit("friend-request-accepted", {
+        user: session.user,
+      });
+
     return {
       relationship: mappers.relationship({
         self: session.userId,
@@ -167,7 +183,7 @@ export class FriendController {
     };
   }
 
-  @Post("requests/accept")
+  @Post("requests/reject")
   async rejectFriendRequest(
     @Body() dto: dtos.RejectFriendRequestDto,
     @Session() session: SessionWithData,
@@ -210,6 +226,12 @@ export class FriendController {
         status: "NONE",
       },
     });
+
+    this.ws.server
+      .to(this.ws.getSocketsByUserId(sender.id).map((s) => s.id))
+      .emit("friend-request-rejected", {
+        user: session.user,
+      });
 
     return {
       relationship: mappers.relationship({
@@ -260,6 +282,12 @@ export class FriendController {
       },
     });
 
+    this.ws.server
+      .to(this.ws.getSocketsByUserId(friend.id).map((s) => s.id))
+      .emit("friend-removed", {
+        user: session.user,
+      });
+
     return {
       relationship: mappers.relationship({
         self: session.userId,
@@ -272,7 +300,10 @@ export class FriendController {
   async getMyFriends(@Session() session: SessionWithData) {
     const relationships = await this.prisma.relationship.findMany({
       where: {
-        OR: [{user1Id: session.userId}, {user2Id: session.userId}],
+        OR: [
+          {user1Id: session.userId, status: "FRIENDS"},
+          {user2Id: session.userId, status: "FRIENDS"},
+        ],
       },
       include: {
         user1: {
@@ -342,6 +373,25 @@ export class FriendController {
         location: {
           city: session.user.location.city,
         },
+        id: {
+          not: session.userId,
+        },
+        OR: [
+          {
+            relationshipsAsUser1: {
+              none: {
+                user2Id: session.userId,
+              },
+            },
+          },
+          {
+            relationshipsAsUser2: {
+              none: {
+                user1Id: session.userId,
+              },
+            },
+          },
+        ],
       },
       include: {
         profile: true,

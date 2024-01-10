@@ -1,7 +1,7 @@
 import {Controller, useForm} from "react-hook-form";
 import {twMerge} from "tailwind-merge";
 import {useState} from "react";
-import {BsPlus} from "react-icons/bs";
+import {useTranslation} from "react-i18next";
 
 import {
   Button,
@@ -9,7 +9,6 @@ import {
   DatePicker,
   H3,
   H4,
-  H6,
   Icon,
   Select,
   TextField,
@@ -18,20 +17,23 @@ import {
   Radio,
   Avatar,
 } from "@shared/ui";
-import {cities} from "@shared/lib/cities";
-import {Nullable} from "@shared/lib/types";
+import {countries} from "@shared/lib/location";
+import {Location, Nullable} from "@shared/lib/types";
 import {Modal, WrappedModalProps} from "@shared/lib/modal";
 import {AvatarEditor} from "@shared/lib/avatars";
 import {useDispatch} from "@shared/lib/store";
 import {projectsModel} from "@features/projects";
+import {navigate} from "wouter/use-location";
+import {api} from "@shared/api";
+import toast from "react-hot-toast";
 
 interface CreateRoomForm {
   name: string;
   description: string;
   startDate: Nullable<Date>;
   endDate: Nullable<Date>;
-  avatar: Nullable<File>;
-  location: Nullable<string>;
+  avatar: Nullable<string>;
+  location: Nullable<Location>;
 }
 
 interface AddSlotsModalData {
@@ -46,6 +48,8 @@ interface AvatarEditorData {
 
 export const CreateRoomPage: React.FC = () => {
   const dispatch = useDispatch();
+
+  const {t} = useTranslation();
 
   const [isCreateCardModalOpen, setIsCreateCardModalOpen] = useState(false);
   const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
@@ -89,7 +93,14 @@ export const CreateRoomPage: React.FC = () => {
           open={avatarEditor.open}
           onSave={(blob) => {
             if (blob) {
-              setValue("avatar", blob as File);
+              api.upload
+                .uploadImage({
+                  image: blob as File,
+                })
+                .then(({url}) => {
+                  // @ts-ignore
+                  setValue("avatar", url);
+                });
             }
 
             setAvatarEditor({open: false, avatar: null});
@@ -103,10 +114,10 @@ export const CreateRoomPage: React.FC = () => {
       <ContentTemplate>
         <div className="w-[100%] h-[100%] flex flex-col bg-paper-brand">
           <div className="flex flex-col bg-paper space-y-2 p-8">
-            <H3>Create project</H3>
+            <H3>{t("common.create-project")}</H3>
 
             <span className="text-paper-contrast/40">
-              Build up your team to realize startup project
+              {t("common.create-project-subtitle")}
             </span>
           </div>
 
@@ -125,13 +136,24 @@ export const CreateRoomPage: React.FC = () => {
                 projectsModel.actions.createProject({
                   name: form.name,
                   description: form.description,
-                  address: {country: "Kazakhstan", city: form.location},
-                  startDay: form.startDate,
-                  finishDay: form.endDate,
-                  goal: "some kinda goal",
-                  founderId: 16,
+                  avatar: avatar || undefined,
+                  location: {
+                    country: form.location.country,
+                    city: form.location.city,
+                  },
+                  startDate: new Date(form.startDate),
+                  endDate: new Date(form.endDate),
                 }),
-              );
+              )
+                .unwrap()
+                .then((res) => {
+                  navigate(`/projects/${res.project.id}`);
+
+                  toast.success("Successfully created a project :)");
+                })
+                .catch(() => {
+                  toast.error("Something's wrong :(");
+                });
             })}
             className="bg-paper-brand"
           >
@@ -157,7 +179,7 @@ export const CreateRoomPage: React.FC = () => {
                       >
                         {avatar ? (
                           <Avatar
-                            src={URL.createObjectURL(avatar)}
+                            src={avatar}
                             alt="Project's avatar"
                             className="w-[100%] h-auto"
                           />
@@ -213,28 +235,35 @@ export const CreateRoomPage: React.FC = () => {
                   </div>
 
                   <Controller
-                    name="location"
+                    name="location.country"
                     control={control}
                     rules={{required: true}}
                     render={({field}) => (
                       <Select.Root
-                        placeholder="Location"
+                        placeholder="Country"
                         onValueChange={field.onChange}
                         value={field.value || undefined}
+                        className="h-auto"
                       >
-                        {cities.map((city) => (
-                          <Select.Item key={city} value={city}>
-                            {city}
+                        {countries.map((country) => (
+                          <Select.Item key={country} value={country}>
+                            {country}
                           </Select.Item>
                         ))}
                       </Select.Root>
                     )}
                   />
+
+                  <TextField
+                    {...register("location.city", {required: true})}
+                    placeholder="City"
+                    className="h-auto"
+                  />
                 </div>
               </div>
 
               <div className="flex flex-col space-y-4">
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <div className="flex flex-col space-y-2">
                     <H6>Cards</H6>
 
@@ -297,7 +326,7 @@ export const CreateRoomPage: React.FC = () => {
                       </span>
                     </div>
                   ))}
-                </div>
+                </div> */}
 
                 <div className="w-[100%] flex justify-end">
                   <div className="flex items-center space-x-4">
@@ -470,7 +499,7 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
+            <Button onClick={() => navigate("/")}>Cancel</Button>
             <Button type="submit">Confirm</Button>
           </div>
         </form>

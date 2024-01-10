@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import Mail from "nodemailer/lib/mailer";
 
 dotenv.config();
 
@@ -11,11 +10,3 @@ export const emtransporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
-const sendEmail = emtransporter.sendMail;
-
-emtransporter.sendMail = (options: Mail.Options) =>
-  sendEmail({
-    from: process.env.EMAIL_USER,
-    ...options,
-  });

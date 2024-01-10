@@ -1,4 +1,4 @@
-import {IsDate, IsEnum, IsString} from "class-validator";
+import {IsDateString, IsEnum, IsString} from "class-validator";
 
 enum TaskPriority {
   LOW = "LOW",
@@ -13,7 +13,7 @@ export class CreateTaskDto {
   @IsString()
   description: string;
 
-  @IsDate()
+  @IsDateString()
   deadline: Date;
 
   @IsEnum(TaskPriority)

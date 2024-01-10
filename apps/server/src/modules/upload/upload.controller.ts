@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Session} from "@nestjs/common";
+import {Controller, Get, Query, Session} from "@nestjs/common";
 import {ConfigService} from "@nestjs/config";
 import {SessionWithData} from "express-session";
 import {nanoid} from "nanoid";
@@ -14,19 +14,22 @@ export class UploadController {
   @Get("presigned")
   async getPresignedUrl(
     @Session() session: SessionWithData,
-    @Body() dto: dtos.GetPresignedUrlDto,
+    @Query() dto: dtos.GetPresignedUrlDto,
   ) {
-    const key = `${session.userId}/${nanoid()}`;
+    const type = dto.contentType.slice(dto.contentType.indexOf("/") + 1);
+
+    const key = `${session.userId}/${nanoid()}.${type}`;
 
     const url = await s3.getSignedUrlPromise("putObject", {
       Bucket: this.config.get<string>("s3.bucketName"),
       ContentType: dto.contentType,
       Expires: 60 * 5,
-      key,
+      Key: key,
     });
 
     return {
       url,
+      key,
     };
   }
 }
