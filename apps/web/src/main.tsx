@@ -91,6 +91,15 @@ const resources = {
         "view-resume": "Смотреть резюме",
         "create-project-subtitle":
           "Создайте свою команду для реализации стартап-проекта",
+        "sign-in": "Войти",
+        "sign-in-subtitle": "Введите данные чтобы войти",
+        "auth-title": "Добро пожаловать в сообщество",
+        "auth-subtitle":
+          "MetaOrta помогает разработчикам создавать организованные и хорошо закодированные информационные панели, полные красивых и многофункциональных модулей. Присоединяйтесь к нам и начните создавать свое приложение уже сегодня.",
+        "sign-up": "Войти",
+        "sign-up-subtitle": "Введите данные чтобы зарегистрироваться",
+        "auth-ad":
+          "К нам присоединилось более 10 тысяч человек, теперь ваша очередь",
       },
     },
   },
@@ -172,6 +181,14 @@ const resources = {
         "view-resume": "View resume",
         "create-project-subtitle":
           "Build up your team to realize startup project",
+        "sign-in": "Sign in",
+        "sign-in-subtitle": "Please enter your data to sign in",
+        "auth-title": "Welcome to our community",
+        "auth-subtitle":
+          "MetaOrta helps developers to build organized and well coded dashboards full of beautiful and rich modules. Join us and start building your application today.",
+        "sign-up": "Sign up",
+        "sign-up-subtitle": "Please enter your data to sign up",
+        "auth-ad": "More than 10k people joined us, it’s your turn",
       },
     },
   },

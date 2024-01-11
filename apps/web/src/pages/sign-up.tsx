@@ -5,6 +5,7 @@ import {twMerge} from "tailwind-merge";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
+import {useTranslation} from "react-i18next";
 
 import {Button, H2, TextField, Select, Link, H3} from "@shared/ui";
 import {countries} from "@shared/lib/location";
@@ -25,6 +26,8 @@ export const SignUpPage: React.FC = () => {
 
   const [signedUp, setSignedUp] = useState(false);
 
+  const {t} = useTranslation();
+
   return (
     <AuthenticationTemplate>
       {signedUp ? (
@@ -32,10 +35,10 @@ export const SignUpPage: React.FC = () => {
       ) : (
         <div className="w-[25rem] flex flex-col space-y-6">
           <div className="flex flex-col space-y-2">
-            <H2>Sign up</H2>
+            <H2>{t("common.sign-up")}</H2>
 
             <span className="text-paper-contrast/70">
-              Please enter your data to sign up
+              {t("common.sign-up-subtitle")}
             </span>
           </div>
 
