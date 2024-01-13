@@ -14,8 +14,13 @@ import {useTranslation} from "react-i18next";
 import {Avatar, Icon} from "@shared/ui";
 import logo from "@shared/assets/logo.png";
 import {authModel} from "@features/auth";
+import {api} from "@shared/api";
+import toast from "react-hot-toast";
+import {useDispatch} from "@shared/lib/store";
 
 export const Navbar: React.FC = () => {
+  const dispatch = useDispatch();
+
   const {t} = useTranslation();
 
   const [open, setOpen] = useState(false);
@@ -197,6 +202,36 @@ export const Navbar: React.FC = () => {
               <AiOutlineRight className="cursor-pointer" />
             </a>
           </Link>
+
+          <div
+            onClick={() => {
+              api.auth
+                .logout()
+                .then(() => {
+                  toast.success("You successfully logged out! :)");
+
+                  dispatch(authModel.actions.setCredentials(null));
+                  dispatch(authModel.actions.setIsAuthetnicated(false));
+                })
+                .catch(() => {
+                  toast.error("Something's wrong :(");
+                });
+            }}
+            role="presentation"
+          >
+            {/*eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
+            <span
+              className={cx(
+                "flex items-center justify-between cursor-pointer text-main-contrast rounded-md p-2",
+              )}
+            >
+              <span className="flex items-center space-x-4">
+                <Icon.Logout className="w-5 h-auto" />
+
+                <span>{t("common.logout")}</span>
+              </span>
+            </span>
+          </div>
         </div>
       </div>
     </>

@@ -20,6 +20,7 @@ import {useDispatch} from "@shared/lib/store";
 import {User, Nullable} from "@shared/lib/types";
 import {api} from "@shared/api";
 import {navigate} from "wouter/use-location";
+import {useLocation} from "wouter";
 
 type Tab = "my-friends" | "new-friends";
 
@@ -303,10 +304,18 @@ const PotentialFriendsSection: React.FC<PotentialFriendsSectionProps> = ({
 };
 
 const PotentialFriend: React.FC<User> = (user) => {
+  const [, navigate] = useLocation();
+
   const [sentReq, setSentReq] = useState(false);
 
   return (
-    <div className="min-w-[15rem] flex flex-col items-center bg-paper shadow-md relative rounded-2xl p-4 space-y-5">
+    <div
+      onClick={() => {
+        navigate(`/profiles/${user.id}`);
+      }}
+      role="presentation"
+      className="min-w-[15rem] flex flex-col items-center bg-paper shadow-md relative rounded-2xl p-4 space-y-5"
+    >
       <img
         src={header}
         alt="Profile header"
@@ -323,7 +332,9 @@ const PotentialFriend: React.FC<User> = (user) => {
 
       {!sentReq ? (
         <Button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
+
             api.friends.sendFriendRequest({recipientId: user.id});
 
             setSentReq(true);

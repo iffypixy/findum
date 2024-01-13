@@ -15,7 +15,7 @@ import {
   ResendVerificationLinkParams,
   ResendVerificationLinkResponse,
 } from "@shared/api/auth";
-import {Credentials} from "@shared/lib/types";
+import {Credentials, Nullable} from "@shared/lib/types";
 
 const prefix = "auth";
 
@@ -46,7 +46,7 @@ export const register = createAsyncThunk<RegisterRes, RegisterReq>(
 export type LoginReq = LoginParams;
 export type LoginRes = LoginResponse;
 
-export const login = createAsyncThunk<RegisterRes, RegisterReq>(
+export const login = createAsyncThunk<LoginRes, LoginReq>(
   `${prefix}/login`,
   async (payload) => {
     const {data} = await api.auth.login(payload);
@@ -91,6 +91,10 @@ export const logout = createAsyncThunk<LogoutRes, LogoutReq>(
   },
 );
 
-export const setCredentials = createAction<Credentials>(
+export const setCredentials = createAction<Nullable<Credentials>>(
   `${prefix}/setCrEDENTIALS`,
+);
+
+export const setIsAuthetnicated = createAction<boolean>(
+  `${prefix}/setIsAuthenticated`,
 );

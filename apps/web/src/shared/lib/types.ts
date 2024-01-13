@@ -24,6 +24,7 @@ export interface Credentials {
   location: Location;
   profile: Profile;
   avatar: string;
+  isVerified: boolean;
 }
 
 export interface ProjectCard {

@@ -572,26 +572,34 @@ const AddPersonModal: React.FC<
         >
           <div className="flex flex-col space-y-4">
             <TextField
-              {...register("specialist")}
+              {...register("specialist", {
+                required: true,
+              })}
               placeholder="Specialist"
               className="h-auto"
             />
 
             <Textarea
-              {...register("requirements")}
+              {...register("requirements", {
+                required: true,
+              })}
               placeholder="Requirements"
               maxWords={150}
             />
 
             <TextField
-              {...register("benefits")}
+              {...register("benefits", {
+                required: true,
+              })}
               placeholder="Benefits for member"
               className="h-auto"
             />
           </div>
 
           <div className="flex justify-between items-center">
-            <Button type="button">Cancel</Button>
+            <Button type="button" onClick={() => onClose()}>
+              Cancel
+            </Button>
             <Button type="submit">Confirm</Button>
           </div>
         </form>

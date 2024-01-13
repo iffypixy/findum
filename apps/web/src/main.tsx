@@ -12,6 +12,7 @@ import {SocketManager} from "@shared/lib/ws/socket-manager";
 import {App} from "./app";
 
 import "./index.css";
+import {Verification} from "@features/auth/ui/verification";
 
 const resources = {
   ru: {
@@ -100,6 +101,8 @@ const resources = {
         "sign-up-subtitle": "Введите данные чтобы зарегистрироваться",
         "auth-ad":
           "К нам присоединилось более 10 тысяч человек, теперь ваша очередь",
+        "leave-project": "Выйти с проекта",
+        logout: "Выйти",
       },
     },
   },
@@ -189,6 +192,8 @@ const resources = {
         "sign-up": "Sign up",
         "sign-up-subtitle": "Please enter your data to sign up",
         "auth-ad": "More than 10k people joined us, it’s your turn",
+        "leave-project": "Leave project",
+        logout: "Log out",
       },
     },
   },
@@ -207,15 +212,17 @@ const root = document.getElementById("root")!;
 ReactDOM.createRoot(root).render(
   <Provider store={store}>
     <CredentialsLoader>
-      <SocketManager>
-        <Toaster />
+      <Verification>
+        <SocketManager>
+          <Toaster />
 
-        <Toast.Provider swipeDirection="right">
-          <Toast.Viewport className="fixed top-0 right-0 p-10" />
+          <Toast.Provider swipeDirection="right">
+            <Toast.Viewport className="fixed top-0 right-0 p-10" />
 
-          <App />
-        </Toast.Provider>
-      </SocketManager>
+            <App />
+          </Toast.Provider>
+        </SocketManager>
+      </Verification>
     </CredentialsLoader>
   </Provider>,
 );

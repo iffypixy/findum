@@ -6,8 +6,10 @@ import Success from "./success.svg?react";
 import Check from "./check.svg?react";
 import * as Chevron from "./chevron";
 import * as Flag from "./flags";
+import Logout from "./logout.svg?react";
 
 export const Icon = {
+  Logout,
   Rooms,
   Image,
   Flag,

@@ -225,25 +225,7 @@ export const RoomPage: React.FC = () => {
                   <>
                     <Popover.Root>
                       <Popover.Trigger asChild>
-                        <button
-                          onClick={() => {
-                            api.projects
-                              .leaveProject({
-                                id: project.id,
-                              })
-                              .then(() => {
-                                navigate("/");
-
-                                toast.success(
-                                  "You successfully left the project! :)",
-                                );
-                              })
-                              .catch(() => {
-                                toast.error("Something's wrong :(");
-                              });
-                          }}
-                          className="inline-flex items-center text-lg space-x-1"
-                        >
+                        <button className="inline-flex items-center text-lg space-x-1">
                           <LiaDoorOpenSolid className="fill-accent w-8 h-auto" />
 
                           <span className="text-accent underline underline-offset-4">
@@ -258,9 +240,31 @@ export const RoomPage: React.FC = () => {
                             <H6>Do you really want to leave this project?</H6>
 
                             <div className="flex space-x-4">
-                              <Button className="w-[50%]">Cancel</Button>
+                              <Popover.PopoverClose asChild>
+                                <Button className="w-[50%]">Cancel</Button>
+                              </Popover.PopoverClose>
 
-                              <Button className="w-[50%]">Confirm</Button>
+                              <Button
+                                onClick={() => {
+                                  api.projects
+                                    .leaveProject({
+                                      id: project.id,
+                                    })
+                                    .then(() => {
+                                      navigate("/");
+
+                                      toast.success(
+                                        "You successfully left the project! :)",
+                                      );
+                                    })
+                                    .catch(() => {
+                                      toast.error("Something's wrong :(");
+                                    });
+                                }}
+                                className="w-[50%]"
+                              >
+                                Confirm
+                              </Button>
                             </div>
                           </div>
                         </Popover.Content>

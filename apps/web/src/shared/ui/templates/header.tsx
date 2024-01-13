@@ -211,7 +211,7 @@ const SearchBarInput: React.FC<SearchBarInputProps> = (props) => {
   }, []);
 
   return (
-    <form className="mr-4">
+    <form className="mr-4" onSubmit={(e) => e.preventDefault()}>
       <input
         value={props.value}
         onChange={props.onChange}
@@ -228,7 +228,12 @@ type Flag = "usa" | "russia";
 const LanguageSelect: React.FC = () => {
   const {i18n} = useTranslation();
 
-  const [flag, setFlag] = useState<Flag>("russia");
+  const map = {
+    ru: "russia",
+    en: "usa",
+  } as any;
+
+  const [flag, setFlag] = useState<Flag>(map[i18n.language]);
 
   const flags = {
     usa: Icon.Flag.USA,

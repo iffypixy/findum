@@ -40,12 +40,6 @@ export const reducer = createReducer<AuthState>(
           state.credentials.data = action.payload.credentials;
         },
       )
-      .addCase(
-        actions.login.fulfilled.type,
-        (state, action: PayloadAction<actions.LoginRes>) => {
-          state.credentials.data = action.payload.credentials;
-        },
-      )
       .addCase(actions.logout.fulfilled.type, (state) => {
         state.credentials.data = null;
         state.isAuthenticated = false;
@@ -54,6 +48,19 @@ export const reducer = createReducer<AuthState>(
         actions.setCredentials.type,
         (state, action: PayloadAction<Credentials>) => {
           state.credentials.data = action.payload;
+        },
+      )
+      .addCase(
+        actions.setIsAuthetnicated.type,
+        (state, action: PayloadAction<boolean>) => {
+          state.isAuthenticated = action.payload;
+        },
+      )
+      .addCase(
+        actions.login.fulfilled.type,
+        (state, action: PayloadAction<actions.LoginRes>) => {
+          state.credentials.data = action.payload.credentials;
+          state.isAuthenticated = true;
         },
       ),
 );

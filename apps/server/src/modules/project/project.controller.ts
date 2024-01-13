@@ -865,27 +865,37 @@ export class ProjectController {
     if (!isFounder)
       throw new BadRequestException("You can't add slots to this card");
 
-    const member = await this.prisma.projectMember.findFirst({
+    const members = await this.prisma.projectMember.findMany({
       where: {
         id: memberId,
       },
     });
 
-    if (!member) throw new NotFoundException("Project member not found");
+    if (!members.length) throw new NotFoundException("No member found");
 
-    await this.prisma.projectMember.update({
+    await this.prisma.projectMember.deleteMany({
       where: {
-        id: memberId,
-      },
-      data: {
-        isOccupied: false,
-        userId: null,
+        id: {
+          in: members.map((m) => m.id),
+        },
       },
     });
+
+    // await this.prisma.projectMember.update({
+    //   where: {
+    //     id: memberId,
+    //   },
+    //   data: {
+    //     isOccupied: false,
+    //     userId: null,
+    //   },
+    // });
 
     this.ws.server
       .to(
-        this.socketioService.getSocketsByUserId(member.userId).map((s) => s.id),
+        this.socketioService
+          .getSocketsByUserId(members[0].userId)
+          .map((s) => s.id),
       )
       .emit(NOTIFICATION_EVENTS.KICKED_FROM_PROJECT, {
         project,
@@ -1100,24 +1110,29 @@ export class ProjectController {
 
     if (!project) throw new NotFoundException("Project not found");
 
-    const member = await this.prisma.projectMember.findFirst({
+    const members = await this.prisma.projectMember.findMany({
       where: {
         projectId: project.id,
         userId: session.userId,
       },
     });
 
-    if (!member)
-      throw new BadRequestException("You are not a member of this project");
-
-    await this.prisma.projectMember.update({
+    await this.prisma.projectMember.deleteMany({
       where: {
-        id: member.id,
-      },
-      data: {
-        isOccupied: false,
-        userId: null,
+        id: {
+          in: members.map((m) => m.id),
+        },
       },
     });
+
+    // await this.prisma.projectMember.update({
+    //   where: {
+    //     id: members[0].id,
+    //   },
+    //   data: {
+    //     isOccupied: false,
+    //     userId: null,
+    //   },
+    // });
   }
 }

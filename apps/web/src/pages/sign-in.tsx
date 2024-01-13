@@ -2,7 +2,9 @@ import {useForm} from "react-hook-form";
 import {useTranslation} from "react-i18next";
 
 import {Button, Checkbox, H2, TextField, Link} from "@shared/ui";
-import {AuthenticationTemplate} from "@features/auth";
+import {AuthenticationTemplate, authModel} from "@features/auth";
+import {useDispatch} from "@shared/lib/store";
+import toast from "react-hot-toast";
 
 export const SignInPage: React.FC = () => {
   const {t} = useTranslation();
@@ -42,6 +44,8 @@ interface SignInForm {
 }
 
 const SignInForm: React.FC = () => {
+  const dispatch = useDispatch();
+
   const {t} = useTranslation();
 
   const {register, handleSubmit} = useForm<SignInForm>({
@@ -53,7 +57,16 @@ const SignInForm: React.FC = () => {
   });
 
   const onFormSubmit = handleSubmit((form) => {
-    console.log(form);
+    dispatch(
+      authModel.actions.login({email: form.email, password: form.password}),
+    )
+      .unwrap()
+      .then(() => {
+        toast.success("You successfully logged in! :)");
+      })
+      .catch(() => {
+        toast.error("Something's wrong :(");
+      });
   });
 
   return (

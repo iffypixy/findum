@@ -376,22 +376,16 @@ export class FriendController {
         id: {
           not: session.userId,
         },
-        OR: [
-          {
-            relationshipsAsUser1: {
-              none: {
-                user2Id: session.userId,
-              },
-            },
+        relationshipsAsUser1: {
+          none: {
+            user2Id: session.userId,
           },
-          {
-            relationshipsAsUser2: {
-              none: {
-                user1Id: session.userId,
-              },
-            },
+        },
+        relationshipsAsUser2: {
+          none: {
+            user1Id: session.userId,
           },
-        ],
+        },
       },
       include: {
         profile: true,
