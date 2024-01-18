@@ -141,11 +141,20 @@ export type Fetchable<T> = {
   isFetching: boolean;
 };
 
+export interface UserHistory {
+  id: string;
+  user: User;
+  project: Project;
+  role: string;
+  startDate: Date;
+  endDate?: Date;
+}
+
 export interface UserProfile extends User {
   relationship: Relationship;
   reviews: Review[];
   highlights: Record<string, number>;
-  history: ProjectMember[];
+  history: UserHistory[];
   profile: Profile;
 }
 

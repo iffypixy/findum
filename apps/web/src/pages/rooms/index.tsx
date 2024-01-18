@@ -20,7 +20,11 @@ export const RoomsPage: React.FC = () => {
 
   const [, navigate] = useLocation();
 
-  const [currentTab, setCurrentTab] = useState<Tab>("my-projects");
+  const params = new URLSearchParams(window.location.search);
+
+  const [currentTab, setCurrentTab] = useState<Tab>(
+    (params.get("tab") as Tab) || "my-projects",
+  );
 
   const [specialist, setSpecialist] = useState("");
 
@@ -149,6 +153,7 @@ export const RoomsPage: React.FC = () => {
                           name={project.name}
                           isFounder={true}
                           requests={(project as any).requests}
+                          tasks={0}
                           avatar={project.avatar}
                           members={[]}
                         />
@@ -174,6 +179,7 @@ export const RoomsPage: React.FC = () => {
                           id={project.id}
                           isFounder={false}
                           name={project.name}
+                          tasks={(project as any).tasks}
                           avatar={project.avatar}
                           members={[]}
                         />

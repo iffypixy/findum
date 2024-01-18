@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -244,5 +245,70 @@ export class AuthController {
       subject: "Welcome to MetaOrta!",
       text: `Confirm your registration via this link: ${verificationUrl}`,
     });
+  }
+
+  @Post("recovery/send")
+  async sendRecovery(@Body("email") email: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+
+    if (!user) throw new NotFoundException("User not found");
+
+    const id = nanoid();
+
+    await this.redis.set(`recovery:${id}`, user.id);
+
+    const verificationUrl = `${process.env.CLIENT_ORIGIN}/reset-password/${id}`;
+
+    emtransporter.sendMail({
+      to: user.email,
+      subject: "Recover at MetaOrta!",
+      text: `Reset your password via this link: ${verificationUrl}`,
+    });
+  }
+
+  @Post("recovery/reset")
+  async resetPassword(
+    @Body("password") password: string,
+    @Body("code") code: string,
+    @Session() session: SessionWithData,
+  ) {
+    const userId = await this.redis.get(`recovery:${code}`);
+
+    if (!userId) throw new BadRequestException("Invalid code");
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) throw new NotFoundException("User not found");
+
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(password, salt);
+
+    const updated = await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: hash,
+      },
+      include: {
+        location: true,
+        profile: true,
+      },
+    });
+
+    session.user = updated;
+    session.userId = updated.id;
+
+    return {
+      credentials: updated,
+    };
   }
 }

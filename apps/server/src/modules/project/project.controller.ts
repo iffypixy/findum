@@ -171,8 +171,29 @@ export class ProjectController {
       },
     });
 
+    const tasks = {};
+
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+
+      tasks[project.id] = await this.prisma.projectTask.count({
+        where: {
+          projectId: project.id,
+          member: {
+            userId: session.userId,
+          },
+          status: {
+            not: "DONE",
+          },
+        },
+      });
+    }
+
     return {
-      projects: projects.map(mappers.project),
+      projects: projects.map((p) => ({
+        ...mappers.project(p),
+        tasks: tasks[p.id],
+      })),
     };
   }
 
@@ -307,7 +328,6 @@ export class ProjectController {
     const slotsOccupied = await this.prisma.projectMember.count({
       where: {
         projectId: project.id,
-        isOccupied: true,
       },
     });
 
@@ -786,6 +806,15 @@ export class ProjectController {
       },
     });
 
+    await this.prisma.userHistory.create({
+      data: {
+        projectId: project.id,
+        userId: request.userId,
+        role: member.role,
+        startDate: new Date(),
+      },
+    });
+
     this.ws.server
       .to(
         this.socketioService
@@ -880,6 +909,32 @@ export class ProjectController {
         },
       },
     });
+
+    for (let i = 0; i < members.length; i++) {
+      const member = members[i];
+
+      await this.prisma.projectCard.update({
+        where: {
+          id: member.cardId,
+        },
+        data: {
+          slots: {
+            decrement: 1,
+          },
+        },
+      });
+
+      this.prisma.userHistory.update({
+        where: {
+          userId: session.userId,
+          projectId: member.projectId,
+          role: member.role,
+        },
+        data: {
+          endDate: new Date(),
+        },
+      });
+    }
 
     // await this.prisma.projectMember.update({
     //   where: {
@@ -1122,6 +1177,16 @@ export class ProjectController {
         id: {
           in: members.map((m) => m.id),
         },
+      },
+    });
+
+    await this.prisma.userHistory.update({
+      where: {
+        userId: session.userId,
+        projectId: project.id,
+      },
+      data: {
+        endDate: new Date(),
       },
     });
 

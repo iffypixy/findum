@@ -13,6 +13,7 @@ import {App} from "./app";
 
 import "./index.css";
 import {Verification} from "@features/auth/ui/verification";
+import {General} from "@shared/lib/general";
 
 const resources = {
   ru: {
@@ -214,13 +215,15 @@ ReactDOM.createRoot(root).render(
     <CredentialsLoader>
       <Verification>
         <SocketManager>
-          <Toaster />
+          <General>
+            <Toaster />
 
-          <Toast.Provider swipeDirection="right">
-            <Toast.Viewport className="fixed top-0 right-0 p-10" />
+            <Toast.Provider swipeDirection="right">
+              <Toast.Viewport className="fixed top-0 right-0 p-10" />
 
-            <App />
-          </Toast.Provider>
+              <App />
+            </Toast.Provider>
+          </General>
         </SocketManager>
       </Verification>
     </CredentialsLoader>

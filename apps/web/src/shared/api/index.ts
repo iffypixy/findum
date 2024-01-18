@@ -24,6 +24,22 @@ const search = (params: SearchParams) =>
     params,
   });
 
+export interface ProjectRequest {
+  id: string;
+  project: Project;
+}
+
+export interface GetOverviewResponse {
+  friendRequests: number;
+  projectRequests: ProjectRequest[];
+}
+
+const getOverview = () =>
+  request({
+    method: "GET",
+    url: "/api/overview",
+  });
+
 export const api = {
   search,
   auth,
@@ -33,4 +49,5 @@ export const api = {
   projects,
   upload,
   users,
+  getOverview,
 };

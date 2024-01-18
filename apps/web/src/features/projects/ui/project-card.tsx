@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import {useSelector} from "react-redux";
 import {authModel} from "@features/auth";
 import {useTranslation} from "react-i18next";
+import {BiBell} from "react-icons/bi";
 
 interface ProjectCardProps {
   id: string;
@@ -355,6 +356,7 @@ interface MyProjectCardProps {
   id: string;
   isFounder: boolean;
   requests?: number;
+  tasks?: number;
   members: {
     avatar: string;
   }[];
@@ -378,15 +380,19 @@ export const MyProjectCard: React.FC<MyProjectCardProps> = (props) => {
       <div className="flex flex-col items-center space-y-1 text-center">
         <span className="text-lg font-bold">{props.name}</span>
 
-        {/* <div className="flex items-center text-paper-contrast/40 space-x-2">
-          <BiBell className="w-4 h-auto" />
-
-          {props.isFounder && props.requests! > 0 ? (
+        {props.isFounder && props.requests! > 0 && (
+          <div className="flex items-center text-paper-contrast/40 space-x-2">
+            <BiBell className="w-4 h-auto" />
             <span className="text-sm">{props.requests} new request(s)</span>
-          ) : props.isFounder ? (
-            <span className="text-sm">no new requests</span>
-          ) : null}
-        </div> */}
+          </div>
+        )}
+
+        {!props.isFounder && props.tasks! > 0 && (
+          <div className="flex items-center text-paper-contrast/40 space-x-2">
+            <BiBell className="w-4 h-auto" />
+            <span className="text-sm">{props.tasks} undone task(s)</span>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center space-x-4">

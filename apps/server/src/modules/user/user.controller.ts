@@ -81,12 +81,25 @@ export class UserController {
       },
     });
 
+    const history = await this.prisma.userHistory.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        project: true,
+        user: true,
+      },
+    });
+
     return {
       user: {
         ...mappers.completeUser(user),
         reviews: reviews.map(mappers.review),
-        history: members,
         highlights,
+        history,
         relationship: mappers.relationship({
           self: session.userId,
           relationship,

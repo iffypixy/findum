@@ -48,4 +48,46 @@ export class AppController {
 
     return {users, projects};
   }
+
+  @Get("overview")
+  async getOverview(@Session() session: SessionWithData) {
+    const projectRequests = await this.prisma.projectRequest.findMany({
+      where: {
+        project: {
+          founderId: session.userId,
+        },
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    const tasks = await this.prisma.projectTask.findMany({
+      where: {
+        member: {
+          userId: session.userId,
+        },
+        status: {
+          not: "DONE",
+        },
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    const friendRequests = await this.prisma.relationship.count({
+      where: {
+        OR: [
+          {status: "FRIEND_REQ_1_2", user2Id: session.userId},
+          {
+            status: "FRIEND_REQ_2_1",
+            user1Id: session.userId,
+          },
+        ],
+      },
+    });
+
+    return {projectRequests, friendRequests, tasks};
+  }
 }

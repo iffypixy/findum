@@ -152,27 +152,27 @@ export const ProfilePage: React.FC = () => {
             )}
 
             <div className="flex items-center space-x-8 py-4 overflow-x-auto">
-              {user?.history.map((member, idx) => (
+              {user?.history.map((history, idx) => (
                 <div
                   key={idx}
                   role="presentation"
                   onClick={() => {
-                    navigate(`/projects/${member.project.id}`);
+                    navigate(`/projects/${history.project?.id}`);
                   }}
                   className="min-w-[20rem] flex space-x-6 items-center bg-paper p-6 rounded-xl shadow-md cursor-pointer"
                 >
                   <Avatar
-                    src={member.project.avatar}
+                    src={history.project?.avatar}
                     className="w-[5rem] h-[5rem]"
                   />
 
                   <div className="flex flex-col space-y-2 justify-between">
                     <span className="font-semibold text-2xl">
-                      {member.project.name}
+                      {history.project?.name}
                     </span>
 
                     <span className="text-paper-contrast/60">
-                      {member.role}
+                      {history.role}
                     </span>
                   </div>
                 </div>

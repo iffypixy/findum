@@ -80,3 +80,30 @@ export const resendVerificationLink = () =>
   request<ResendVerificationLinkResponse>({
     url: "/api/auth/verification/resend",
   });
+
+export interface SendRecoveryParams {
+  email: string;
+}
+
+export const sendRecovery = (params: SendRecoveryParams) =>
+  request({
+    method: "POST",
+    url: "/api/auth/recovery/send",
+    data: params,
+  });
+
+export interface ResetPasswordParams {
+  password: string;
+  code: string;
+}
+
+export interface ResetPasswordResponse {
+  credentials: Credentials;
+}
+
+export const resetPassword = (params: ResetPasswordParams) =>
+  request<ResetPasswordResponse>({
+    method: "POST",
+    url: "/api/auth/recovery/reset",
+    data: params,
+  });

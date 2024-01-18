@@ -17,6 +17,7 @@ import {authModel} from "@features/auth";
 import {api} from "@shared/api";
 import toast from "react-hot-toast";
 import {useDispatch} from "@shared/lib/store";
+import {useGeneralStore} from "@shared/lib/general";
 
 export const Navbar: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,12 @@ export const Navbar: React.FC = () => {
   const credentials = useSelector(authModel.selectors.credentials);
 
   const [location] = useLocation();
+
+  const {friendRequests, projectRequests, tasks} = useGeneralStore((s) => ({
+    friendRequests: s.friendRequests,
+    projectRequests: s.projectRequests,
+    tasks: s.tasks,
+  }));
 
   return (
     <>
@@ -139,7 +146,13 @@ export const Navbar: React.FC = () => {
                 <span>{t("common.friends")}</span>
               </span>
 
-              <AiOutlineRight className="cursor-pointer" />
+              {friendRequests === 0 ? (
+                <AiOutlineRight className="cursor-pointer" />
+              ) : (
+                <span className="text-black -mr-1.5 w-8 h-8 flex justify-center items-center bg-[#CBCFFF] rounded-full">
+                  {friendRequests}
+                </span>
+              )}
             </a>
           </Link>
 
@@ -159,7 +172,13 @@ export const Navbar: React.FC = () => {
                 <span>{t("common.projects")}</span>
               </span>
 
-              <AiOutlineRight className="cursor-pointer" />
+              {projectRequests.length + tasks.length === 0 ? (
+                <AiOutlineRight className="cursor-pointer" />
+              ) : (
+                <span className="text-black -mr-1.5 w-8 h-8 flex justify-center items-center bg-[#CBCFFF] rounded-full">
+                  {projectRequests.length + tasks.length}
+                </span>
+              )}
             </a>
           </Link>
 

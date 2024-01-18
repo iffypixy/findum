@@ -2,8 +2,11 @@ import {useState} from "react";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {useForm} from "react-hook-form";
 
-import {AuthenticationTemplate} from "@features/auth";
+import {AuthenticationTemplate, authModel} from "@features/auth";
 import {Button, H2, Link, TextField} from "@shared/ui";
+import {useParams} from "wouter";
+import {api} from "@shared/api";
+import {useDispatch} from "@shared/lib/store";
 
 interface ResetPasswordForm {
   password1: string;
@@ -11,19 +14,41 @@ interface ResetPasswordForm {
 }
 
 export const ResetPasswordPage: React.FC = () => {
-  const {register} = useForm<ResetPasswordForm>();
+  const dispatch = useDispatch();
+
+  const {register, handleSubmit, watch} = useForm<ResetPasswordForm>();
 
   const [showPassword, setShowPassword] = useState({
     password1: false,
     password2: false,
   });
 
+  const p1 = watch("password1");
+  const p2 = watch("password2");
+
+  const {code} = useParams() as {code: string};
+
   return (
     <AuthenticationTemplate>
       <div className="flex flex-col space-y-8">
         <H2>New password</H2>
 
-        <form className="w-[25rem] flex flex-col space-y-4">
+        <form
+          onSubmit={handleSubmit((form) => {
+            if (form.password1 !== form.password2) return;
+
+            api.auth
+              .resetPassword({
+                code,
+                password: form.password1,
+              })
+              .then(({data}) => {
+                dispatch(authModel.actions.setCredentials(data.credentials));
+                dispatch(authModel.actions.setIsAuthetnicated(true));
+              });
+          })}
+          className="w-[25rem] flex flex-col space-y-4"
+        >
           <div>
             <TextField
               label="Password"
@@ -31,6 +56,7 @@ export const ResetPasswordPage: React.FC = () => {
               type={showPassword.password1 ? "text" : "password"}
               suffix={
                 <button
+                  type="button"
                   onClick={() => {
                     setShowPassword({
                       ...showPassword,
@@ -54,6 +80,7 @@ export const ResetPasswordPage: React.FC = () => {
               type={showPassword.password2 ? "text" : "password"}
               suffix={
                 <button
+                  type="button"
                   onClick={() => {
                     setShowPassword({
                       ...showPassword,
@@ -72,7 +99,9 @@ export const ResetPasswordPage: React.FC = () => {
             />
           </div>
 
-          <Button type="submit">Change email</Button>
+          <Button disabled={p1 !== p2 || !p1} type="submit">
+            Change password
+          </Button>
         </form>
 
         <div className="flex space-x-1">

@@ -30,7 +30,7 @@ export const SignInPage: React.FC = () => {
             <Link href="/sign-up">Sign up</Link>
           </div>
 
-          <Link href="/password-recovery">Forgot password</Link>
+          <Link href="/forgot-password">Forgot password</Link>
         </div>
       </div>
     </AuthenticationTemplate>

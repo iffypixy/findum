@@ -12,6 +12,7 @@ import {countries} from "@shared/lib/location";
 import {AuthenticationTemplate, authModel} from "@features/auth";
 import {useDispatch} from "@shared/lib/store";
 import {Location} from "@shared/lib/types";
+import toast from "react-hot-toast";
 
 interface SignUpForm {
   stage1: Stage1Form;
@@ -91,9 +92,14 @@ export const SignUpPage: React.FC = () => {
                     location: form.stage1!.location,
                     password: data.password1,
                   }),
-                ).then(() => {
-                  setSignedUp(true);
-                });
+                )
+                  .unwrap()
+                  .then(() => {
+                    setSignedUp(true);
+                  })
+                  .catch(() => {
+                    toast.error("Something's wrong :(");
+                  });
               }}
             />
           ) : null}

@@ -33,8 +33,11 @@ export const Routes: React.FC = () => (
     <PrivateRoute path="/projects/:id/edit" component={EditProjectPage} />
     <PrivateRoute path="/projects/:id" component={RoomPage} />
     <PrivateRoute path="/profiles/:id" component={ProfilePage} />
-    <PrivateRoute path="/forgot-password" component={ForgotPasswordPage} />
-    <PrivateRoute path="/reset-password" component={ResetPasswordPage} />
+    <PublicOnlyRoute path="/forgot-password" component={ForgotPasswordPage} />
+    <PublicOnlyRoute
+      path="/reset-password/:code"
+      component={ResetPasswordPage}
+    />
     <PrivateRoute path="/faq" component={FaqPage} />
   </Switch>
 );

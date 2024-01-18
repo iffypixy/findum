@@ -264,7 +264,7 @@ export const SettingsPage: React.FC = () => {
                                   }}
                                   className="w-[50%] flex"
                                 >
-                                  <Button className="w-[100%]">
+                                  <Button className="w-[100%]" type="button">
                                     {t("common.upload")}
                                   </Button>
                                 </Upload>

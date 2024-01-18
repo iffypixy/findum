@@ -529,7 +529,11 @@ interface AddPersonForm {
 const AddPersonModal: React.FC<
   AddPersonModalProps & {onFinish: (member: ProjectMember) => void}
 > = ({open, onClose, ...props}) => {
-  const {register, handleSubmit} = useForm<AddPersonForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<AddPersonForm>({
     defaultValues: {
       specialist: "",
       requirements: "",
@@ -574,7 +578,10 @@ const AddPersonModal: React.FC<
             <TextField
               {...register("specialist", {
                 required: true,
+                minLength: 4,
+                maxLength: 25,
               })}
+              error={errors.specialist?.message}
               placeholder="Specialist"
               className="h-auto"
             />
@@ -582,6 +589,7 @@ const AddPersonModal: React.FC<
             <Textarea
               {...register("requirements", {
                 required: true,
+                minLength: 4,
               })}
               placeholder="Requirements"
               maxWords={150}
@@ -590,7 +598,10 @@ const AddPersonModal: React.FC<
             <TextField
               {...register("benefits", {
                 required: true,
+                minLength: 4,
+                maxLength: 150,
               })}
+              error={errors.benefits?.message}
               placeholder="Benefits for member"
               className="h-auto"
             />

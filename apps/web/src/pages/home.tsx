@@ -56,7 +56,7 @@ export const HomePage: React.FC = () => {
 
                 <Button
                   onClick={() => {
-                    navigate("/projects");
+                    navigate("/projects?tab=all-projects");
                   }}
                   className="w-[45%] inline-flex items-center justify-center bg-accent-contrast text-main space-x-2 shadow-sm py-6"
                 >

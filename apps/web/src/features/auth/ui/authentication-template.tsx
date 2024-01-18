@@ -1,10 +1,10 @@
-import {Avatar, H2} from "@shared/ui";
+import {H2} from "@shared/ui";
 import bg from "@shared/assets/block-bg.png";
 import {useTranslation} from "react-i18next";
 
 import {Button} from "@shared/ui";
 
-const avatar = "https://shorturl.at/ikvZ0";
+// const avatar = "https://shorturl.at/ikvZ0";
 
 type AuthenticationTemplate = React.PropsWithChildren;
 
@@ -23,22 +23,26 @@ export const AuthenticationTemplate: React.FC<AuthenticationTemplate> = ({
       >
         <div className="w-[70%] flex flex-col space-y-20">
           <div className="flex flex-col space-y-6">
-            <H2 className="text-main-contrast whitespace-pre-line">
+            <H2 className="text-white whitespace-pre-line">
               {t("common.auth-title")}
             </H2>
 
-            <p className="text-main-contrast/70">{t("common.auth-subtitle")}</p>
+            {/* <p className="text-main-contrast/70 text-white">
+              {t("common.auth-subtitle")}
+            </p> */}
           </div>
 
-          <div className="flex items-center space-x-5">
+          {/* <div className="flex items-center space-x-5">
             <div className="flex -space-x-3">
               {Array.from({length: 4}).map((_, idx) => (
                 <Avatar key={idx} src={avatar} />
               ))}
             </div>
 
-            <span className="text-main-contrast/70">{t("common.auth-ad")}</span>
-          </div>
+            <span className="text-main-contrast/70 text-white">
+              {t("common.auth-ad")}
+            </span>
+          </div> */}
 
           <div className="flex flex-col space-y-6">
             <p className="text-white text-xs">
@@ -56,6 +60,24 @@ export const AuthenticationTemplate: React.FC<AuthenticationTemplate> = ({
               <br /> <br />
               KZ348562203131489362 <br /> АО "Банк ЦентрКредит"
               <br /> KCJBKZKX
+            </p>
+
+            <p className="text-white text-xs">
+              MetaOrta помогает разработчикам создавать организованные и хорошо
+              закодированные информационные панели, полные красивых и
+              многофункциональных модулей. Присоединяйтесь к нам и начните
+              создавать свое приложение уже сегодня. Создание карточек для
+              проекта является обьявлением о со-комндниках которые нужны
+              проекту, то есть если пользователь хочет найти себе в команду
+              разработчика, то он должен купить слот для разработчика , а затем
+              обьявить о поиске разработчика, остальные пользователи будут
+              видеть их обьявление и смогут подать заявку на проект. После
+              принятия их заявки создателем проекта, они смогут развивать свой
+              проект вместе выдавая задачи. Пользователи смогут выйти с проекта
+              когда захотят, и слот останется у создателя проекта, в случае если
+              создатель проекта сам выгоняет сотрудника , то слот не
+              сохраняется. На данный момент мы дорабатываем страницу
+              пользователя чтобы было легче выбирать кандидатов
             </p>
 
             <div className="flex space-x-4 text-xs">
