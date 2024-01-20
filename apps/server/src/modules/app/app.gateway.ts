@@ -7,12 +7,7 @@ import {SocketService} from "@lib/socket";
 
 console.log(process.env.CLIENT_ORIGIN);
 
-@WebSocketGateway({
-  cors: {
-    credentials: true,
-    origin: process.env.CLIENT_ORIGIN,
-  },
-})
+@WebSocketGateway()
 export class AppGateway implements OnGatewayInit {
   constructor(private readonly socketService: SocketService) {}
 

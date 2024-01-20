@@ -21,12 +21,7 @@ const events = {
   },
 };
 
-@WebSocketGateway({
-  cors: {
-    credentials: true,
-    origin: process.env.CLIENT_ORIGIN,
-  },
-})
+@WebSocketGateway()
 export class ChatGateway {
   constructor(private readonly prisma: PrismaService) {}
 
