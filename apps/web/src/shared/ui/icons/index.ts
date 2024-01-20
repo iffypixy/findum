@@ -7,8 +7,10 @@ import Check from "./check.svg?react";
 import * as Chevron from "./chevron";
 import * as Flag from "./flags";
 import Logout from "./logout.svg?react";
+import Heart from "./heart.svg?react";
 
 export const Icon = {
+  Heart,
   Logout,
   Rooms,
   Image,

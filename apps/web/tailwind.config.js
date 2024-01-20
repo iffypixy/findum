@@ -4,6 +4,13 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      boxShadow: flatten({
+        even: {
+          sm: "0 0 10px rgb(0 0 0 / 0.1)",
+          md: "0 0 25px rgb(0 0 0 / 0.1)",
+          lg: "0 0 50px rgb(0 0 0 / 0.1)",
+        },
+      }),
       transitionProperty: {
         width: "width",
       },
@@ -69,3 +76,23 @@ export default {
   },
   plugins: [require("tailwind-scrollbar")],
 };
+
+function flatten(theme) {
+  const flat = {};
+
+  function recurse(object, prefix = "") {
+    for (const prop in object) {
+      if (typeof object[prop] === "object") {
+        recurse(object[prop], `${prefix}${prop}-`);
+      } else {
+        const key = `${prefix}${prop}`;
+
+        flat[key] = object[prop];
+      }
+    }
+  }
+
+  recurse(theme);
+
+  return flat;
+}

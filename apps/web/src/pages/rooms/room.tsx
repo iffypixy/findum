@@ -439,9 +439,14 @@ export const RoomPage: React.FC = () => {
                                             </H6>
 
                                             <div className="flex space-x-4">
-                                              <Button className="w-[50%]">
-                                                Cancel
-                                              </Button>
+                                              <Popover.PopoverClose asChild>
+                                                <Button
+                                                  color="secondary"
+                                                  className="w-[50%]"
+                                                >
+                                                  Cancel
+                                                </Button>
+                                              </Popover.PopoverClose>
 
                                               <Button
                                                 onClick={(e) => {
@@ -1000,7 +1005,7 @@ const InvestmentRequestModal: React.FC<WrappedModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="flex flex-col bg-paper shadow-md rounded-xl space-y-12 p-10">
+      <div className="flex flex-col bg-paper rounded-3xl shadow-even-md space-y-12 p-10">
         <H3 className="text-center">Request for investment</H3>
 
         <form
@@ -1026,7 +1031,12 @@ const InvestmentRequestModal: React.FC<WrappedModalProps> = ({
           </div>
 
           <div className="flex space-x-4">
-            <Button onClick={onClose} className="w-[100%]">
+            <Button
+              color="secondary"
+              type="button"
+              onClick={onClose}
+              className="w-[100%]"
+            >
               Cancel
             </Button>
 
@@ -1076,7 +1086,7 @@ const CreateTaskModal: React.FC<
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="flex flex-col bg-paper shadow-md rounded-xl space-y-12 p-10">
+      <div className="flex flex-col bg-paper rounded-3xl shadow-even-md space-y-12 p-10">
         <H4>Create a task</H4>
 
         <form
@@ -1237,6 +1247,8 @@ const CreateTaskModal: React.FC<
               onClick={() => {
                 onClose();
               }}
+              color="secondary"
+              type="button"
               className="w-[50%]"
             >
               Cancel
@@ -1273,7 +1285,7 @@ const LeaveFeedbackModal: React.FC<
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[30rem] flex flex-col bg-paper relative shadow-md rounded-xl space-y-8 p-8">
+      <div className="w-[30rem] flex flex-col bg-paper relative rounded-3xl shadow-even-md space-y-8 p-8">
         <div className="flex space-x-4 items-center">
           <Avatar src={member.user.avatar} className="w-20 h-auto" />
           <div className="flex flex-col flex-1 overflow-hidden pr-20">
@@ -1322,7 +1334,9 @@ const LeaveFeedbackModal: React.FC<
           <Textarea {...register("review")} placeholder="Review" />
 
           <div className="flex space-x-4">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button color="secondary" type="button" onClick={onClose}>
+              Cancel
+            </Button>
             <Button type="submit">Send</Button>
           </div>
         </form>
@@ -1380,7 +1394,7 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
-      <div className="w-[35rem] flex flex-col space-y-8 bg-paper shadow-md rounded-lg p-10">
+      <div className="w-[35rem] flex flex-col space-y-8 bg-paper rounded-3xl shadow-even-md p-10">
         <div className="flex flex-col space-y-6">
           <H4>Confirm your project request</H4>
 
@@ -1431,6 +1445,7 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
                 }}
                 type="button"
                 className="w-[50%]"
+                color="secondary"
               >
                 Cancel
               </Button>

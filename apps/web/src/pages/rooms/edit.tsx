@@ -348,7 +348,13 @@ export const EditProjectPage: React.FC = () => {
 
                 <div className="w-[100%] flex justify-end">
                   <div className="flex items-center space-x-4">
-                    <Button>Cancel</Button>
+                    <Button
+                      type="button"
+                      color="secondary"
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                    >
+                      Cancel
+                    </Button>
                     <Button type="submit">Save all changes</Button>
                   </div>
                 </div>
@@ -439,7 +445,7 @@ const CreateCardModal: React.FC<WrappedModalProps & CreateCardModalProps> = ({
 
   return (
     <Modal onClose={onClose} open={open}>
-      <div className="w-[30rem] flex flex-col space-y-16 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[30rem] flex flex-col space-y-16 bg-paper rounded-3xl shadow-even-md p-10">
         <H4>Create a card</H4>
 
         <form
@@ -505,7 +511,9 @@ const CreateCardModal: React.FC<WrappedModalProps & CreateCardModalProps> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
+            <Button color="secondary" type="button" onClick={onClose}>
+              Cancel
+            </Button>
 
             <Button type="submit">Create card</Button>
           </div>
@@ -532,8 +540,9 @@ const AddPersonModal: React.FC<
   const {
     register,
     handleSubmit,
-    formState: {errors},
+    formState: {errors, isValid},
   } = useForm<AddPersonForm>({
+    mode: "onChange",
     defaultValues: {
       specialist: "",
       requirements: "",
@@ -541,9 +550,11 @@ const AddPersonModal: React.FC<
     },
   });
 
+  console.log(errors);
+
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[30rem] flex flex-col space-y-10 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[30rem] flex flex-col space-y-10 bg-paper rounded-3xl shadow-even-md p-10">
         <div className="flex flex-col space-y-2">
           <H4>Add a person</H4>
 
@@ -589,10 +600,15 @@ const AddPersonModal: React.FC<
             <Textarea
               {...register("requirements", {
                 required: true,
-                minLength: 4,
+                minLength: {
+                  message:
+                    "Requirements field should have at least 250 characters",
+                  value: 250,
+                },
               })}
               placeholder="Requirements"
               maxWords={150}
+              error={errors.requirements?.message}
             />
 
             <TextField
@@ -608,10 +624,12 @@ const AddPersonModal: React.FC<
           </div>
 
           <div className="flex justify-between items-center">
-            <Button type="button" onClick={() => onClose()}>
+            <Button color="secondary" type="button" onClick={() => onClose()}>
               Cancel
             </Button>
-            <Button type="submit">Confirm</Button>
+            <Button disabled={!isValid} type="submit">
+              Confirm
+            </Button>
           </div>
         </form>
       </div>
@@ -643,7 +661,7 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[25rem] flex flex-col space-y-14 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[25rem] flex flex-col space-y-14 bg-paper rounded-3xl shadow-even-md p-10">
         <H4>Add new slots</H4>
 
         <form
@@ -698,7 +716,7 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <Button type="button" onClick={onClose}>
+            <Button color="secondary" type="button" onClick={onClose}>
               Cancel
             </Button>
 

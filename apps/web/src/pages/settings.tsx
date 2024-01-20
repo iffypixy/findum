@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {PropsWithChildren, useState} from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import {cx} from "class-variance-authority";
 import {Controller, useForm} from "react-hook-form";
@@ -85,16 +85,17 @@ export const SettingsPage: React.FC = () => {
           className="flex flex-col h-[100%]"
         >
           <Tabs.List className="px-14">
-            <Tabs.Trigger
-              value="profile"
-              className={cx("bg-paper rounded-t-lg px-10 py-2", {
-                "bg-paper-brand": currentTab === "profile",
-              })}
-            >
-              Profile
-            </Tabs.Trigger>
+            <Container>
+              <Tabs.Trigger
+                value="profile"
+                className={cx("bg-paper rounded-t-lg px-10 py-2", {
+                  "bg-paper-brand": currentTab === "profile",
+                })}
+              >
+                Profile
+              </Tabs.Trigger>
 
-            {/* <Tabs.Trigger
+              {/* <Tabs.Trigger
               value="general"
               className={cx("bg-paper rounded-t-lg px-10 py-2", {
                 "bg-paper-brand": currentTab === "general",
@@ -102,107 +103,109 @@ export const SettingsPage: React.FC = () => {
             >
               General
             </Tabs.Trigger> */}
+            </Container>
           </Tabs.List>
 
-          <Tabs.Content value="profile" className="flex-1">
-            <div className="h-[100%] bg-paper-brand p-14">
-              <form
-                onSubmit={handleSubmit((form) => {
-                  api.profile
-                    .editProfile({
-                      firstName: form.firstName,
-                      lastName: form.lastName,
-                      avatar: form.avatar,
-                      cv: form.cv || undefined,
-                      location: form.location,
-                    })
-                    .then((res) => {
-                      navigate("/");
+          <Tabs.Content value="profile" className="flex-1 bg-paper-brand">
+            <div className="h-[100%] p-14 flex flex-1">
+              <Container>
+                <form
+                  onSubmit={handleSubmit((form) => {
+                    api.profile
+                      .editProfile({
+                        firstName: form.firstName,
+                        lastName: form.lastName,
+                        avatar: form.avatar,
+                        cv: form.cv || undefined,
+                        location: form.location,
+                      })
+                      .then((res) => {
+                        navigate("/");
 
-                      dispatch(setCredentials(res.data.credentials));
+                        dispatch(setCredentials(res.data.credentials));
 
-                      toast.success("Successfully updated profile :)");
-                    })
-                    .catch(() => {
-                      toast.error("Something's wrong :(");
-                    });
-                })}
-                className="flex flex-col space-y-6"
-              >
-                <Controller
-                  name="avatar"
-                  control={control}
-                  render={() => (
-                    <Upload
-                      onChange={(event) => {
-                        const file = event.currentTarget.files![0];
+                        toast.success("Successfully updated profile :)");
+                      })
+                      .catch(() => {
+                        toast.error("Something's wrong :(");
+                      });
+                  })}
+                  className="flex flex-col space-y-6"
+                >
+                  <Controller
+                    name="avatar"
+                    control={control}
+                    render={() => (
+                      <Upload
+                        onChange={(event) => {
+                          const file = event.currentTarget.files![0];
 
-                        if (file) {
-                          setAvatarEditor({avatar: file!, open: true});
-                        }
-                      }}
-                    >
-                      <div
-                        className={twMerge(
-                          "w-28 h-28 bg-paper-contrast/10 rounded-full flex items-center justify-center transition border-2 border-transparent hover:border-accent overflow-hidden",
-                        )}
-                      >
-                        {avatar ? (
-                          <Avatar
-                            src={avatar}
-                            alt="Project's avatar"
-                            className="w-[100%] h-auto"
-                          />
-                        ) : (
-                          <Icon.Image className="w-12 h-auto text-main" />
-                        )}
-                      </div>
-                    </Upload>
-                  )}
-                />
-
-                <div className="flex justify-between space-x-8">
-                  <div className="w-[50%] flex flex-col space-y-6">
-                    <div className="flex items-center space-x-4">
-                      <TextField
-                        {...register("firstName")}
-                        className="w-[100%] h-auto"
-                      />
-
-                      <TextField
-                        {...register("lastName")}
-                        className="w-[100%] h-auto"
-                      />
-                    </div>
-
-                    <TextField
-                      value={credentials.data?.email}
-                      disabled
-                      className="w-[100%] h-auto"
-                    />
-
-                    <div className="flex space-x-4">
-                      <TextField
-                        value="*********"
-                        disabled
-                        className="w-[50%] h-auto"
-                      />
-
-                      <Button
-                        onClick={() => {
-                          setIsChangePasswordModalOpen(true);
+                          if (file) {
+                            setAvatarEditor({avatar: file!, open: true});
+                          }
                         }}
-                        type="button"
-                        className="w-[50%]"
                       >
-                        {t("common.change-password")}
-                      </Button>
-                    </div>
-                  </div>
+                        <div
+                          className={twMerge(
+                            "w-28 h-28 bg-paper-contrast/10 rounded-full flex items-center justify-center transition border-2 border-transparent hover:border-accent overflow-hidden",
+                          )}
+                        >
+                          {avatar ? (
+                            <Avatar
+                              src={avatar}
+                              alt="Project's avatar"
+                              className="w-[100%] h-auto"
+                            />
+                          ) : (
+                            <Icon.Image className="w-12 h-auto text-main" />
+                          )}
+                        </div>
+                      </Upload>
+                    )}
+                  />
 
-                  <div className="w-[50%] flex flex-col space-y-12 -mt-8">
-                    <div className="flex flex-col space-y-4">
-                      {/* <div className="flex flex-col space-y-2">
+                  <div className="flex justify-between space-x-8">
+                    <div className="w-[50%] flex flex-col space-y-6">
+                      <div className="flex items-center space-x-4">
+                        <TextField
+                          {...register("firstName")}
+                          className="w-[100%] h-auto"
+                        />
+
+                        <TextField
+                          {...register("lastName")}
+                          className="w-[100%] h-auto"
+                        />
+                      </div>
+
+                      <TextField
+                        value={credentials.data?.email}
+                        disabled
+                        className="w-[100%] h-auto"
+                      />
+
+                      <div className="flex space-x-4">
+                        <TextField
+                          value="*********"
+                          disabled
+                          className="w-[50%] h-auto"
+                        />
+
+                        <Button
+                          onClick={() => {
+                            setIsChangePasswordModalOpen(true);
+                          }}
+                          type="button"
+                          className="w-[50%]"
+                        >
+                          {t("common.change-password")}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="w-[50%] flex flex-col space-y-36 -mt-8">
+                      <div className="flex flex-col space-y-4">
+                        {/* <div className="flex flex-col space-y-2">
                         <span>* Choose your role in the team</span>
 
                         <div className="flex flex-col space-y-6">
@@ -228,89 +231,97 @@ export const SettingsPage: React.FC = () => {
                         </div>
                       </div> */}
 
-                      <div className="flex flex-col space-y-2">
-                        <span>{t("common.upload-cv-to")}</span>
+                        <div className="flex flex-col space-y-2">
+                          <span>{t("common.upload-cv-to")}</span>
 
-                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-4">
+                            <Controller
+                              name="cv"
+                              control={control}
+                              render={({field}) => (
+                                <>
+                                  <TextField
+                                    placeholder={
+                                      !credentials.data?.profile.cv && !cv
+                                        ? "No resume"
+                                        : "resume.pdf"
+                                    }
+                                    disabled
+                                    className="w-[50%] h-auto"
+                                  />
+
+                                  <Upload
+                                    accept="application/pdf"
+                                    onChange={({currentTarget}) => {
+                                      const file = currentTarget.files![0];
+
+                                      if (file) {
+                                        api.upload
+                                          .uploadImage({image: file})
+                                          .then((data) => {
+                                            if (data) {
+                                              field.onChange(data.url);
+                                            }
+                                          });
+                                      }
+                                    }}
+                                    className="w-[50%] flex"
+                                  >
+                                    <Button className="w-[100%]" type="button">
+                                      {t("common.upload")}
+                                    </Button>
+                                  </Upload>
+                                </>
+                              )}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex space-x-4">
                           <Controller
-                            name="cv"
+                            name="location.country"
                             control={control}
                             render={({field}) => (
-                              <>
-                                <TextField
-                                  placeholder={
-                                    !credentials.data?.profile.cv && !cv
-                                      ? "No resume"
-                                      : "resume.pdf"
-                                  }
-                                  disabled
-                                  className="w-[50%] h-auto"
-                                />
-
-                                <Upload
-                                  accept="application/pdf"
-                                  onChange={({currentTarget}) => {
-                                    const file = currentTarget.files![0];
-
-                                    if (file) {
-                                      api.upload
-                                        .uploadImage({image: file})
-                                        .then((data) => {
-                                          if (data) {
-                                            field.onChange(data.url);
-                                          }
-                                        });
-                                    }
-                                  }}
-                                  className="w-[50%] flex"
-                                >
-                                  <Button className="w-[100%]" type="button">
-                                    {t("common.upload")}
-                                  </Button>
-                                </Upload>
-                              </>
+                              <Select.Root
+                                name="location.country"
+                                onValueChange={field.onChange}
+                                value={field.value || undefined}
+                                placeholder="Select country"
+                                className="h-auto w-[50%]"
+                              >
+                                {countries.map((country) => (
+                                  <Select.Item key={country} value={country}>
+                                    {country}
+                                  </Select.Item>
+                                ))}
+                              </Select.Root>
                             )}
+                          />
+
+                          <TextField
+                            {...register("location.city")}
+                            className="w-[50%] h-auto"
                           />
                         </div>
                       </div>
 
-                      <div className="flex flex-col space-y-4">
-                        <Controller
-                          name="location.country"
-                          control={control}
-                          render={({field}) => (
-                            <Select.Root
-                              name="location.country"
-                              onValueChange={field.onChange}
-                              value={field.value || undefined}
-                              placeholder="Select country"
-                              className="h-auto"
-                            >
-                              {countries.map((country) => (
-                                <Select.Item key={country} value={country}>
-                                  {country}
-                                </Select.Item>
-                              ))}
-                            </Select.Root>
-                          )}
-                        />
-
-                        <TextField
-                          {...register("location.city")}
-                          className="w-[50%] h-auto"
-                        />
+                      <div className="flex space-x-4">
+                        <Button
+                          color="secondary"
+                          type="button"
+                          className="w-[50%]"
+                          onClick={() => navigate("/")}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                        <Button className="w-[50%]">
+                          {t("common.save-all-changes")}
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="flex space-x-4">
-                      <Button className="w-[50%]">{t("common.cancel")}</Button>
-                      <Button className="w-[50%]">
-                        {t("common.save-all-changes")}
-                      </Button>
-                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              </Container>
             </div>
           </Tabs.Content>
 
@@ -399,7 +410,7 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="min-w-[30rem] flex flex-col rounded-lg shadow-md bg-paper space-y-8 p-12">
+      <div className="min-w-[30rem] flex flex-col rounded-3xl shadow-even-md bg-paper space-y-8 p-12">
         <div className="flex flex-col space-y-2">
           <H4>{t("common.change-password-title")}</H4>
 
@@ -451,6 +462,7 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
                 onClose();
               }}
               className="w-[50%]"
+              color="secondary"
             >
               {t("common.cancel")}
             </Button>
@@ -468,3 +480,9 @@ const ChangePasswordModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
     </Modal>
   );
 };
+
+const Container: React.FC<PropsWithChildren> = ({children}) => (
+  <div className="max-w-[80rem] m-auto relative flex-1 h-[100%]">
+    {children}
+  </div>
+);

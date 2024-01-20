@@ -7,6 +7,7 @@ import {store} from "@shared/lib/store";
 import {CredentialsLoader} from "@features/auth";
 import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
+import Modal from "react-modal";
 
 import {SocketManager} from "@shared/lib/ws/socket-manager";
 import {App} from "./app";
@@ -104,6 +105,7 @@ const resources = {
           "К нам присоединилось более 10 тысяч человек, теперь ваша очередь",
         "leave-project": "Выйти с проекта",
         logout: "Выйти",
+        accept: "Принять",
       },
     },
   },
@@ -195,10 +197,13 @@ const resources = {
         "auth-ad": "More than 10k people joined us, it’s your turn",
         "leave-project": "Leave project",
         logout: "Log out",
+        accept: "Accept",
       },
     },
   },
 };
+
+Modal.setAppElement("#root");
 
 i18n.use(initReactI18next).init({
   resources,

@@ -22,7 +22,7 @@ model User {
 
   profile Profile?
 
-  history UserHistory?
+  history UserHistory[]
 
   relationshipsAsUser1 Relationship[] @relation("RelationshipUser1")
   relationshipsAsUser2 Relationship[] @relation("RelationshipUser2")
@@ -252,7 +252,7 @@ model UserHistory {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
-  userId String @unique
+  userId String
 
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   projectId String?

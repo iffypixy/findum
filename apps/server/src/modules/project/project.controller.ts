@@ -260,11 +260,14 @@ export class ProjectController {
         "You have already made a request to this card slot",
       );
 
-    await this.prisma.projectRequest.create({
+    const request = await this.prisma.projectRequest.create({
       data: {
         memberId: member.id,
         projectId: card.projectId,
         userId: session.userId,
+      },
+      include: {
+        project: true,
       },
     });
 
@@ -276,6 +279,7 @@ export class ProjectController {
       )
       .emit(NOTIFICATION_EVENTS.PROJECT_REQUEST_SENT, {
         project,
+        request,
       });
   }
 
@@ -800,11 +804,14 @@ export class ProjectController {
       },
     });
 
-    await this.prisma.projectRequest.delete({
+    await this.prisma.projectRequest.deleteMany({
       where: {
-        id: request.id,
+        projectId: project.id,
+        memberId: request.memberId,
       },
     });
+
+    console.log(request, request.userId);
 
     await this.prisma.userHistory.create({
       data: {
@@ -924,7 +931,7 @@ export class ProjectController {
         },
       });
 
-      this.prisma.userHistory.update({
+      this.prisma.userHistory.updateMany({
         where: {
           userId: session.userId,
           projectId: member.projectId,
@@ -1180,7 +1187,7 @@ export class ProjectController {
       },
     });
 
-    await this.prisma.userHistory.update({
+    await this.prisma.userHistory.updateMany({
       where: {
         userId: session.userId,
         projectId: project.id,

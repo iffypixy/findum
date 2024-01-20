@@ -38,7 +38,7 @@ const Root: React.FC<SelectRootProps> = ({
       </S.Trigger>
 
       <S.Portal>
-        <S.Content className="w-fit bg-paper rounded-md border border-paper-contrast shadow-md z-[60]">
+        <S.Content className="bg-paper rounded-md border border-paper-contrast shadow-md z-[60]">
           <S.ScrollUpButton className="flex items-center justify-center bg-paper text-paper-contrast cursor-default">
             <Icon.Chevron.Up className="w-[1.5rem] h-auto" />
           </S.ScrollUpButton>

@@ -229,9 +229,9 @@ const ProjectDescriptionModal: React.FC<ProjectDescriptionModalProps> = (
 
   return (
     <Modal onClose={props.onClose} open={props.open}>
-      <div className="w-[30rem] flex flex-col space-y-12 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[30rem] flex flex-col space-y-12 bg-paper rounded-3xl shadow-even-md p-10">
         <div className="flex justify-between items-center">
-          <H4 className="w-[70%]">{props.name}</H4>
+          <H4 className="w-[70%] text-xl">{props.name}</H4>
 
           <div className="w-[30%] flex flex-col space-y-1 text-xs text-right">
             <span className="text-main">
@@ -246,17 +246,22 @@ const ProjectDescriptionModal: React.FC<ProjectDescriptionModalProps> = (
           </div>
         </div>
 
-        <p className="text-paper-contrast/60">{props.description}</p>
+        <p
+          className="text-paper-contrast/60 text-sm font-medium"
+          style={{fontFamily: "Montserrat"}}
+        >
+          {props.description}
+        </p>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-5">
           <Avatar src={props.owner.avatar} />
 
           <div className="flex flex-col">
-            <span className="font-semibold text-lg">
+            <span className="font-semibold text-xl text-[#112042]">
               {props.owner.firstName} {props.owner.lastName}
             </span>
 
-            <span className="text-sm text-paper-contrast/60">
+            <span className="text-xs text-[#817C7C]">
               {t("common.founder")}
             </span>
           </div>
@@ -286,7 +291,7 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
 }) => {
   return (
     <Modal open={props.open} onClose={props.onClose}>
-      <div className="w-[35rem] flex flex-col space-y-10 bg-paper shadow-md rounded-lg p-10">
+      <div className="w-[35rem] flex flex-col space-y-10 bg-paper rounded-3xl shadow-even-md p-10">
         <H4>Confirm your project request</H4>
 
         <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
@@ -312,6 +317,7 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
 
           <div className="flex space-x-6 items-center">
             <Button
+              color="secondary"
               onClick={() => {
                 props.onClose();
               }}

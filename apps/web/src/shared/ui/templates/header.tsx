@@ -265,7 +265,7 @@ const LanguageSelect: React.FC = () => {
       <Select.Portal>
         <Select.Content
           position="popper"
-          className="bg-paper rounded-md border border-paper-contrast shadow-md"
+          className="bg-paper rounded-md shadow-even-md"
         >
           <Select.Viewport className="p-2">
             {Object.entries(flags)

@@ -70,8 +70,9 @@ export const CreateRoomPage: React.FC = () => {
     watch,
     handleSubmit,
     setValue,
-    formState: {isValid},
+    formState: {isValid, errors},
   } = useForm<CreateRoomForm>({
+    mode: "onChange",
     defaultValues: {
       name: "",
       description: "",
@@ -200,8 +201,17 @@ export const CreateRoomPage: React.FC = () => {
                     className="h-auto"
                   />
                   <Textarea
-                    {...register("description", {required: true})}
+                    {...register("description", {
+                      required: true,
+                      minLength: {
+                        message:
+                          "Description field should have at least 300 characters",
+                        value: 300,
+                      },
+                    })}
                     placeholder="Description"
+                    error={errors.description?.message}
+                    maxWords={200}
                   />
                 </div>
 
@@ -330,7 +340,13 @@ export const CreateRoomPage: React.FC = () => {
 
                 <div className="w-[100%] flex justify-end">
                   <div className="flex items-center space-x-4">
-                    <Button>Cancel</Button>
+                    <Button
+                      color="secondary"
+                      type="button"
+                      onClick={() => navigate("/projects")}
+                    >
+                      Cancel
+                    </Button>
                     <Button type="submit" disabled={!isValid}>
                       Create room
                     </Button>
@@ -383,7 +399,7 @@ const CreateCardModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
 
   return (
     <Modal onClose={onClose} open={open}>
-      <div className="w-[30rem] flex flex-col space-y-16 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[30rem] flex flex-col space-y-16 bg-paper rounded-3xl shadow-even-md p-10">
         <H4>Create a card</H4>
 
         <form
@@ -440,7 +456,9 @@ const CreateCardModal: React.FC<WrappedModalProps> = ({onClose, open}) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
+            <Button onClick={onClose} type="button" color="secondary">
+              Cancel
+            </Button>
 
             <Button type="submit">Create card</Button>
           </div>
@@ -457,7 +475,11 @@ interface AddPersonForm {
 }
 
 const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
-  const {register} = useForm<AddPersonForm>({
+  const {
+    register,
+    handleSubmit,
+    formState: {isValid, errors},
+  } = useForm<AddPersonForm>({
     defaultValues: {
       specialist: "",
       requirements: "",
@@ -467,7 +489,7 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[30rem] flex flex-col space-y-10 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[30rem] flex flex-col space-y-10 bg-paper rounded-3xl shadow-even-md p-10">
         <div className="flex flex-col space-y-2">
           <H4>Add a person</H4>
 
@@ -477,7 +499,12 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
           </p>
         </div>
 
-        <form className="flex flex-col space-y-10">
+        <form
+          className="flex flex-col space-y-10"
+          onSubmit={handleSubmit((form) => {
+            console.log(form);
+          })}
+        >
           <div className="flex flex-col space-y-4">
             <TextField
               {...register("specialist")}
@@ -486,9 +513,14 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
             />
 
             <Textarea
-              {...register("requirements")}
+              {...register("requirements", {
+                required: true,
+                minLength: 250,
+                min: 250,
+              })}
               placeholder="Requirements"
               maxWords={150}
+              error={errors.requirements?.message}
             />
 
             <TextField
@@ -499,8 +531,12 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
           </div>
 
           <div className="flex justify-between items-center">
-            <Button onClick={() => navigate("/")}>Cancel</Button>
-            <Button type="submit">Confirm</Button>
+            <Button color="secondary" onClick={() => navigate("/")}>
+              Cancel
+            </Button>
+            <Button disabled={!isValid} type="submit">
+              Confirm
+            </Button>
           </div>
         </form>
       </div>
@@ -529,7 +565,7 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[25rem] flex flex-col space-y-14 bg-paper rounded-lg shadow-md p-10">
+      <div className="w-[25rem] flex flex-col space-y-14 bg-paper rounded-3xl shadow-even-md p-10">
         <H4>Add new slots</H4>
 
         <form
@@ -574,27 +610,11 @@ const AddSlotsModal: React.FC<AddSlotsModalProps> = ({
           </div>
 
           <div className="flex justify-between items-center">
-            <Button>Cancel</Button>
-
-            <Button
-              type="submit"
-              onClick={() => {
-                window.Robokassa.StartPayment({
-                  MerchantLogin: "Test1999",
-                  Pass1: "Пароль#1",
-                  OutSum: 100,
-                  InvId: 678678,
-                  Description: "Оплата заказа в Тестовом магазине ROBOKASSA",
-                  Shp_Item: "1",
-                  Culture: "ru",
-                  Encoding: "utf-8",
-                  SignatureValue: "dsfsdf",
-                  IsTest: 1,
-                });
-              }}
-            >
-              To payment
+            <Button onClick={onClose} color="secondary">
+              Cancel
             </Button>
+
+            <Button type="submit">To payment</Button>
           </div>
         </form>
       </div>

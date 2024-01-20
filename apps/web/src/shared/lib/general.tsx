@@ -9,7 +9,7 @@ interface GeneralStore {
   friendRequests: number;
   projectRequests: ProjectRequest[];
   tasks: ProjectTask[];
-  setFriendRequests: (requests: number) => void;
+  addFriendRequests: (requests: number) => void;
   setProjectRequests: (requests: ProjectRequest[]) => void;
   setTasks: (tasks: ProjectTask[]) => void;
 }
@@ -18,7 +18,11 @@ export const useGeneralStore = create<GeneralStore>((set) => ({
   friendRequests: 0,
   projectRequests: [],
   tasks: [],
-  setFriendRequests: (requests: number) => set({friendRequests: requests}),
+  addFriendRequests: (requests: number) =>
+    set((store) => ({
+      ...store,
+      friendRequests: store.friendRequests + requests,
+    })),
   setProjectRequests: (requests: ProjectRequest[]) =>
     set({projectRequests: requests}),
   setTasks: (tasks: ProjectTask[]) => set({tasks}),
@@ -27,7 +31,7 @@ export const useGeneralStore = create<GeneralStore>((set) => ({
 export const General: React.FC<PropsWithChildren> = ({children}) => {
   const isAuthenticated = useSelector(authModel.selectors.isAuthenticated);
 
-  const {setProjectRequests, setFriendRequests, setTasks} = useGeneralStore(
+  const {setProjectRequests, addFriendRequests, setTasks} = useGeneralStore(
     (s) => s,
   );
 
@@ -35,7 +39,7 @@ export const General: React.FC<PropsWithChildren> = ({children}) => {
     if (isAuthenticated)
       api.getOverview().then(({data}) => {
         setProjectRequests(data.projectRequests);
-        setFriendRequests(data.friendRequests);
+        addFriendRequests(data.friendRequests);
         setTasks(data.tasks);
       });
   }, [isAuthenticated]);

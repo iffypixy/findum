@@ -9,6 +9,7 @@ import {useSelector} from "react-redux";
 import {chatsModel} from "@features/chats";
 import toast from "react-hot-toast";
 import {navigate} from "wouter/use-location";
+import {useGeneralStore} from "../general";
 
 export const NOTIFICATION_EVENTS = {
   TASK_ACCEPTED: "task-accepted",
@@ -26,6 +27,9 @@ export const SocketManager: React.FC<PropsWithChildren> = ({children}) => {
   const projectChats = useSelector(chatsModel.selectors.project);
   const privateChats = useSelector(chatsModel.selectors.cprivate);
 
+  const {addFriendRequests, setProjectRequests, projectRequests} =
+    useGeneralStore((s) => s);
+
   useEffect(() => {
     ws.on(NOTIFICATION_EVENTS.KICKED_FROM_PROJECT, ({project}) => {
       dispatch(
@@ -37,9 +41,7 @@ export const SocketManager: React.FC<PropsWithChildren> = ({children}) => {
       );
     });
 
-    ws.on(NOTIFICATION_EVENTS.PROJECT_REQUEST_SENT, ({project}) => {
-      console.log(project);
-
+    ws.on(NOTIFICATION_EVENTS.PROJECT_REQUEST_SENT, ({project, request}) => {
       dispatch(
         notificationsModel.actions.addNotification({
           date: new Date(),
@@ -47,6 +49,8 @@ export const SocketManager: React.FC<PropsWithChildren> = ({children}) => {
           text: "You received a project request",
         }),
       );
+
+      setProjectRequests([...projectRequests, request]);
     });
 
     ws.on(NOTIFICATION_EVENTS.REQUEST_ACCEPTED, ({project}) => {
@@ -93,6 +97,8 @@ export const SocketManager: React.FC<PropsWithChildren> = ({children}) => {
     });
 
     ws.on("friend-request-sent", ({user}) => {
+      addFriendRequests(1);
+
       toast.custom((t) => (
         <div
           className={`${

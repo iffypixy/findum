@@ -142,6 +142,8 @@ export const AvatarEditor: React.FC<AvatarEditorProps> = ({
             onClick={() => {
               onClose();
             }}
+            color="secondary"
+            type="button"
             className="w-[50%]"
           >
             Cancel
