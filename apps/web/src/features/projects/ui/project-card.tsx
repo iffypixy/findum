@@ -112,7 +112,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = (props) => {
         }}
         className="w-[100%] flex flex-col bg-paper rounded-3xl shadow-sm cursor-pointer"
       >
-        <div className="flex justify-between px-8 py-8">
+        <div className="flex justify-between p-8">
           <div className="flex items-center space-x-8">
             <Avatar
               src={props.avatar}
@@ -379,24 +379,28 @@ export const MyProjectCard: React.FC<MyProjectCardProps> = (props) => {
       onClick={() => {
         navigate(`/projects/${props.id}`);
       }}
-      className="w-[15rem] max-w-[15rem] min-w-[15rem] h-[17rem] justify-center items-center flex flex-col items-center bg-paper shadow-md rounded-lg space-y-6 cursor-pointer p-8"
+      className="w-[15rem] max-w-[13rem] min-w-[13rem] justify-center items-center flex flex-col bg-paper shadow-even-sm rounded-2xl space-y-4 cursor-pointer py-6"
     >
-      <Avatar src={props.avatar} className="w-16 h-auto" />
+      <Avatar src={props.avatar} className="w-16 h-auto border" />
 
-      <div className="flex flex-col items-center space-y-1 text-center">
-        <span className="text-lg font-bold">{props.name}</span>
+      <div className="flex flex-col items-center space-y-1 text-center w-[100%]">
+        <div className="w-[80%] overflow-hidden">
+          <span className="text-lg font-semibold whitespace-nowrap">
+            {props.name}
+          </span>
+        </div>
 
-        {props.isFounder && props.requests! > 0 && (
+        {props.isFounder && props.requests! > -1 && (
           <div className="flex items-center text-paper-contrast/40 space-x-2">
             <BiBell className="w-4 h-auto" />
-            <span className="text-sm">{props.requests} new request(s)</span>
+            <span className="text-xs">{props.requests} new request(s)</span>
           </div>
         )}
 
         {!props.isFounder && props.tasks! > 0 && (
           <div className="flex items-center text-paper-contrast/40 space-x-2">
             <BiBell className="w-4 h-auto" />
-            <span className="text-sm">{props.tasks} undone task(s)</span>
+            <span className="text-xs">{props.tasks} undone task(s)</span>
           </div>
         )}
       </div>

@@ -1,6 +1,4 @@
 import React, {useEffect, useRef, useState} from "react";
-import * as Select from "@radix-ui/react-select";
-import {BiBell, BiSearch} from "react-icons/bi";
 import {twMerge} from "tailwind-merge";
 import {cx} from "class-variance-authority";
 import * as Popover from "@radix-ui/react-popover";
@@ -15,6 +13,8 @@ import {navigate} from "wouter/use-location";
 import {RootState, useDispatch} from "@shared/lib/store";
 import {setNotRead} from "@features/notifications/model/actions";
 import {useTranslation} from "react-i18next";
+import russia from "@shared/assets/flags/russia.png";
+import usa from "@shared/assets/flags/usa.png";
 
 export const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ export const Header: React.FC = () => {
       id="header"
       className="relative w-[100%] h-[6rem] flex justify-end items-center bg-paper-brand py-6 px-10"
     >
-      <div className="flex items-center space-x-5">
+      <div className="flex items-center space-x-6">
         <SearchBar />
 
         <Popover.Root>
@@ -37,9 +37,9 @@ export const Header: React.FC = () => {
               dispatch(setNotRead(false));
             }}
           >
-            <BiBell
+            <Icon.Bell
               className={cx("w-6 h-auto", {
-                "text-red-300": notRead,
+                "text-red-400": notRead,
               })}
             />
           </Popover.Trigger>
@@ -132,7 +132,7 @@ const SearchBar: React.FC = () => {
           setShowInput(true);
         }}
       >
-        <BiSearch className="w-6 h-auto" />
+        <Icon.Search className="w-6 h-auto text-paper-contrast" />
       </button>
 
       {showInput && text && (
@@ -236,52 +236,71 @@ const LanguageSelect: React.FC = () => {
   const [flag, setFlag] = useState<Flag>(map[i18n.language]);
 
   const flags = {
-    usa: Icon.Flag.USA,
-    russia: Icon.Flag.Russia,
+    usa: usa,
+    russia: russia,
   };
 
-  const Flag = flags[flag]!;
+  const flagImage = flags[flag]!;
 
   return (
-    <Select.Root
-      onValueChange={(value) => {
-        setFlag(value as Flag);
-
-        if (value === "usa") {
-          i18n.changeLanguage("en");
-        } else if (value === "russia") {
+    <img
+      src={flagImage}
+      alt="flag"
+      className="w-8 h-auto cursor-pointer"
+      role="presentation"
+      onClick={() => {
+        if (flag === "usa") {
           i18n.changeLanguage("ru");
+          setFlag("russia");
+        } else {
+          i18n.changeLanguage("en");
+          setFlag("usa");
         }
       }}
-      value={flag}
-      name="language"
-    >
-      <Select.Trigger>
-        <Select.Value>
-          <Flag className="w-8 h-auto" />
-        </Select.Value>
-      </Select.Trigger>
+    />
+    // <Select.Root
+    //   onValueChange={(value) => {
+    //     setFlag(value as Flag);
 
-      <Select.Portal>
-        <Select.Content
-          position="popper"
-          className="bg-paper rounded-md shadow-even-md"
-        >
-          <Select.Viewport className="p-2">
-            {Object.entries(flags)
-              .filter(([f]) => f !== flag)
-              .map(([flag, Flag]) => (
-                <Select.Item
-                  key={flag}
-                  value={flag}
-                  className="data-[highlighted]:bg-accent rounded-md select-none outline-none p-2"
-                >
-                  <Flag className="w-8 h-auto" />
-                </Select.Item>
-              ))}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
+    //     if (value === "usa") {
+    //       i18n.changeLanguage("en");
+    //     } else if (value === "russia") {
+    //       i18n.changeLanguage("ru");
+    //     }
+    //   }}
+    //   value={flag}
+    //   name="language"
+    // >
+    //   <Select.Trigger>
+    //     <Select.Value>
+    //       {flagImage && (
+    //         <img src={flagImage} alt="flag" className="w-8 h-auto" />
+    //       )}
+    //     </Select.Value>
+    //   </Select.Trigger>
+
+    //   <Select.Portal>
+    //     <Select.Content
+    //       position="popper"
+    //       className="bg-paper rounded-md shadow-even-md"
+    //     >
+    //       <Select.Viewport className="p-2">
+    //         {Object.entries(flags)
+    //           .filter(([f]) => f !== flag)
+    //           .map(([flag, flagImage]) => (
+    //             <Select.Item
+    //               key={flag}
+    //               value={flag}
+    //               className="data-[highlighted]:bg-accent rounded-md select-none outline-none p-2"
+    //             >
+    //               {flagImage && (
+    //                 <img src={flagImage} alt="flag" className="w-8 h-auto" />
+    //               )}
+    //             </Select.Item>
+    //           ))}
+    //       </Select.Viewport>
+    //     </Select.Content>
+    //   </Select.Portal>
+    // </Select.Root>
   );
 };

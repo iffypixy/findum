@@ -211,7 +211,6 @@ export const CreateRoomPage: React.FC = () => {
                     })}
                     placeholder="Description"
                     error={errors.description?.message}
-                    maxWords={200}
                   />
                 </div>
 
@@ -519,7 +518,6 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
                 min: 250,
               })}
               placeholder="Requirements"
-              maxWords={150}
               error={errors.requirements?.message}
             />
 

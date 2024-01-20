@@ -11,10 +11,11 @@ interface InputProps extends PropsWithClassName, React.ComponentProps<"input"> {
 
 interface TextFieldProps extends InputProps {
   suffix?: React.ReactNode;
+  borderless?: boolean;
 }
 
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  ({label, error, suffix, className, ...props}, ref) => {
+  ({label, error, suffix, className, borderless, ...props}, ref) => {
     const input = (
       <div className="relative">
         <input
@@ -24,6 +25,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             "w-full h-12 bg-transparent placeholder:text-paper-contrast/40 border border-paper-contrast/40 focus:border-accent rounded-md outline-none p-2 disabled:border-paper-contrast/20 disabled:text-paper-contrast/20",
             {
               "pr-8": !!suffix,
+              "border-none": borderless,
             },
           )}
         />

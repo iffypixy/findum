@@ -8,8 +8,12 @@ import * as Chevron from "./chevron";
 import * as Flag from "./flags";
 import Logout from "./logout.svg?react";
 import Heart from "./heart.svg?react";
+import Bell from "./bell.svg?react";
+import Search from "./search.svg?react";
 
 export const Icon = {
+  Bell,
+  Search,
   Heart,
   Logout,
   Rooms,

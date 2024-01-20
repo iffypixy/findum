@@ -160,7 +160,11 @@ export const FriendsPage: React.FC = () => {
                               </Popover.Trigger>
 
                               <Popover.Portal>
-                                <Popover.Content side="bottom" align="start">
+                                <Popover.Content
+                                  side="bottom"
+                                  align="center"
+                                  className="mt-4"
+                                >
                                   <div className="w-[20rem] flex flex-col bg-paper rounded-lg shadow-md space-y-4 p-6">
                                     <H6>{t("common.delete-the-friend?")}</H6>
 

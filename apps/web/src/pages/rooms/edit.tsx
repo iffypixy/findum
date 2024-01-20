@@ -20,12 +20,19 @@ import {
   Avatar,
 } from "@shared/ui";
 import {countries} from "@shared/lib/location";
-import {Location, Nullable, Project, ProjectMember} from "@shared/lib/types";
+import {
+  Location,
+  Nullable,
+  Project,
+  ProjectCard,
+  ProjectMember,
+} from "@shared/lib/types";
 import {Modal, WrappedModalProps} from "@shared/lib/modal";
 import {AvatarEditor} from "@shared/lib/avatars";
 import {useParams} from "wouter";
 import {api} from "@shared/api";
 import toast from "react-hot-toast";
+import {request} from "@shared/lib/request";
 
 interface CreateRoomForm {
   name: string;
@@ -93,6 +100,8 @@ export const EditProjectPage: React.FC = () => {
         location: project?.location || null,
       },
     });
+
+  const [isCreateCardBtnLoading, setIsCCBLoading] = useState(false);
 
   const avatar = watch("avatar");
   const startDate = watch("startDate");
@@ -273,15 +282,32 @@ export const EditProjectPage: React.FC = () => {
                     </span>
                   </div>
 
-                  {project.cards.length < 4 && (
+                  {project.cards.length < 1 && (
                     <Button
                       type="button"
+                      disabled={isCreateCardBtnLoading}
                       onClick={() => {
-                        setIsCreateCardModalOpen(true);
+                        // setIsCreateCardModalOpen(true);
+
+                        setIsCCBLoading(true);
+
+                        request<ProjectCard>({
+                          url: `/api/projects/${project.id}/create-card`,
+                          method: "POST",
+                        })
+                          .then(({data}: any) => {
+                            setProject({
+                              ...project,
+                              cards: [...project.cards, data],
+                            });
+                          })
+                          .finally(() => {
+                            setIsCCBLoading(false);
+                          });
                       }}
                       className="h-fit"
                     >
-                      Create card
+                      {isCreateCardBtnLoading ? "Loading..." : "Create card"}
                     </Button>
                   )}
                 </div>
@@ -607,7 +633,6 @@ const AddPersonModal: React.FC<
                 },
               })}
               placeholder="Requirements"
-              maxWords={150}
               error={errors.requirements?.message}
             />
 

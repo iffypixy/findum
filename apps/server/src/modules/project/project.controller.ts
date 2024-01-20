@@ -48,6 +48,11 @@ export class ProjectController {
       orderBy: {
         createdAt: "desc",
       },
+      where: {
+        members: {
+          some: {},
+        },
+      },
       take: 6,
       include: {
         members: {
@@ -1196,15 +1201,51 @@ export class ProjectController {
         endDate: new Date(),
       },
     });
+  }
 
-    // await this.prisma.projectMember.update({
-    //   where: {
-    //     id: members[0].id,
-    //   },
-    //   data: {
-    //     isOccupied: false,
-    //     userId: null,
-    //   },
-    // });
+  @Post(":id/create-card")
+  async createProjectWithCardsTemporarily(
+    @Param("id") projectId: string,
+    @Session() session: SessionWithData,
+  ) {
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id: projectId,
+      },
+      include: {
+        cards: {
+          select: {
+            id: true,
+          },
+        },
+        founder: true,
+      },
+    });
+
+    if (!project) throw new NotFoundException("Project not found");
+
+    const isFounder = project.founderId === session.userId;
+
+    if (!isFounder)
+      throw new BadRequestException(
+        "You can't create a card for a project you are not a founder of",
+      );
+
+    const card = await this.prisma.projectCard.create({
+      data: {
+        projectId: project.id,
+        slots: 4,
+      },
+      include: {
+        project: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return card;
   }
 }

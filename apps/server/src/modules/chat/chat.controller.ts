@@ -129,18 +129,34 @@ export class ChatController {
           },
         ],
       },
+      include: {
+        projectChat: true,
+      },
     });
 
     if (!chat) throw new NotFoundException("Chat not found");
 
-    const messages = await this.prisma.chatMessage.findMany({
+    const messages = (await this.prisma.chatMessage.findMany({
       where: {
         chatId: id,
       },
       include: {
         sender: true,
       },
-    });
+    })) as any;
+
+    if (chat.projectChat?.projectId) {
+      for (let i = 0; i < messages.length; i++) {
+        const member = await this.prisma.projectMember.findFirst({
+          where: {
+            userId: messages[i].senderId,
+            projectId: chat.projectChat?.projectId,
+          },
+        });
+
+        messages[i].role = member.role;
+      }
+    }
 
     return {
       messages,

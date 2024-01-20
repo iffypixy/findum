@@ -1,13 +1,14 @@
 import {forwardRef, useState} from "react";
 
 interface TextareaProps extends React.ComponentProps<"textarea"> {
-  maxWords?: number;
   error?: string;
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({maxWords, error, ...props}, ref) => {
-    const [value, setValue] = useState(props.defaultValue || props.value || "");
+  ({error, ...props}, ref) => {
+    const [value, setValue] = useState(
+      (props.defaultValue as string) || (props.value as string) || "",
+    );
 
     const textarea = (
       <textarea
@@ -22,25 +23,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       />
     );
 
-    if (maxWords)
-      return (
-        <div className="relative flex flex-col space-y-2">
-          {error && <span className="text-error text-sm">{error}</span>}
+    return (
+      <div className="relative flex flex-col space-y-2">
+        {error && <span className="text-error text-sm">{error}</span>}
 
-          {textarea}
+        {textarea}
 
-          <span className="text-paper-contrast/40 absolute right-4 bottom-4">
-            {
-              value
-                .toString()
-                .split(" ")
-                .filter((w) => w !== "").length
-            }{" "}
-            / {maxWords}
-          </span>
-        </div>
-      );
-
-    return textarea;
+        <span className="text-paper-contrast/40 absolute right-4 bottom-4">
+          ({value.length})
+        </span>
+      </div>
+    );
   },
 );

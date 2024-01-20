@@ -214,40 +214,42 @@ export const RoomsPage: React.FC = () => {
           >
             <Container>
               <div className="flex flex-col space-y-8 p-14">
-                <div className="flex flex-col space-y-4">
+                <div className="flex flex-col w-[30rem] space-y-4">
                   <TextField
                     suffix={<BiSearch className="w-6 h-auto" />}
                     placeholder={t("common.specialist")}
-                    className="w-[25rem] h-auto"
+                    className="w-[100%] h-auto"
                     value={specialist}
                     onChange={(event) => {
                       setSpecialist(event.currentTarget.value);
                     }}
                   />
 
-                  <Select.Root
-                    placeholder={t("common.country")}
-                    className="w-[15rem] h-auto"
-                    value={country || undefined}
-                    onValueChange={(value) => {
-                      setCountry(value);
-                    }}
-                  >
-                    {countries.map((country, idx) => (
-                      <Select.Item key={idx} value={country}>
-                        {country}
-                      </Select.Item>
-                    ))}
-                  </Select.Root>
+                  <div className="flex space-x-4">
+                    <Select.Root
+                      placeholder={t("common.country")}
+                      className="w-[50%] h-auto"
+                      value={country || undefined}
+                      onValueChange={(value) => {
+                        setCountry(value);
+                      }}
+                    >
+                      {countries.map((country, idx) => (
+                        <Select.Item key={idx} value={country}>
+                          {country}
+                        </Select.Item>
+                      ))}
+                    </Select.Root>
 
-                  <TextField
-                    placeholder={t("common.city")}
-                    className="w-[25rem] h-auto"
-                    value={city}
-                    onChange={(event) => {
-                      setCity(event.currentTarget.value);
-                    }}
-                  />
+                    <TextField
+                      placeholder={t("common.city")}
+                      className="w-[50%] h-auto"
+                      value={city}
+                      onChange={(event) => {
+                        setCity(event.currentTarget.value);
+                      }}
+                    />
+                  </div>
                 </div>
 
                 {all.data?.length === 0 ? (

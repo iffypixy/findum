@@ -386,8 +386,9 @@ export const PrivateChatPage: React.FC = () => {
               </button> */}
 
               <TextField
-                className="flex-1 h-auto"
-                placeholder="Enter your message..."
+                borderless
+                className="flex-1 bg-white rounded-xl h-[3rem]"
+                placeholder="Message"
                 onKeyDown={(e) => {
                   if (e.keyCode === 13) {
                     api.chats.sendMessage({
