@@ -4,6 +4,7 @@ import * as S from "@radix-ui/react-select";
 import {PropsWithClassName} from "@shared/lib/types";
 import {Icon} from "@shared/ui";
 import {cx} from "class-variance-authority";
+import {twMerge} from "tailwind-merge";
 
 interface SelectRootProps
   extends React.ComponentProps<typeof S.Root>,
@@ -12,6 +13,7 @@ interface SelectRootProps
   placeholder?: React.ReactNode;
   label?: string;
   error?: string;
+  borderless?: boolean;
 }
 
 const Root: React.FC<SelectRootProps> = ({
@@ -20,6 +22,7 @@ const Root: React.FC<SelectRootProps> = ({
   error,
   children,
   className,
+  borderless,
   ...props
 }) => {
   const select = (
@@ -38,12 +41,19 @@ const Root: React.FC<SelectRootProps> = ({
       </S.Trigger>
 
       <S.Portal>
-        <S.Content className="bg-paper rounded-md border border-paper-contrast shadow-md z-[60]">
+        <S.Content
+          className={cx(
+            "bg-paper rounded-md border border-paper-contrast shadow-md z-[60] w-[95%] mx-auto",
+            {
+              "border-none": borderless,
+            },
+          )}
+        >
           <S.ScrollUpButton className="flex items-center justify-center bg-paper text-paper-contrast cursor-default">
             <Icon.Chevron.Up className="w-[1.5rem] h-auto" />
           </S.ScrollUpButton>
 
-          <S.Viewport className="p-2">{children}</S.Viewport>
+          <S.Viewport className="p-0">{children}</S.Viewport>
 
           <S.ScrollDownButton className="flex items-center justify-center bg-paper text-paper-contrast cursor-default">
             <Icon.Chevron.Down className="w-[1.5rem] h-auto" />
@@ -70,16 +80,21 @@ const Root: React.FC<SelectRootProps> = ({
   );
 };
 
-interface SelectItemProps {
+interface SelectItemProps extends PropsWithClassName {
   value: string;
   children?: React.ReactNode;
 }
 
-const Item: React.FC<SelectItemProps> = ({value, children}) => {
+const Item: React.FC<SelectItemProps> = ({value, children, className}) => {
   return (
     <S.Item
       value={value}
-      className="flex items-center space-x-2 data-[highlighted]:bg-accent data-[highlighted]:text-accent-contrast text-sm rounded-md select-none outline-none p-2"
+      className={twMerge(
+        cx(
+          "flex items-center space-x-2 data-[highlighted]:bg-accent data-[highlighted]:text-accent-contrast text-sm rounded-md select-none outline-none p-2",
+          className,
+        ),
+      )}
     >
       <S.ItemIndicator className="inline-flex items-center justify-center">
         <Icon.Check className="w-[1.5rem] h-auto" />

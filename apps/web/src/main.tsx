@@ -106,6 +106,7 @@ const resources = {
         "leave-project": "Выйти с проекта",
         logout: "Выйти",
         accept: "Принять",
+        "send-offer": "Отправить запрос",
       },
     },
   },

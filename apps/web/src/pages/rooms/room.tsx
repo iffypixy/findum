@@ -1396,7 +1396,7 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
-      <div className="w-[35rem] flex flex-col space-y-8 bg-paper rounded-3xl shadow-even-md p-10">
+      <div className="w-[35rem] flex flex-col space-y-8 bg-paper rounded-3xl shadow-even-md p-8">
         <div className="flex flex-col space-y-6">
           <H4>Confirm your project request</H4>
 
@@ -1405,9 +1405,14 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
               value={selectedRole || undefined}
               onValueChange={(value) => setSelectedRole(value)}
               className="h-auto"
+              borderless
             >
               {roles.map((role) => (
-                <Select.Item key={role.id} value={role.id}>
+                <Select.Item
+                  key={role.id}
+                  value={role.id}
+                  className="bg-[#F1F5F9] shadow-even-lg"
+                >
                   {role.specialist}
                 </Select.Item>
               ))}
@@ -1423,18 +1428,18 @@ const ConfirmJoinRequestModal: React.FC<ConfirmJoinRequestModalProps> = ({
             className="space-y-6"
           >
             <div className="flex flex-col space-y-4">
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 w-[90%]">
                 <span className="text-accent font-semibold">Requirements</span>
 
-                <p className="text-paper-contrast/60 text-sm ml-8">
+                <p className="text-paper-contrast/60 text-sm ml-8 break-all">
                   {data?.requirements}
                 </p>
               </div>
 
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 w-[90%]">
                 <span className="text-accent font-semibold">Benefits</span>
 
-                <p className="text-paper-contrast/60 text-sm ml-8">
+                <p className="text-paper-contrast/60 text-sm ml-8 break-all">
                   {data?.benefits}
                 </p>
               </div>
