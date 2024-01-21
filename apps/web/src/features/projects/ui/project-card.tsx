@@ -246,12 +246,14 @@ const ProjectDescriptionModal: React.FC<ProjectDescriptionModalProps> = (
           </div>
         </div>
 
-        <p
-          className="text-paper-contrast/60 text-sm font-medium"
-          style={{fontFamily: "Montserrat"}}
-        >
-          {props.description}
-        </p>
+        <div className="w-[85%]">
+          <p
+            className="text-paper-contrast/60 text-sm font-medium break-all"
+            style={{fontFamily: "Montserrat"}}
+          >
+            {props.description}
+          </p>
+        </div>
 
         <div className="flex items-center space-x-5">
           <Avatar src={props.owner.avatar} />

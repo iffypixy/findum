@@ -628,8 +628,8 @@ const AddPersonModal: React.FC<
                 required: true,
                 minLength: {
                   message:
-                    "Requirements field should have at least 250 characters",
-                  value: 250,
+                    "Requirements field should have at least 150 characters",
+                  value: 150,
                 },
               })}
               placeholder="Requirements"

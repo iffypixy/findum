@@ -205,8 +205,8 @@ export const CreateRoomPage: React.FC = () => {
                       required: true,
                       minLength: {
                         message:
-                          "Description field should have at least 300 characters",
-                        value: 300,
+                          "Description field should have at least 200 characters",
+                        value: 200,
                       },
                     })}
                     placeholder="Description"
@@ -514,8 +514,6 @@ const AddPersonModal: React.FC<WrappedModalProps> = ({open, onClose}) => {
             <Textarea
               {...register("requirements", {
                 required: true,
-                minLength: 250,
-                min: 250,
               })}
               placeholder="Requirements"
               error={errors.requirements?.message}

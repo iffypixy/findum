@@ -145,18 +145,18 @@ export class ChatController {
       },
     })) as any;
 
-    if (chat.projectChat?.projectId) {
-      for (let i = 0; i < messages.length; i++) {
-        const member = await this.prisma.projectMember.findFirst({
-          where: {
-            userId: messages[i].senderId,
-            projectId: chat.projectChat?.projectId,
-          },
-        });
+    // if (chat.projectChat?.projectId) {
+    //   for (let i = 0; i < messages.length; i++) {
+    //     const member = await this.prisma.projectMember.findFirst({
+    //       where: {
+    //         userId: messages[i].senderId,
+    //         projectId: chat.projectChat?.projectId,
+    //       },
+    //     });
 
-        messages[i].role = member.role;
-      }
-    }
+    //     messages[i].role = member.role;
+    //   }
+    // }
 
     return {
       messages,

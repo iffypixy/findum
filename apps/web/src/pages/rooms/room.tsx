@@ -287,9 +287,11 @@ export const RoomPage: React.FC = () => {
               <H5>{t("common.overview")}</H5>
 
               <div className="flex flex-col space-y-4">
-                <p className="text-paper-contrast/60 text-sm">
-                  {project.description}
-                </p>
+                <div className="w-[90%]">
+                  <p className="text-paper-contrast/60 text-sm break-all">
+                    {project.description}
+                  </p>
+                </div>
 
                 <div className="flex flex-col">
                   <span className="text-paper-contrast/60 text-xs">
