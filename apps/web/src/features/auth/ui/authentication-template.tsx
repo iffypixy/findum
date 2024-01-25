@@ -1,8 +1,6 @@
-import {Avatar, H2} from "@shared/ui";
+import {H2} from "@shared/ui";
 import bg from "@shared/assets/block-bg.png";
 import {useTranslation} from "react-i18next";
-
-const avatar = "https://shorturl.at/ikvZ0";
 
 type AuthenticationTemplate = React.PropsWithChildren;
 
@@ -28,18 +26,6 @@ export const AuthenticationTemplate: React.FC<AuthenticationTemplate> = ({
             {/* <p className="text-main-contrast/70 text-white">
               {t("common.auth-subtitle")}
             </p> */}
-          </div>
-
-          <div className="flex items-center space-x-5">
-            <div className="flex -space-x-3">
-              {Array.from({length: 4}).map((_, idx) => (
-                <Avatar key={idx} src={avatar} />
-              ))}
-            </div>
-
-            <span className="text-main-contrast/70 text-white">
-              {t("common.auth-ad")}
-            </span>
           </div>
 
           <div className="flex flex-col space-y-6">
