@@ -51,10 +51,18 @@ export default {
       },
     },
     screens: {
-      xl: "1170px",
-      lg: "992px",
-      md: "768px",
-      sm: "576px",
+      xl: {
+        max: "1170px",
+      },
+      lg: {
+        max: "992px",
+      },
+      md: {
+        max: "768px",
+      },
+      sm: {
+        max: "576px",
+      },
     },
     fontFamily: {
       body: '"Inter", sans-serif',

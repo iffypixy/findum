@@ -60,20 +60,14 @@
   }
 
   html {
-    @media screen(2xl) {
-      font-size: 95%;
-    }
-
-    @media screen(xl) {
-      font-size: 85%;
-    }
+    font-size: 100%;
 
     @media screen(lg) {
-      font-size: 70%;
+      font-size: 80%;
     }
 
     @media screen(md) {
-      font-size: 55%;
+      font-size: 60%;
     }
 
     @media screen(sm) {
