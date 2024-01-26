@@ -4,18 +4,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      boxShadow: flatten({
-        even: {
-          sm: "0 0 10px rgb(0 0 0 / 0.1)",
-          md: "0 0 25px rgb(0 0 0 / 0.1)",
-          lg: "0 0 50px rgb(0 0 0 / 0.1)",
-        },
-      }),
-      transitionProperty: {
-        width: "width",
-      },
-      fontSize: {
-        inherit: "inherit",
+      boxShadow: {
+        "even-sm": "0 0 10px rgb(0 0 0 / 0.1)",
+        "even-md": "0 0 25px rgb(0 0 0 / 0.1)",
+        "even-lg": "0 0 50px rgb(0 0 0 / 0.1)",
       },
       colors: {
         main: {
@@ -51,23 +43,18 @@ export default {
           DEFAULT: "rgb(var(--color-error) / <alpha-value>)",
         },
       },
+      transitionProperty: {
+        width: "width",
+      },
+      fontSize: {
+        inherit: "inherit",
+      },
     },
     screens: {
-      "2xl": {
-        max: "1480px",
-      },
-      xl: {
-        max: "1200px",
-      },
-      lg: {
-        max: "992px",
-      },
-      md: {
-        max: "768px",
-      },
-      sm: {
-        max: "576px",
-      },
+      xl: "1170px",
+      lg: "992px",
+      md: "768px",
+      sm: "576px",
     },
     fontFamily: {
       body: '"Inter", sans-serif',
@@ -76,23 +63,3 @@ export default {
   },
   plugins: [require("tailwind-scrollbar")],
 };
-
-function flatten(theme) {
-  const flat = {};
-
-  function recurse(object, prefix = "") {
-    for (const prop in object) {
-      if (typeof object[prop] === "object") {
-        recurse(object[prop], `${prefix}${prop}-`);
-      } else {
-        const key = `${prefix}${prop}`;
-
-        flat[key] = object[prop];
-      }
-    }
-  }
-
-  recurse(theme);
-
-  return flat;
-}
