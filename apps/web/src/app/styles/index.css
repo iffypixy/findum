@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./fonts.css";
+@import "./themes.css";
+
+@layer base {
+  html {
+    font-size: 100%;
+
+    @media screen(lg) {
+      font-size: 80%;
+    }
+
+    @media screen(md) {
+      font-size: 60%;
+    }
+
+    @media screen(sm) {
+      font-size: 40%;
+    }
+  }
+
+  body {
+    @apply font-body;
+    @apply text-base;
+    @apply bg-paper;
+  }
+}

@@ -1,0 +1,114 @@
+@font-face {
+  font-family: "Inter";
+  font-weight: 300;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 400;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 500;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 600;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 700;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: 900;
+  src:
+    local("Inter"),
+    url("./shared/assets/fonts/Inter/Inter-Black.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 400;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Montserrat/Montserrat-Regular.ttf")
+      format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 500;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Montserrat/Montserrat-Medium.ttf")
+      format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 600;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Montserrat/Montserrat-SemiBold.ttf")
+      format("woff2");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 700;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Montserrat/Montserrat-Bold.ttf") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-weight: 400;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Manrope/Manrope-Regular.ttf") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-weight: 500;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Manrope/Manrope-Medium.ttf") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-weight: 600;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Manrope/Manrope-SemiBold.ttf") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-weight: 700;
+  src:
+    local("Montserrat"),
+    url("./shared/assets/fonts/Manrope/Manrope-Bold.ttf") format("woff2");
+}
