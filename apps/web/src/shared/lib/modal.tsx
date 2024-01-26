@@ -32,20 +32,3 @@ export const Modal: React.FC<ModalProps> = ({children, open, onClose}) => (
     {children}
   </M>
 );
-
-// open
-//   ? createPortal(
-//       <>
-//         <div
-//           onClick={onClose}
-//           role="presentation"
-//           className="fixed inset-0 -z-10 bg-[rgba(255, 255, 255, 0.4)]"
-//         />
-
-//         <div className="fixed inset-0 z-50 flex items-center justify-center">
-//           {children}
-//         </div>
-//       </>,
-//       document.body,
-//     )
-//   : null;

@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {PropsWithChildren, useEffect} from "react";
 import {create} from "zustand";
 
 type Theme = "light" | "dark";
@@ -18,11 +18,7 @@ export const useThemingStore = create<ThemingStore>((set) => ({
     }),
 }));
 
-interface ThemeToggleProps {
-  children?: React.ReactNode;
-}
-
-export const ThemeManager: React.FC<ThemeToggleProps> = ({children}) => {
+export const ThemeManager: React.FC<PropsWithChildren> = ({children}) => {
   const theme = useThemingStore((state) => state.theme);
 
   useEffect(() => {
