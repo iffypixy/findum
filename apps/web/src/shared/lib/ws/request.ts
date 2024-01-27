@@ -1,6 +1,7 @@
 import {io} from "socket.io-client";
+import {WsResponse} from "@findum/ws";
 
-import {WsResponse, WsListener} from "./types";
+import {WsListener} from "./types";
 import {WS_TIMEOUT} from "./constants";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
