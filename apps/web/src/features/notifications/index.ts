@@ -1,1 +1,2 @@
-export {model as notificationsModel} from "./model";
+export {useNotificationStore} from "./store";
+export {NotificationManager} from "./lib/notification-manager";
