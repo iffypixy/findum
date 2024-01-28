@@ -6,3 +6,8 @@ export const request = axios.create({
   baseURL: BACKEND_URL,
   withCredentials: true,
 });
+
+export interface GenericDto<Req, Res> {
+  req: Req;
+  res: Res;
+}
