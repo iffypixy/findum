@@ -12,6 +12,8 @@ const namespaces = [
   "profile",
 ];
 
+export const langs = ["en", "ru", "kz"];
+
 i18n
   .use(Backend)
   .use(LanguageDetector)
