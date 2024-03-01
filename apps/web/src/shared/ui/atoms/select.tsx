@@ -1,10 +1,10 @@
 import {PropsWithChildren} from "react";
 import * as S from "@radix-ui/react-select";
+import {cx} from "class-variance-authority";
+import {twMerge} from "tailwind-merge";
 
 import {PropsWithClassName} from "@shared/lib/types";
 import {Icon} from "@shared/ui";
-import {cx} from "class-variance-authority";
-import {twMerge} from "tailwind-merge";
 
 interface SelectRootProps
   extends React.ComponentProps<typeof S.Root>,
@@ -13,7 +13,6 @@ interface SelectRootProps
   placeholder?: React.ReactNode;
   label?: string;
   error?: string;
-  borderless?: boolean;
 }
 
 const Root: React.FC<SelectRootProps> = ({
@@ -22,17 +21,19 @@ const Root: React.FC<SelectRootProps> = ({
   error,
   children,
   className,
-  borderless,
   ...props
 }) => {
   const select = (
     <S.Root {...props}>
       <S.Trigger
         className="
-          w-[100%] flex items-center rounded-lg border border-paper-contrast/40 focus:border-accent data-[placeholder]:text-paper-contrast/40"
+          w-[100%] flex items-center rounded-lg border border-[#D2D1D1] focus:border-accent data-[placeholder]:text-paper-contrast/40"
       >
-        <span className="w-[100%] h-12 flex justify-between items-center rounded-md p-2 [&>span]:my-auto">
-          <S.Value placeholder={placeholder} />
+        <span className="w-[100%] h-12 flex justify-between items-center rounded-md py-2 px-3 [&>span]:my-auto">
+          <S.Value
+            placeholder={placeholder}
+            className="placeholder:text-[#D2D1D1] text-[#2D2D2E]"
+          />
         </span>
 
         <S.Icon className="-translate-x-2">
@@ -44,9 +45,6 @@ const Root: React.FC<SelectRootProps> = ({
         <S.Content
           className={cx(
             "bg-paper rounded-md border border-paper-contrast shadow-md z-[60] w-[95%] mx-auto",
-            {
-              "border-none": borderless,
-            },
           )}
         >
           <S.ScrollUpButton className="flex items-center justify-center bg-paper text-paper-contrast cursor-default">
@@ -64,10 +62,10 @@ const Root: React.FC<SelectRootProps> = ({
   );
 
   return (
-    <div className={cx("h-24 flex flex-col space-y-1", className)}>
+    <div className={cx("h-24 flex flex-col space-y-2", className)}>
       {label ? (
         <label className="flex flex-col space-y-1 text-left">
-          <span className="text-paper-contrast/80">{label}</span>
+          <span className="text-[#817C7C]">{label}</span>
 
           {select}
         </label>

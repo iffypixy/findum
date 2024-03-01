@@ -1,1 +1,2 @@
-export {model as friendsModel} from "./model";
+export * from "./ui";
+export * from "./queries";

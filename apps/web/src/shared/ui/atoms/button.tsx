@@ -7,14 +7,15 @@ interface ButtonProps
   extends PropsWithClassName,
     React.ComponentProps<"button">,
     React.PropsWithChildren {
-  color?: "primary" | "secondary";
+  color?: "primary" | "secondary" | "chromatic";
 }
 
-const styles = cva("rounded-xl py-2 px-7", {
+const styles = cva("w-fit h-fit text-lg rounded-xl py-2 px-8", {
   variants: {
     color: {
       primary: "text-accent-contrast bg-accent",
       secondary: "text-accent bg-accent-contrast border border-accent",
+      chromatic: "text-[#112042] bg-[#F8F9FA] border-2 border-[#8193F3]",
     },
   },
   defaultVariants: {
@@ -33,7 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
       cx(
         styles({color: props.color}),
         {
-          "opacity-70": props.disabled,
+          "opacity-60 cursor-not-allowed": props.disabled,
         },
         className,
       ),

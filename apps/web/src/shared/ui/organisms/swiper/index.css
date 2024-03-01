@@ -1,0 +1,13 @@
+.swiper-pagination-bullet-active {
+  width: 28px;
+  border-radius: 8px;
+  background-color: #8193f3;
+}
+
+.swiper-slide {
+  cursor: grab;
+}
+
+.swiper-pagination {
+  z-index: -1;
+}

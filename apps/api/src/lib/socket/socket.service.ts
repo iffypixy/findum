@@ -5,7 +5,7 @@ import {Server, Socket} from "socket.io";
 export class SocketService {
   public server: Server = null;
 
-  public getSocketsByUserId(id: string, options?: {room: string}): Socket[] {
+  public getSockets(id: string, options?: {room: string}): Socket[] {
     const global = this.server.of("/");
 
     let sockets = Array.from(global.sockets.values());
@@ -22,7 +22,16 @@ export class SocketService {
       }
     }
 
-    // @ts-ignore
     return sockets.filter((socket) => socket.request.session.userId === id);
+  }
+
+  public getSocketIds(id: string) {
+    const global = this.server.of("/");
+
+    const sockets = Array.from(global.sockets.values());
+
+    return sockets
+      .filter((socket) => socket.request.session.userId === id)
+      .map((s) => s.id);
   }
 }

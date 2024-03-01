@@ -1,22 +1,11 @@
-import {useEffect} from "react";
-import {useSelector} from "react-redux";
-
-import {useDispatch} from "@shared/lib/store";
-
-import {model} from "../model";
+import {useCredentials} from "../queries";
 
 export const CredentialsLoader: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const dispatch = useDispatch();
+  const [, {isLoading}] = useCredentials();
 
-  const credentials = useSelector(model.selectors.credentials);
-
-  useEffect(() => {
-    if (!credentials.data) dispatch(model.actions.fetchCredentials());
-  }, []);
-
-  if (credentials.isFetching) return null;
+  if (isLoading) return null;
 
   return <>{children}</>;
 };

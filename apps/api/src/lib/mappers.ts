@@ -42,8 +42,8 @@ const credentials = (u: CompleteUser) => ({
   email: u.email,
   avatar: u.avatar,
   isVerified: u.isVerified,
-  profile: profile(u.profile),
-  location: location(u.location),
+  profile: u.profile ? profile(u.profile) : null,
+  location: u.location ? location(u.location) : null,
 });
 
 const project = (p: Project) => ({
@@ -53,6 +53,8 @@ const project = (p: Project) => ({
   description: p.description,
   startDate: p.startDate,
   endDate: p.endDate,
+  slots: p.slots,
+  createdAt: p.createdAt,
 });
 
 const review = (r: CompleteReview) => ({

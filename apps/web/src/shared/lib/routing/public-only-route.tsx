@@ -1,10 +1,9 @@
 import {Redirect, Route, RouteProps} from "wouter";
-import {useSelector} from "react-redux";
 
-import {authModel} from "@features/auth";
+import {useCredentials} from "@features/auth";
 
 export const PublicOnlyRoute: React.FC<RouteProps> = (props) => {
-  const isAuthenticated = useSelector(authModel.selectors.isAuthenticated);
+  const [{isAuthenticated}] = useCredentials();
 
   if (isAuthenticated) return <Redirect to="/" />;
 

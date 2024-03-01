@@ -1,3 +1,4 @@
+import {cx} from "class-variance-authority";
 import {forwardRef, useState} from "react";
 
 interface TextareaProps extends React.ComponentProps<"textarea"> {
@@ -19,7 +20,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
           setValue(event.currentTarget.value);
         }}
-        className="w-full h-60 bg-transparent placeholder:text-paper-contrast/40 border border-paper-contrast/40 focus:border-accent rounded-md outline-none p-2 resize-none scrollbar-thin"
+        className={cx(
+          "w-full h-56 bg-transparent text-[#2D2D2E] placeholder:[#D2D1D1] border border-[#D2D1D1] focus:border-accent rounded-md outline-none p-2 resize-none scrollbar-thin",
+          props.className,
+        )}
       />
     );
 

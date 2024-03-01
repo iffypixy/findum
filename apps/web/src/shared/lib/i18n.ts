@@ -3,15 +3,6 @@ import {initReactI18next} from "react-i18next";
 import Backend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-const namespaces = [
-  "common",
-  "home",
-  "sign-up",
-  "sign-in",
-  "project",
-  "profile",
-];
-
 export const langs = ["en", "ru", "kz"];
 
 i18n
@@ -26,11 +17,10 @@ i18n
       escapeValue: false,
     },
     backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json",
+      loadPath: "/locales/{{lng}}/translation.json",
     },
-    ns: namespaces,
     react: {
-      useSuspense: false,
+      useSuspense: true,
     },
     detection: {
       order: ["localStorage"],

@@ -1,10 +1,10 @@
-import {H2} from "@shared/ui";
-import bg from "@shared/assets/block-bg.png";
+import {PropsWithChildren} from "react";
 import {useTranslation} from "react-i18next";
 
-type AuthenticationTemplate = React.PropsWithChildren;
+import {H2} from "@shared/ui";
+import bg from "@shared/assets/block-bg.png";
 
-export const AuthenticationTemplate: React.FC<AuthenticationTemplate> = ({
+export const AuthenticationTemplate: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const {t} = useTranslation();
@@ -18,23 +18,13 @@ export const AuthenticationTemplate: React.FC<AuthenticationTemplate> = ({
         className="w-[50%] h-[100%] flex items-center justify-center bg-main bg-cover bg-center"
       >
         <div className="w-[70%] flex flex-col space-y-20">
-          <div className="flex flex-col space-y-6">
+          <div className="flex flex-col space-y-10">
             <H2 className="text-white whitespace-pre-line">
-              {t("common.auth-title")}
+              {t("common.auth.greeting.title")}
             </H2>
 
-            {/* <p className="text-main-contrast/70 text-white">
-              {t("common.auth-subtitle")}
-            </p> */}
-          </div>
-
-          <div className="flex flex-col space-y-6">
-            <p className="text-white text-sm">
-              MetaOrta является социальной сетью, которая предоставляет
-              возможность людям обьединяться в одну команду для реализации их
-              стартап-идеи. Наша ценность в том, что мы упрощаем и ускоряем
-              процесс командообразования что в следствии влияет позитивно на
-              воспроизводимость их проекта
+            <p className="text-[#9EAFC1]">
+              {t("common.auth.greeting.subtitle")}
             </p>
           </div>
         </div>

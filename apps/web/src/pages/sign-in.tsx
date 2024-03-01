@@ -1,10 +1,9 @@
 import {useForm} from "react-hook-form";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 
 import {Button, Checkbox, H2, TextField, Link} from "@shared/ui";
-import {AuthenticationTemplate, authModel} from "@features/auth";
-import {useDispatch} from "@shared/lib/store";
-import toast from "react-hot-toast";
+import {AuthenticationTemplate} from "@features/auth";
+import {useSignIn} from "@features/auth";
 
 export const SignInPage: React.FC = () => {
   const {t} = useTranslation();
@@ -13,24 +12,26 @@ export const SignInPage: React.FC = () => {
     <AuthenticationTemplate>
       <div className="w-[25rem] flex flex-col space-y-6">
         <div className="flex flex-col space-y-2">
-          <H2>{t("common.sign-in")}</H2>
+          <H2>{t("sign-in.title")}</H2>
 
           <span className="text-paper-contrast/70">
-            {t("common.sign-in-subtitle")}
+            {t("sign-in.subtitle")}
           </span>
         </div>
 
         <SignInForm />
 
-        <div className="flex flex-col text-left">
-          <div className="flex space-x-2">
-            <span className="text-paper-contrast/80">
-              Don't have an account?
-            </span>
-            <Link href="/sign-up">Sign up</Link>
-          </div>
+        <div className="flex flex-col space-y-1 text-left text-[#817C7C]">
+          <span>
+            <Trans
+              i18nKey="sign-in.helpers.sign-up"
+              components={[<Link href="/sign-up" />]}
+            />
+          </span>
 
-          <Link href="/forgot-password">Forgot password</Link>
+          <Link href="/forgot-password">
+            {t("sign-in.helpers.forgot-password")}
+          </Link>
         </div>
       </div>
     </AuthenticationTemplate>
@@ -44,7 +45,7 @@ interface SignInForm {
 }
 
 const SignInForm: React.FC = () => {
-  const dispatch = useDispatch();
+  const {mutate} = useSignIn();
 
   const {t} = useTranslation();
 
@@ -57,16 +58,10 @@ const SignInForm: React.FC = () => {
   });
 
   const onFormSubmit = handleSubmit((form) => {
-    dispatch(
-      authModel.actions.login({email: form.email, password: form.password}),
-    )
-      .unwrap()
-      .then(() => {
-        toast.success("You successfully logged in! :)");
-      })
-      .catch(() => {
-        toast.error("Something's wrong :(");
-      });
+    mutate({
+      email: form.email,
+      password: form.password,
+    });
   });
 
   return (
@@ -90,7 +85,7 @@ const SignInForm: React.FC = () => {
       <div className="flex flex-col space-y-6">
         <Checkbox {...register("remember")} label="Remember me" />
 
-        <Button type="submit">{t("common.sign-in")}</Button>
+        <Button type="submit">{t("sign-in.buttons.sign-in")}</Button>
       </div>
     </form>
   );

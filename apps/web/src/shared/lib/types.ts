@@ -4,8 +4,14 @@ export interface PropsWithClassName {
 
 export type Nullable<T> = T | null;
 
+export type Nullish<T> = T | null | undefined;
+
 export type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Location {
   country: string;
@@ -34,7 +40,7 @@ export interface ProjectCard {
   members: ProjectMember[];
 }
 
-export interface Project {
+export interface BaseProject {
   id: string;
   name: string;
   avatar: string;
@@ -43,22 +49,28 @@ export interface Project {
   endDate?: Date;
   founder: User;
   location: Location;
-  members: ProjectMember[];
-  cards: ProjectCard[];
-  isFounder: boolean;
-  isMember: boolean;
-  chat: Chat;
-  tasks: ProjectTask[];
-  requests: {
-    id: string;
-    member: ProjectMember;
-    user: User;
-  }[];
-  slots: {
-    total: number;
-    occupied: number;
-  };
+  slots: number;
 }
+
+export interface FounderProject extends BaseProject {
+  newRequests: number;
+}
+
+export interface MemberProject extends BaseProject {
+  newTasks: number;
+}
+
+export type Project = FounderProject | MemberProject;
+
+export type SpecificProject = Project & {
+  members: ProjectMember[];
+  requests: ProjectRequest[];
+  tasks: ProjectTask[];
+};
+
+export type ProjectSheet = Project & {
+  members: string[];
+};
 
 export interface ProjectMember {
   id: string;
@@ -68,6 +80,15 @@ export interface ProjectMember {
   benefits: string;
   user: User;
   isOccupied: boolean;
+  cardId: string;
+  createdAt: Date;
+}
+
+export interface ProjectRequest {
+  id: string;
+  member: ProjectMember;
+  user: User;
+  isSeen: boolean;
 }
 
 export interface Review {
@@ -92,6 +113,10 @@ export interface ProjectTask {
   member: ProjectMember;
   priority: TaskPriority;
   status: TaskStatus;
+}
+
+export interface MyProjectTask extends ProjectTask {
+  isSeen: boolean;
 }
 
 export enum TaskStatus {
@@ -136,11 +161,6 @@ export interface ChatMessage {
   createdAt: Date;
 }
 
-export type Fetchable<T> = {
-  data: T;
-  isFetching: boolean;
-};
-
 export interface UserHistory {
   id: string;
   user: User;
@@ -163,3 +183,7 @@ export interface Notification {
   text: string;
   date: Date;
 }
+
+export type Id = string;
+
+export type TODO = any;

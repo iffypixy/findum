@@ -1,22 +1,35 @@
-interface MainTemplateProps extends React.PropsWithChildren {
-  navbar?: React.ReactNode;
-  header?: React.ReactNode;
+import {PropsWithChildren, ReactNode} from "react";
+import {cx} from "class-variance-authority";
+
+import {Container} from "./container";
+
+interface MainTemplateProps extends PropsWithChildren {
+  navbar?: ReactNode;
+  header?: ReactNode;
+  preserveNoScroll?: boolean;
 }
 
 export const MainTemplate: React.FC<MainTemplateProps> = ({
   navbar,
   header,
+  preserveNoScroll,
   children,
 }) => (
-  <div className="w-[100%] h-screen flex">
-    {navbar && <nav>{navbar}</nav>}
+  <div className="w-full h-full flex flex-col">
+    {header && <header>{header}</header>}
 
-    <div className="flex-1 h-[100%] flex flex-col bg-paper overflow-x-hidden">
-      {header && <header>{header}</header>}
+    <div
+      className={cx("w-full h-full bg-paper py-8", {
+        "min-h-[calc(100%-96px)]": preserveNoScroll,
+      })}
+    >
+      <Container>
+        <div className="w-full h-full flex">
+          {navbar && <nav className="w-[13rem] mr-[3rem]">{navbar}</nav>}
 
-      <main className="flex-1 overflow-y-auto overflow-x-hidden py-8">
-        {children}
-      </main>
+          <main className="flex h-full w-[calc(100%-18rem)]">{children}</main>
+        </div>
+      </Container>
     </div>
   </div>
 );

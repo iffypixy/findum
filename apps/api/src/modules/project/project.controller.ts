@@ -20,9 +20,9 @@ import {PrismaService} from "@lib/prisma";
 import {PAYMENT_TYPES, robokassa} from "@lib/robokassa";
 import {SocketService} from "@lib/socket";
 import {NOTIFICATION_EVENTS} from "@lib/notifications";
+import {MAXIMUM_CARD_SLOTS} from "./project.constants";
 
 import * as dtos from "./dtos";
-import {MAXIMUM_CARD_SLOTS} from "./project.constants";
 
 @Controller("projects")
 export class ProjectController {
@@ -44,13 +44,21 @@ export class ProjectController {
 
   @Get("cards/featured")
   async getFeaturedProjectCards() {
+    const currentDate = new Date();
+    const deadline = new Date(new Date().setDate(currentDate.getDate() - 7));
+
     const cards = await this.prisma.projectCard.findMany({
       orderBy: {
         createdAt: "desc",
       },
       where: {
         members: {
-          some: {},
+          some: {
+            isOccupied: false,
+            createdAt: {
+              gte: deadline,
+            },
+          },
         },
       },
       take: 6,
@@ -94,10 +102,17 @@ export class ProjectController {
         where.project.location.country = dto.location.country;
     }
 
+    const currentDate = new Date();
+    const deadline = new Date(new Date().setDate(currentDate.getDate() - 7));
+
     where.members = {
       some: {
         role: {
           contains: dto.role,
+        },
+        isOccupied: false,
+        createdAt: {
+          gte: deadline,
         },
       },
     };
@@ -113,6 +128,7 @@ export class ProjectController {
         members: {
           include: {
             user: true,
+            project: true,
           },
         },
         project: {
@@ -124,13 +140,19 @@ export class ProjectController {
     });
 
     return {
-      cards: cards.map((c) => ({
-        ...mappers.projectCard(c),
-        project: {
-          ...mappers.projectCard(c).project,
-          founder: c.project.founder,
-        },
-      })),
+      cards: cards
+        .map((c) => ({
+          ...c,
+          members: c.members.filter((m) => !m.isOccupied),
+        }))
+        .map((c) => ({
+          ...mappers.projectCard(c),
+          project: {
+            ...mappers.projectCard(c).project,
+            founder: c.project.founder,
+          },
+          members: c.members,
+        })),
     };
   }
 
@@ -152,14 +174,18 @@ export class ProjectController {
           },
           take: 2,
         },
+        founder: true,
       },
     });
 
     return {
       projects: projects.map((p) => ({
         ...mappers.project(p),
+        founder: p.founder,
         requests: p.requests.length,
-        members: p.members.map(mappers.projectMember),
+        members: p.members
+          .filter((m) => m.isOccupied)
+          .map((m) => m.user.avatar),
       })),
     };
   }
@@ -171,6 +197,14 @@ export class ProjectController {
         members: {
           some: {
             userId: session.userId,
+          },
+        },
+      },
+      include: {
+        founder: true,
+        members: {
+          include: {
+            project: true,
           },
         },
       },
@@ -198,6 +232,7 @@ export class ProjectController {
       projects: projects.map((p) => ({
         ...mappers.project(p),
         tasks: tasks[p.id],
+        founder: p.founder,
       })),
     };
   }
@@ -277,11 +312,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(
-        this.socketioService
-          .getSocketsByUserId(member.project.founderId)
-          .map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(member.project.founderId))
       .emit(NOTIFICATION_EVENTS.PROJECT_REQUEST_SENT, {
         project,
         request,
@@ -293,15 +324,31 @@ export class ProjectController {
     @Param("id") id: string,
     @Session() session: SessionWithData,
   ) {
+    const currentDate = new Date();
+    const deadline = new Date(new Date().setDate(currentDate.getDate() - 7));
+
     const project = await this.prisma.project.findFirst({
       where: {
         id,
       },
       include: {
         members: {
+          where: {
+            OR: [
+              {
+                createdAt: {
+                  gte: deadline,
+                },
+              },
+              {
+                isOccupied: true,
+              },
+            ],
+          },
           include: {
             user: true,
             card: true,
+            project: true,
           },
         },
         cards: {
@@ -343,9 +390,15 @@ export class ProjectController {
     const isFounder = session.userId === project.founder.id;
 
     if (isFounder) {
+      const currentDate = new Date();
+      const deadline = new Date(new Date().setDate(currentDate.getDate() - 12));
+
       const requests = await this.prisma.projectRequest.findMany({
         where: {
           projectId: project.id,
+          createdAt: {
+            gte: deadline,
+          },
         },
         include: {
           user: true,
@@ -381,10 +434,7 @@ export class ProjectController {
           tasks,
           isFounder: true,
           chat,
-          slots: {
-            total: slotsInTotal,
-            occupied: slotsOccupied,
-          },
+          slots: project.slots,
         },
       };
     }
@@ -705,10 +755,9 @@ export class ProjectController {
     };
   }
 
-  @Post(":projectId/cards/:cardId/members")
+  @Post(":projectId/members")
   async createMember(
     @Param("projectId") projectId: string,
-    @Param("cardId") cardId: string,
     @Session() session: SessionWithData,
     @Body() dto: dtos.CreateMemberDto,
   ) {
@@ -723,42 +772,95 @@ export class ProjectController {
     const isFounder = project.founderId === session.userId;
 
     if (!isFounder)
-      throw new BadRequestException("You can't add slots to this card");
+      throw new BadRequestException("You can't add members to this project");
 
-    const card = await this.prisma.projectCard.findFirst({
+    const cards = await this.prisma.projectCard.findMany({
       where: {
-        id: cardId,
         projectId: project.id,
       },
     });
 
-    if (!card) throw new NotFoundException("Project card not found");
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
 
-    const members = await this.prisma.projectMember.count({
-      where: {
+      const count = await this.prisma.projectMember.count({
+        where: {
+          projectId: project.id,
+          cardId: card.id,
+        },
+      });
+
+      if (card.slots > count) {
+        const member = await this.prisma.projectMember.create({
+          data: {
+            cardId: card.id,
+            role: dto.role,
+            requirements: dto.requirements,
+            benefits: dto.benefits,
+            isOccupied: false,
+            projectId: project.id,
+          },
+        });
+
+        await this.prisma.project.update({
+          where: {
+            id: project.id,
+          },
+          data: {
+            slots: {
+              decrement: 1,
+            },
+          },
+        });
+
+        return {member};
+      }
+    }
+
+    const card = await this.prisma.projectCard.create({
+      data: {
+        slots: 4,
         projectId: project.id,
-        cardId: card.id,
       },
     });
-
-    const slotAvailable = card.slots > members;
-
-    if (!slotAvailable)
-      throw new BadRequestException(
-        "You have no slots available in this project card",
-      );
 
     const member = await this.prisma.projectMember.create({
       data: {
+        cardId: card.id,
         role: dto.role,
         requirements: dto.requirements,
         benefits: dto.benefits,
-        cardId: card.id,
-        projectId: project.id,
         isOccupied: false,
-        userId: null,
+        projectId: project.id,
       },
     });
+
+    await this.prisma.project.update({
+      where: {
+        id: project.id,
+      },
+      data: {
+        slots: {
+          decrement: 1,
+        },
+      },
+    });
+
+    // const currentDate = new Date();
+
+    // const deadline = new Date().setDate(currentDate.getDate() + 7);
+
+    // schedule.scheduleJob(deadline, async () => {
+    //   const projectMember = await this.prisma.projectMember.findFirst({
+    //     where: {
+    //       id: member.id,
+    //     },
+    //   });
+
+    //   if (!projectMember.isOccupied) {
+
+    //   }
+    // });
 
     return {
       member,
@@ -807,6 +909,9 @@ export class ProjectController {
         userId: request.userId,
         isOccupied: true,
       },
+      include: {
+        user: true,
+      },
     });
 
     await this.prisma.projectRequest.deleteMany({
@@ -815,8 +920,6 @@ export class ProjectController {
         memberId: request.memberId,
       },
     });
-
-    console.log(request, request.userId);
 
     await this.prisma.userHistory.create({
       data: {
@@ -828,11 +931,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(
-        this.socketioService
-          .getSocketsByUserId(request.userId)
-          .map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(request.userId))
       .emit(NOTIFICATION_EVENTS.REQUEST_ACCEPTED, {
         project,
       });
@@ -842,7 +941,7 @@ export class ProjectController {
     };
   }
 
-  @Delete(":projectId/requests/:requestId/decline")
+  @Delete(":projectId/requests/:requestId/reject")
   async declineProjectRequest(
     @Param("projectId") projectId: string,
     @Param("requestId") requestId: string,
@@ -881,7 +980,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(this.socketioService.getSocketsByUserId(userId).map((s) => s.id))
+      .to(this.socketioService.getSocketIds(userId))
       .emit(NOTIFICATION_EVENTS.REQUEST_DECLINED, {
         project,
       });
@@ -959,11 +1058,7 @@ export class ProjectController {
     // });
 
     this.ws.server
-      .to(
-        this.socketioService
-          .getSocketsByUserId(members[0].userId)
-          .map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(members[0].userId))
       .emit(NOTIFICATION_EVENTS.KICKED_FROM_PROJECT, {
         project,
       });
@@ -1007,9 +1102,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(
-        this.socketioService.getSocketsByUserId(member.userId).map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(member.userId))
       .emit(NOTIFICATION_EVENTS.REVIEW_GIVEN, {
         review,
       });
@@ -1067,9 +1160,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(
-        this.socketioService.getSocketsByUserId(member.userId).map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(member.userId))
       .emit(NOTIFICATION_EVENTS.TASK_ASSIGNED, {project});
 
     return {
@@ -1114,11 +1205,7 @@ export class ProjectController {
     });
 
     this.ws.server
-      .to(
-        this.socketioService
-          .getSocketsByUserId(task.member.userId)
-          .map((s) => s.id),
-      )
+      .to(this.socketioService.getSocketIds(task.member.userId))
       .emit(NOTIFICATION_EVENTS.TASK_ACCEPTED, {
         task,
       });

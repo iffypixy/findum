@@ -1,2 +1,2 @@
-export {MyProjectCard, ProjectCard} from "./ui";
-export {model as projectsModel} from "./model";
+export {MyProjectSheet, ProjectCard, ProjectMemberCard} from "./ui";
+export * from "./queries";

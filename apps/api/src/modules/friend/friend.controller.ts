@@ -112,7 +112,7 @@ export class FriendController {
     }
 
     this.ws.server
-      .to(this.ws.getSocketsByUserId(recipient.id).map((s) => s.id))
+      .to(this.ws.getSocketIds(recipient.id))
       .emit("friend-request-sent", {
         user: session.user,
       });
@@ -170,7 +170,7 @@ export class FriendController {
     });
 
     this.ws.server
-      .to(this.ws.getSocketsByUserId(sender.id).map((s) => s.id))
+      .to(this.ws.getSocketIds(sender.id))
       .emit("friend-request-accepted", {
         user: session.user,
       });
@@ -228,7 +228,7 @@ export class FriendController {
     });
 
     this.ws.server
-      .to(this.ws.getSocketsByUserId(sender.id).map((s) => s.id))
+      .to(this.ws.getSocketIds(sender.id))
       .emit("friend-request-rejected", {
         user: session.user,
       });
@@ -282,11 +282,9 @@ export class FriendController {
       },
     });
 
-    this.ws.server
-      .to(this.ws.getSocketsByUserId(friend.id).map((s) => s.id))
-      .emit("friend-removed", {
-        user: session.user,
-      });
+    this.ws.server.to(this.ws.getSocketIds(friend.id)).emit("friend-removed", {
+      user: session.user,
+    });
 
     return {
       relationship: mappers.relationship({

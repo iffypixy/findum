@@ -1,11 +1,14 @@
-import {request} from "@shared/lib/request";
+import {GenericDto, request} from "@shared/lib/request";
 import {
+  Id,
   Location,
   Project,
   ProjectCard,
   ProjectMember,
+  ProjectSheet,
   ProjectTask,
   Review,
+  SpecificProject,
   TaskPriority,
   TaskStatus,
 } from "@shared/lib/types";
@@ -19,25 +22,25 @@ export const getFeaturedProjectCards = () =>
     url: "/api/projects/cards/featured",
   });
 
-export interface GetCardsParams {
-  limit: number;
-  page: number;
-  location?: Partial<Location>;
-  role?: string;
-}
+export type GetCardsDto = GenericDto<
+  {
+    limit: number;
+    page: number;
+    search: string;
+  },
+  {
+    cards: ProjectCard[];
+  }
+>;
 
-export interface GetCardsResponse {
-  cards: ProjectCard[];
-}
-
-export const getCards = (params: GetCardsParams) =>
-  request<GetCardsResponse>({
+export const getCards = (req: GetCardsDto["req"]) =>
+  request<GetCardsDto["res"]>({
     url: "/api/projects/cards",
-    params,
+    params: req,
   });
 
 export interface GetProjectsAsFounderResponse {
-  projects: Project[];
+  projects: ProjectSheet[];
 }
 
 export const getProjectsAsFounder = () =>
@@ -46,7 +49,7 @@ export const getProjectsAsFounder = () =>
   });
 
 export interface GetProjectsAsMemberResponse {
-  projects: Project[];
+  projects: ProjectSheet[];
 }
 
 export const getProjectsAsMember = () =>
@@ -54,72 +57,76 @@ export const getProjectsAsMember = () =>
     url: "/api/projects/member",
   });
 
-export interface SendProjectRequestParams {
-  projectId: string;
-  cardId: string;
-  memberId: string;
-}
+export type SendProjectRequestDto = GenericDto<
+  {
+    projectId: string;
+    cardId: string;
+    memberId: string;
+  },
+  void
+>;
 
-export type SendProjectRequestResponse = void;
-
-export const sendProjectRequest = (params: SendProjectRequestParams) =>
-  request<SendProjectRequestResponse>({
-    url: `/api/projects/${params.projectId}/cards/${params.cardId}/members/${params.memberId}/requests`,
+export const sendProjectRequest = (req: SendProjectRequestDto["req"]) =>
+  request<SendProjectRequestDto["res"]>({
+    url: `/api/projects/${req.projectId}/cards/${req.cardId}/members/${req.memberId}/requests`,
     method: "POST",
   });
 
-export interface GetProjectParams {
-  id: string;
-}
+export type GetProjectDto = GenericDto<
+  {
+    id: Id;
+  },
+  {
+    project: SpecificProject;
+  }
+>;
 
-export interface GetProjectResponse {
-  project: Project;
-}
-
-export const getProject = (params: GetProjectParams) =>
-  request<GetProjectResponse>({
-    url: `/api/projects/${params.id}`,
+export const getProject = (req: GetProjectDto["req"]) =>
+  request<GetProjectDto["res"]>({
+    url: `/api/projects/${req.id}`,
   });
 
-export interface CreateProjectParams {
-  name: string;
-  avatar?: string;
-  description: string;
-  startDate: Date;
-  endDate?: Date;
-  location: Location;
-}
+export type CreateProjectDto = GenericDto<
+  {
+    name: string;
+    avatar?: string;
+    description: string;
+    startDate: Date;
+    endDate?: Date;
+    location: Location;
+  },
+  {
+    project: Project;
+  }
+>;
 
-export interface CreateProjectResponse {
-  project: Project;
-}
-
-export const createProject = (params: CreateProjectParams) =>
-  request<CreateProjectResponse>({
+export const createProject = (req: CreateProjectDto["req"]) =>
+  request<CreateProjectDto["res"]>({
     url: "/api/projects",
     method: "POST",
-    data: params,
+    data: req,
   });
 
-export interface EditProjectParams {
-  id: string;
-  name?: string;
-  description?: string;
-  startDate?: Date;
-  endDate?: Date;
-  avatar?: string;
-  location?: Partial<Location>;
-}
+export type EditProjectDto = GenericDto<
+  {
+    id: string;
+    name?: string;
+    description?: string;
+    startDate?: Date;
+    endDate?: Date;
+    avatar?: string;
+    location?: Partial<Location>;
+  },
+  {
+    project: Project;
+  }
+>;
 
-export interface EditProjectResponse {
-  project: Project;
-}
-
-export const editProject = (params: EditProjectParams) =>
-  request<EditProjectResponse>({
-    url: `/api/projects/${params.id}/edit`,
+export const editProject = (req: EditProjectDto["req"]) =>
+  request<EditProjectDto["res"]>({
+    url: `/api/projects/${req.id}/edit`,
     method: "PUT",
-    data: params,
+    data: req,
   });
 
 export interface CreateProjectCardParams {
@@ -157,67 +164,65 @@ export const addCardSlots = (params: AddCardSlotsParams) =>
     },
   });
 
-export interface CreateProjectMemberParams {
-  projectId: string;
-  cardId: string;
-  role: string;
-  requirements: string;
-  benefits: string;
-}
+export type CreateProjectMemberDto = GenericDto<
+  {
+    projectId: Id;
+    role: string;
+    requirements: string;
+    benefits: string;
+  },
+  {
+    member: ProjectMember;
+  }
+>;
 
-export interface CreateProjectMemberResponse {
-  member: ProjectMember;
-}
-
-export const createProjectMember = (params: CreateProjectMemberParams) =>
-  request<CreateProjectMemberResponse>({
-    url: `/api/projects/${params.projectId}/cards/${params.cardId}/members`,
+export const createProjectMember = (req: CreateProjectMemberDto["req"]) =>
+  request<CreateProjectMemberDto["res"]>({
+    url: `/api/projects/${req.projectId}/members`,
     method: "POST",
     data: {
-      role: params.role,
-      requirements: params.requirements,
-      benefits: params.benefits,
+      role: req.role,
+      requirements: req.requirements,
+      benefits: req.benefits,
     },
   });
 
-export interface AcceptProjectRequestParams {
-  projectId: string;
-  requestId: string;
-}
+export type AcceptProjectRequestDto = GenericDto<
+  {projectId: Id; requestId: Id},
+  {member: ProjectMember}
+>;
 
-export interface AcceptProjectRequestResponse {
-  member: ProjectMember;
-}
-
-export const acceptProjectRequest = (params: AcceptProjectRequestParams) =>
-  request<AcceptProjectRequestResponse>({
-    url: `/api/projects/${params.projectId}/requests/${params.requestId}/accept`,
+export const acceptProjectRequest = (req: AcceptProjectRequestDto["req"]) =>
+  request<AcceptProjectRequestDto["res"]>({
+    url: `/api/projects/${req.projectId}/requests/${req.requestId}/accept`,
     method: "POST",
   });
 
-export interface DeclineProjectRequestParams {
-  projectId: string;
-  requestId: string;
-}
+export type RejectProjectRequestDto = GenericDto<
+  {
+    projectId: Id;
+    requestId: Id;
+  },
+  void
+>;
 
-export type DeclineProjectRequestResponse = void;
-
-export const declineProjectRequest = (params: DeclineProjectRequestParams) =>
-  request<DeclineProjectRequestResponse>({
-    url: `/api/projects/${params.projectId}/requests/${params.requestId}/decline`,
+export const rejectProjectRequest = (req: RejectProjectRequestDto["req"]) =>
+  request<RejectProjectRequestDto["res"]>({
+    url: `/api/projects/${req.projectId}/requests/${req.requestId}/reject`,
     method: "DELETE",
   });
 
-export interface RemoveProjectMemberParams {
-  projectId: string;
-  memberId: string;
-}
+export type RemoveProjectMemberDto = GenericDto<
+  {
+    projectId: Id;
+    memberId: Id;
+  },
+  void
+>;
 
-export type RemoveProjectMemberResponse = void;
-
-export const removeProjectMember = (params: RemoveProjectMemberParams) =>
-  request<RemoveProjectMemberResponse>({
-    url: `/api/projects/${params.projectId}/members/${params.memberId}`,
+export const removeProjectMember = (req: RemoveProjectMemberDto["req"]) =>
+  request<RemoveProjectMemberDto["res"]>({
+    url: `/api/projects/${req.projectId}/members/${req.memberId}`,
     method: "DELETE",
   });
 
@@ -232,72 +237,87 @@ export interface LeaveFeedbackResponse {
   review: Review;
 }
 
-export const leaveFeedback = (params: LeaveFeedbackParams) =>
-  request<LeaveFeedbackResponse>({
-    url: `/api/projects/${params.projectId}/members/${params.memberId}/reviews`,
+export type LeaveFeedbackDto = GenericDto<
+  {
+    projectId: Id;
+    memberId: Id;
+    like: boolean;
+    description: string;
+  },
+  {
+    review: Review;
+  }
+>;
+
+export const leaveFeedback = (req: LeaveFeedbackDto["req"]) =>
+  request<LeaveFeedbackDto["res"]>({
+    url: `/api/projects/${req.projectId}/members/${req.memberId}/reviews`,
     method: "POST",
     data: {
-      like: params.like,
-      description: params.description,
+      like: req.like,
+      description: req.description,
     },
   });
 
-export interface CreateProjectTaskParams {
-  projectId: string;
-  memberId: string;
-  title: string;
-  description: string;
-  deadline: Date;
-  priority: TaskPriority;
-}
+export type CreateProjectTaskDto = GenericDto<
+  {
+    projectId: Id;
+    memberId: Id;
+    title: string;
+    description: string;
+    deadline: Date;
+    priority: TaskPriority;
+  },
+  {
+    task: ProjectTask;
+  }
+>;
 
-export interface CreateProjectTaskResponse {
-  task: ProjectTask;
-}
-
-export const createProjectTask = (params: CreateProjectTaskParams) =>
-  request<CreateProjectTaskResponse>({
-    url: `/api/projects/${params.projectId}/members/${params.memberId}/tasks`,
+export const createProjectTask = (req: CreateProjectTaskDto["req"]) =>
+  request<CreateProjectTaskDto["res"]>({
+    url: `/api/projects/${req.projectId}/members/${req.memberId}/tasks`,
     method: "POST",
     data: {
-      title: params.title,
-      description: params.description,
-      deadline: params.deadline,
-      priority: params.priority,
+      title: req.title,
+      description: req.description,
+      deadline: req.deadline,
+      priority: req.priority,
     },
   });
 
-export interface AcceptProjectTaskParams {
-  projectId: string;
-  taskId: string;
-}
+export type AcceptProjectTaskDto = GenericDto<
+  {
+    projectId: Id;
+    taskId: Id;
+  },
+  void
+>;
 
-export type AcceptProjectTaskResponse = void;
-
-export const acceptProjectTask = (params: AcceptProjectTaskParams) =>
-  request<AcceptProjectTaskResponse>({
-    url: `/api/projects/${params.projectId}/tasks/${params.taskId}`,
+export const acceptProjectTask = (req: AcceptProjectTaskDto["req"]) =>
+  request<AcceptProjectTaskDto["res"]>({
+    url: `/api/projects/${req.projectId}/tasks/${req.taskId}`,
     method: "DELETE",
   });
 
-export interface ChangeProjectTaskStatusParams {
-  projectId: string;
-  taskId: string;
-  status: TaskStatus;
-}
-
-export interface ChangeProjectTaskStatusResponse {
-  task: ProjectTask;
-}
+export type ChangeProjectTaskStatusDto = GenericDto<
+  {
+    projectId: Id;
+    taskId: Id;
+    status: TaskStatus;
+  },
+  {
+    task: ProjectTask;
+  }
+>;
 
 export const changeProjectTaskStatus = (
-  params: ChangeProjectTaskStatusParams,
+  req: ChangeProjectTaskStatusDto["req"],
 ) =>
-  request<ChangeProjectTaskStatusResponse>({
-    url: `/api/projects/${params.projectId}/tasks/${params.taskId}`,
+  request<ChangeProjectTaskStatusDto["res"]>({
+    url: `/api/projects/${req.projectId}/tasks/${req.taskId}`,
     method: "PUT",
     data: {
-      status: params.status,
+      status: req.status,
     },
   });
 
@@ -312,14 +332,15 @@ export const getTotalNumberOfProjects = () =>
     url: "/api/projects/total",
   });
 
-export interface LeaveProjectParams {
-  id: string;
-}
+export type LeaveProjectDto = GenericDto<
+  {
+    id: Id;
+  },
+  void
+>;
 
-export type LeaveProjectResponse = void;
-
-export const leaveProject = (params: LeaveProjectParams) =>
-  request<LeaveProjectResponse>({
-    url: `/api/projects/${params.id}/leave`,
+export const leaveProject = (req: LeaveProjectDto["req"]) =>
+  request<LeaveProjectDto["res"]>({
+    url: `/api/projects/${req.id}/leave`,
     method: "DELETE",
   });

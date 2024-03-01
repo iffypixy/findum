@@ -5,127 +5,110 @@ import {twMerge} from "tailwind-merge";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {useTranslation} from "react-i18next";
+import {Trans, useTranslation} from "react-i18next";
 
+import {useSignUp, AuthenticationTemplate} from "@features/auth";
 import {Button, H2, TextField, Select, Link, H3} from "@shared/ui";
 import {countries} from "@shared/lib/location";
-import {AuthenticationTemplate, authModel} from "@features/auth";
-import {useDispatch} from "@shared/lib/store";
 import {Location} from "@shared/lib/types";
-import toast from "react-hot-toast";
 
 interface SignUpForm {
-  stage1: Stage1Form;
-  stage2: Stage2Form;
+  step1: Step1Form;
+  step2: Step2Form;
 }
 
 export const SignUpPage: React.FC = () => {
-  const dispatch = useDispatch();
+  const {t} = useTranslation();
 
-  const [stage, setStage] = useState(0);
+  const {signUp, isSuccess} = useSignUp();
+
+  const [step, setStep] = useState(0);
   const [form, setForm] = useState<Partial<SignUpForm>>({});
 
-  const [signedUp, setSignedUp] = useState(false);
+  const signedUp = isSuccess;
 
-  const {t} = useTranslation();
+  if (signedUp) return <SignUpConfirmation />;
+
+  const TOTAL_STEPS = 2;
+
+  const step1Form = (
+    <Step1Form
+      onConfirm={(data) => {
+        setStep(step + 1);
+
+        setForm({...form, step1: data});
+      }}
+    />
+  );
+
+  const step2Form = (
+    <Step2Form
+      onConfirm={(data) => {
+        const step1 = form.step1!;
+
+        signUp({
+          email: data.email,
+          password: data.password1,
+          firstName: step1.firstName,
+          lastName: step1.lastName,
+          location: step1.location,
+        });
+      }}
+    />
+  );
+
+  const currentForm = [step1Form, step2Form][step];
 
   return (
     <AuthenticationTemplate>
-      {signedUp ? (
-        <SignUpConfirmation />
-      ) : (
-        <div className="w-[25rem] flex flex-col space-y-6">
-          <div className="flex flex-col space-y-2">
-            <H2>{t("common.sign-up")}</H2>
+      <div className="w-[25rem] flex flex-col space-y-6">
+        <div className="flex flex-col space-y-2">
+          <H2 className="text-[#112042]">{t("sign-up.title")}</H2>
 
-            <span className="text-paper-contrast/70">
-              {t("common.sign-up-subtitle")}
-            </span>
-          </div>
-
-          <div className="flex">
-            <span
-              className={twMerge(
-                cx(
-                  "inline-flex justify-center w-[50%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
-                  {
-                    "text-main border-main": stage === 0,
-                  },
-                ),
-              )}
-            >
-              Step 1
-            </span>
-
-            <span
-              className={twMerge(
-                cx(
-                  "inline-flex justify-center w-[50%] py-[2%] border-b-2 text-main/30 text-lg font-semibold border-main/30",
-                  {
-                    "text-main border-main": stage === 1,
-                  },
-                ),
-              )}
-            >
-              Step 2
-            </span>
-          </div>
-
-          {stage === 0 ? (
-            <Stage1
-              onSubmit={(data) => {
-                setStage(1);
-
-                setForm({...form, stage1: data});
-              }}
-            />
-          ) : stage === 1 ? (
-            <Stage2
-              onSubmit={(data) => {
-                setStage(2);
-
-                dispatch(
-                  authModel.actions.register({
-                    email: data.email,
-                    firstName: form.stage1!.firstName,
-                    lastName: form.stage1!.lastName,
-                    location: form.stage1!.location,
-                    password: data.password1,
-                  }),
-                )
-                  .unwrap()
-                  .then(() => {
-                    setSignedUp(true);
-                  })
-                  .catch(() => {
-                    toast.error("Something's wrong :(");
-                  });
-              }}
-            />
-          ) : null}
-
-          <div className="flex space-x-1">
-            <span>Do you already have an account?</span>
-            <Link href="/sign-in">Sign in</Link>
-          </div>
+          <span className="text-[#817C7C]">{t("sign-up.subtitle")}</span>
         </div>
-      )}
+
+        <div className="flex">
+          {Array.from({length: TOTAL_STEPS}).map((_, idx) => (
+            <div
+              key={idx}
+              style={{
+                width: `${100 / TOTAL_STEPS}%`,
+              }}
+              className={twMerge(
+                cx(
+                  "flex items-center justify-center border-b-2 border-current py-2",
+                  {
+                    "text-[#112042]": step === idx,
+                    "text-[#E9E4E4]": step !== idx,
+                  },
+                ),
+              )}
+            >
+              <span className="text-current text-lg font-semibold">
+                {t("common.step")} {idx + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {currentForm}
+
+        <div className="flex space-x-1">
+          <span className="text-[#817C7C]">
+            <Trans
+              i18nKey="sign-up.helpers.sign-in"
+              components={[<Link href="/sign-in" />]}
+            />
+          </span>
+        </div>
+      </div>
     </AuthenticationTemplate>
   );
 };
 
-type InterimFormProps<T> = {
-  onSubmit: (form: T) => void;
-};
-
-interface Stage1Form {
-  firstName: string;
-  lastName: string;
-  location: Location;
-}
-
-const validationSchemas = {
-  stage1: z.object({
+const schema = {
+  step1: z.object({
     firstName: z.string().min(2).max(64),
     lastName: z.string().min(2).max(64),
     location: z.object({
@@ -133,7 +116,7 @@ const validationSchemas = {
       city: z.string().min(2).max(64),
     }),
   }),
-  stage2: z
+  step2: z
     .object({
       email: z.string().email(),
       password1: z.string().min(8).max(256),
@@ -143,45 +126,47 @@ const validationSchemas = {
       message: "Passwords do not match",
       path: ["password2"],
     }),
-  // stage3: z.object({
-  //   role1: z.string().min(1).max(64),
-  //   role2: z.string().min(1).max(64),
-  //   role3: z.string().min(1).max(64),
-  //   cv: z.instanceof(File),
-  // }),
 };
 
-const Stage1: React.FC<InterimFormProps<Stage1Form>> = (props) => {
+interface InterimFormProps<T> {
+  onConfirm: (form: T) => void;
+}
+
+interface Step1Form {
+  firstName: string;
+  lastName: string;
+  location: Location;
+}
+
+const Step1Form: React.FC<InterimFormProps<Step1Form>> = (props) => {
   const {
     handleSubmit,
     register,
     control,
     formState: {isValid},
-  } = useForm<Stage1Form>({
+  } = useForm<Step1Form>({
     mode: "onChange",
-    resolver: zodResolver(validationSchemas.stage1),
+    resolver: zodResolver(schema.step1),
   });
+
+  const {t} = useTranslation();
 
   return (
     <form
-      onSubmit={handleSubmit((form) => {
-        if (isValid) {
-          props.onSubmit(form);
-        }
-      })}
+      onSubmit={handleSubmit(props.onConfirm)}
       className="flex flex-col space-y-4"
     >
       <div>
         <TextField
-          label="First name"
-          placeholder="First name"
+          label={t("common.fields.first-name")}
+          placeholder={t("sign-up.placeholders.first-name")}
           type="text"
           {...register("firstName")}
         />
 
         <TextField
-          label="Last name"
-          placeholder="Last name"
+          label={t("common.fields.last-name")}
+          placeholder={t("sign-up.placeholders.last-name")}
           type="text"
           {...register("lastName")}
         />
@@ -189,23 +174,27 @@ const Stage1: React.FC<InterimFormProps<Stage1Form>> = (props) => {
         <Controller
           name="location.country"
           control={control}
-          render={({field}) => (
+          render={({field: {name, onChange, value, disabled}}) => (
             <Select.Root
-              placeholder="Select country"
-              label="Country"
-              onValueChange={field.onChange}
-              {...field}
+              name={name}
+              value={value}
+              placeholder={t("sign-up.placeholders.country")}
+              label={t("common.fields.country")}
+              onValueChange={onChange}
+              disabled={disabled}
             >
               {countries.map((country) => (
-                <Select.Item value={country}>{country}</Select.Item>
+                <Select.Item key={country} value={country}>
+                  {country}
+                </Select.Item>
               ))}
             </Select.Root>
           )}
         />
 
         <TextField
-          label="City"
-          placeholder="Select city"
+          label={t("common.fields.city")}
+          placeholder={t("sign-up.placeholders.city")}
           type="text"
           {...register("location.city")}
         />
@@ -218,20 +207,20 @@ const Stage1: React.FC<InterimFormProps<Stage1Form>> = (props) => {
   );
 };
 
-interface Stage2Form {
+interface Step2Form {
   email: string;
   password1: string;
   password2: string;
 }
 
-const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
+const Step2Form: React.FC<InterimFormProps<Step2Form>> = (props) => {
   const {
     handleSubmit,
     register,
     formState: {isValid},
-  } = useForm<Stage2Form>({
+  } = useForm<Step2Form>({
     mode: "onChange",
-    resolver: zodResolver(validationSchemas.stage2),
+    resolver: zodResolver(schema.step2),
   });
 
   const [showPassword, setShowPassword] = useState({
@@ -241,9 +230,7 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
 
   return (
     <form
-      onSubmit={handleSubmit((form) => {
-        if (isValid) props.onSubmit(form);
-      })}
+      onSubmit={handleSubmit(props.onConfirm)}
       className="flex flex-col space-y-4"
     >
       <div>
@@ -310,88 +297,19 @@ const Stage2: React.FC<InterimFormProps<Stage2Form>> = (props) => {
   );
 };
 
-// interface Stage3Form {
-//   role1: string;
-//   role2: string;
-//   role3: string;
-//   cv: File;
-// }
-
-// const Stage3: React.FC<InterimFormProps<Stage3Form>> = (props) => {
-//   const {
-//     handleSubmit,
-//     register,
-//     control,
-//     formState: {isValid},
-//   } = useForm<Stage3Form>({
-//     mode: "onChange",
-//     resolver: zodResolver(validationSchemas.stage3),
-//   });
-
-//   return (
-//     <form
-//       onSubmit={handleSubmit((form) => {
-//         if (isValid) {
-//           props.onSubmit(form);
-//         }
-//       })}
-//       className="flex flex-col space-y-4"
-//     >
-//       <div>
-//         <TextField
-//           {...register("role1")}
-//           label="1st role"
-//           placeholder="1st role"
-//           type="text"
-//         />
-
-//         <TextField
-//           {...register("role2")}
-//           label="2nd role"
-//           placeholder="2nd role"
-//           type="text"
-//         />
-
-//         <TextField
-//           {...register("role3")}
-//           label="3rd role"
-//           placeholder="3rd role"
-//           type="text"
-//         />
-
-//         <Controller
-//           name="cv"
-//           control={control}
-//           render={({field}) => (
-//             <UploadField
-//               {...field}
-//               value={undefined}
-//               label="CV (.pdf)"
-//               placeholder="cv.pdf"
-//               onChange={(event) => {
-//                 field.onChange(event.target.files![0]);
-//               }}
-//             />
-//           )}
-//         />
-//       </div>
-
-//       <Button type="submit" disabled={!isValid}>
-//         Sign up
-//       </Button>
-//     </form>
-//   );
-// };
-
 const SignUpConfirmation: React.FC = () => {
+  const {t} = useTranslation();
+
   return (
-    <div className="flex flex-col space-y-8">
-      <div className="flex flex-col space-y-2">
-        <H3>Thank you for signing up!</H3>
-        <span className="text-paper-contrast/60 text-lg">
-          Check your mailbox
-        </span>
+    <AuthenticationTemplate>
+      <div className="flex flex-col space-y-8">
+        <div className="flex flex-col space-y-2">
+          <H3>{t("sign-up.success.title")}</H3>
+          <span className="text-paper-contrast/60 text-lg">
+            {t("sign-up.success.subtitle")}
+          </span>
+        </div>
       </div>
-    </div>
+    </AuthenticationTemplate>
   );
 };

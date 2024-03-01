@@ -1,0 +1,387 @@
+{
+  "chats": {
+    "private": {
+      "title": "Private"
+    },
+    "project": {
+      "title": "Project chats",
+      "member-count_other": "{{count}} people",
+      "member-count_one": "{{count}} person"
+    }
+  },
+  "common": {
+    "auth": {
+      "greeting": {
+        "title": "Welcome to\nour community",
+        "subtitle": "MetaOrta helps developers to build organized and well coded dashboards full of beautiful and rich modules. Join us and start\nbuilding your application today."
+      }
+    },
+    "fields": {
+      "email": "Email",
+      "email-address": "Email address",
+      "password": "Password",
+      "password-confirmation": "Confirm password",
+      "first-name": "First name",
+      "last-name": "Last name",
+      "country": "Country",
+      "city": "City",
+      "location": "Location",
+      "current-password": "Current password",
+      "new-password": "New password",
+      "new-password-confirmation": "Confirm new password",
+      "start-day": "Start day",
+      "end-day": "End day",
+      "name": "Name",
+      "description": "Description"
+    },
+    "next": "Next",
+    "back": "Back",
+    "home": "Home",
+    "send": "Send",
+    "messages": "Messages",
+    "friends": "Friends",
+    "projects": "Projects",
+    "settings": "Settings",
+    "faq": "FAQ",
+    "log-out": "Log out",
+    "show-all": "Show all",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "crop": "Crop",
+    "expand": "Expand",
+    "align": "Align",
+    "download": "Download",
+    "founder": "Founder",
+    "go-to-chat": "Go to chat",
+    "country": "Country",
+    "city": "City",
+    "step": "Step",
+    "confirm": "Confirm",
+    "benefits": "Benefits",
+    "requirements": "Requirements",
+    "logout": "Logout",
+    "coming-soon": "Coming soon...",
+    "overview": "Overview",
+    "not-found": "not found",
+    "modals": {
+      "edit-avatar": {
+        "title": "Edit profile photo",
+        "buttons": {
+          "save": "Save changes",
+          "upload-photo": "Upload photo",
+          "take-photo": "Take a photo"
+        }
+      },
+      "update-password": {
+        "title": "Update your password",
+        "subtitle": "Enter current and new password",
+        "buttons": {
+          "save": "Save changes"
+        }
+      }
+    },
+    "quotes": {
+      "#1": {
+        "text": "Ideas don’t come out fully formed. They only become clear as you work on them. You just have to get started.",
+        "author": "Mark Zuckerberg"
+      }
+    },
+    "toasts": {
+      "sent-project-request": "Project request is successfully sent! :)",
+      "something-went-wrong": "Something went wrong. :("
+    }
+  },
+  "create-project": {
+    "title": "Create project",
+    "subtitle": "Build up your team to realize startup project",
+    "cards": {
+      "title": "Cards ({{cards}}/{{total}})",
+      "subtitle": "You may create up to 4 cards in one project"
+    },
+    "buttons": {
+      "create-card": "Create card",
+      "create-project": "Create project",
+      "add-person": "Add person"
+    },
+    "modals": {
+      "create-card": {
+        "title": "Create card",
+        "helpers": {
+          "card-label_ordinal_one": "Creating {{count}}st card",
+          "card-label_ordinal_two": "Creating {{count}}nd card",
+          "card-label_ordinal_few": "Creating {{count}}rd card",
+          "card-label_ordinal_other": "Creating {{count}}th card",
+          "member-count_one": "{{count}} member",
+          "member-count_other": "{{count}} members"
+        }
+      },
+      "add-person": {
+        "title": "Add person",
+        "subtitle": "Please, be sure! You have only one chance to apply a new specialist 😉",
+        "fields": {
+          "specialist": "Specialist",
+          "requirements": "Requirements",
+          "benefits": "Benefits for member"
+        }
+      },
+      "add-slot": {
+        "title": "Add new person",
+        "helpers": {
+          "member-count_one": "{{count}} member",
+          "member-count_other": "{{count}} members"
+        },
+        "buttons": {
+          "to-payment": "To payment"
+        }
+      }
+    }
+  },
+  "faq": {
+    "document#1": {
+      "title": "Document #1",
+      "subtitle": "Hides email, location"
+    },
+    "document#2": {
+      "title": "Document #2",
+      "subtitle": "Hides email, location"
+    }
+  },
+  "forgot-password": {
+    "title": "Forgot password?",
+    "subtitle": "No worries, we'll send you reset instruction",
+    "buttons": {
+      "reset": "Reset password"
+    },
+    "helper": {
+      "sign-up": "Don't have an account? <0>Sign up</0>"
+    }
+  },
+  "friends": {
+    "labels": {
+      "delete-friend": "You want to delete a friend?"
+    },
+    "tabs": {
+      "my-friends": "My friends",
+      "incoming-requests": "Incoming requests"
+    },
+    "no-friends": {
+      "title": "You don’t have friends",
+      "subtitle": "Let’s try to find friends to build connections"
+    },
+    "no-requests": {
+      "title": "You don't have friend requests",
+      "subtitle": "Nobody has sent you a friend request yet"
+    },
+    "potential-friends": {
+      "title": "You may know these people"
+    },
+    "add-friend": "Add friend",
+    "request-sent": "Request sent"
+  },
+  "home": {
+    "hero": {
+      "#1": {
+        "title": "Discover. Connect. Collaborate",
+        "subtitle": "MetaOrta is your bridge to a world of innovation and collaboration. Whether you're a creative thinker, an experienced expert, or a skilled professional, MetaOrta connects you to the right people and projects.",
+        "buttons": {
+          "explore": "Explore"
+        }
+      },
+      "#2": {
+        "title": "Gather a team to realize your idea",
+        "subtitle": "Welcome to a world where your ideas meet a dedicated team. On our site, find partners to turn your dream into reality. Choose top specialists, build your team, and achieve success together!",
+        "buttons": {
+          "explore": "Create project"
+        }
+      },
+      "#3": {
+        "title": "Become part of an inspiring project!",
+        "subtitle": "Join our movement to change the world. Your unique skills are the key to realizing amazing ideas. Be a catalyst for innovation, find a project close to your heart, and grow with it!",
+        "buttons": {
+          "explore": "Find project"
+        }
+      }
+    },
+    "projects": {
+      "title": "Best recent startup projects"
+    }
+  },
+  "notifications": {
+    "title": "Recent notifications"
+  },
+  "project": {
+    "tabs": {
+      "team-members": "Team members",
+      "requests": "Requests",
+      "tasks": "Tasks"
+    },
+    "modals": {
+      "create-task": {
+        "title": "Create task"
+      },
+      "send-project-request": {
+        "title": "Send project request"
+      },
+      "add-member": {
+        "title": "Online payments are under development, to access the search please write to this number",
+        "buttons": {
+          "write": "Contact"
+        }
+      }
+    },
+    "buttons": {
+      "request-investment": "Request investment",
+      "leave-project": "Leave project",
+      "send-request": "Send request",
+      "edit": "Edit",
+      "go-to-chat": "Go to chat"
+    },
+    "helpers": {
+      "start-date": "Start date",
+      "end-date": "End date"
+    },
+    "state": {
+      "no-members": "The project has no members at the moment",
+      "no-requests": "You haven't received any project requests yet",
+      "no-tasks": "There's no project tasks right now"
+    }
+  },
+  "projects": {
+    "tabs": {
+      "my-projects": "My projects",
+      "all-projects": "All projects"
+    },
+    "all-projects": {
+      "labels": {
+        "no-project-cards": "No project cards found"
+      }
+    },
+    "no-founder-projects": {
+      "title": "You haven't created any project",
+      "subtitle": "Let's try to create a project to start the project",
+      "buttons": {
+        "create-project": "Create project"
+      }
+    },
+    "no-member-projects": {
+      "title": "You're not part of any project",
+      "subtitle": "Let's find you some projects",
+      "buttons": {
+        "find-project": "Find project"
+      }
+    },
+    "total-project-count_other": "<0>{{count}} projects</0> <1>were created</1>",
+    "total-project-count_one": "<0>{{count}} project</0> <1>was created</1>",
+    "founder": {
+      "title": "Founder"
+    },
+    "member": {
+      "title": "Projects"
+    },
+    "buttons": {
+      "create-project": "Create project"
+    },
+    "notifications": {
+      "new-offers_one": "new offer",
+      "new-offers_other": "{{count}} new offers",
+      "undone-tasks_one": "{{count}} unfinished task",
+      "undone-tasks_other": "{{count}} unfinished tasks"
+    },
+    "placeholders": {
+      "search-project-cards": "Search project cards"
+    }
+  },
+  "reset-password": {
+    "title": "New password",
+    "buttons": {
+      "save": "Save password"
+    },
+    "helpers": {
+      "sign-up": "Don't have an account? <0>Sign up</0>"
+    }
+  },
+  "settings": {
+    "tabs": {
+      "profile": "Profile",
+      "general": "General"
+    },
+    "helpers": {
+      "upload-cv": "Upload your CV"
+    },
+    "buttons": {
+      "change-password": "Change password",
+      "save-changes": "Save all changes"
+    },
+    "options": {
+      "personal-information": {
+        "title": "Hide personal information",
+        "subtitle": "Hides email, location"
+      },
+      "invite-links": {
+        "title": "Hide invite links",
+        "subtitle": "Recommended if you don't want random people accessing your projects"
+      }
+    },
+    "modals": {
+      "change-password": {
+        "title": "Update your password",
+        "subtitle": "Enter current and new password",
+        "buttons": {
+          "update": "Update"
+        }
+      }
+    }
+  },
+  "sign-in": {
+    "title": "Sign in",
+    "placeholders": {
+      "first-name": "Enter your first name",
+      "last-name": "Enter your last name",
+      "country": "Select country",
+      "city": "Enter your city"
+    },
+    "buttons": {
+      "sign-in": "Sign in"
+    },
+    "subtitle": "Please enter your data to sign up",
+    "helpers": {
+      "sign-up": "Don't have an account? <0>Sign up</0>",
+      "forgot-password": "Forgot password"
+    },
+    "success": {
+      "title": "Thank you for registering!",
+      "subtitle": "Check your mailbox"
+    }
+  },
+  "sign-up": {
+    "title": "Sign up",
+    "placeholders": {
+      "first-name": "Enter your first name",
+      "last-name": "Enter your last name",
+      "country": "Select country",
+      "city": "Enter your city"
+    },
+    "subtitle": "Please enter your data to sign up",
+    "helpers": {
+      "sign-in": "Do you have an account? <0>Sign in</0>"
+    },
+    "success": {
+      "title": "Thank you for registering!",
+      "subtitle": "Check your mailbox"
+    }
+  },
+  "users": {
+    "buttons": {
+      "view-resume": "View resume",
+      "edit-profile": "Edit profile"
+    },
+    "labels": {
+      "no-projects": "You haven't joined any projects yet",
+      "no-reviews": "You haven't received any reviews yet"
+    }
+  },
+  "edit-project": {
+    "title": "Edit project",
+    "subtitle": "Here you can change basic information about your project"
+  }
+}

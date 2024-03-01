@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import Editor, {AvatarEditorProps as EditorProps} from "react-avatar-editor";
 import * as Tabs from "@radix-ui/react-tabs";
 import {BsCrop} from "react-icons/bs";
@@ -7,43 +7,37 @@ import {cx} from "class-variance-authority";
 import {twMerge} from "tailwind-merge";
 import * as Slider from "@radix-ui/react-slider";
 
-import {Button, H4, Upload} from "@shared/ui";
-import {Modal, WrappedModalProps} from "@shared/lib/modal";
+import {Button, Upload, Modal, ModalWindowPropsWithClose} from "@shared/ui";
 import {Nullable} from "@shared/lib/types";
 
 type Tab = "crop" | "upload";
 
-interface AvatarEditorProps extends WrappedModalProps, EditorProps {
-  onSave?: (blob: Nullable<Blob>) => void;
+interface AvatarEditorProps extends EditorProps, ModalWindowPropsWithClose {
+  onSave?: (blob: Blob) => void;
 }
 
 export const AvatarEditor: React.FC<AvatarEditorProps> = ({
-  onClose,
-  open,
   onSave,
+  close,
   ...props
 }) => {
-  let editor: Nullable<Editor> = null;
+  const editor = useRef<Nullable<Editor>>(null);
 
-  const [avatar, setAvatar] = useState(props.image as string);
+  const [avatar, setAvatar] = useState(props.image);
   const [currentTab, setCurrentTab] = useState<Tab>("crop");
   const [scale, setScale] = useState(1);
 
   return (
-    <Modal onClose={onClose} open={open}>
-      <div className="w-[30rem] flex flex-col bg-paper rounded-lg shadow-md space-y-8 p-10">
-        <H4>Edit profile picture</H4>
-
-        <div className="w-[100%] flex flex-col justify-center items-center space-y-2 m-auto">
+    <Modal.Window title="Edit profile picture">
+      <div className="flex flex-col space-y-8">
+        <div className="w-full flex flex-col justify-center items-center space-y-4 m-auto">
           <Editor
-            ref={(ref) => {
-              editor = ref;
-            }}
+            ref={editor}
             image={avatar}
             borderRadius={125}
             scale={scale}
             border={25}
-            style={{width: "100%", height: "auto"}}
+            className="w-full h-auto"
           />
 
           <Tabs.Root
@@ -118,7 +112,7 @@ export const AvatarEditor: React.FC<AvatarEditorProps> = ({
             </Tabs.Content>
 
             <Tabs.Content value="upload">
-              <div className="flex items-center space-y-4">
+              <div className="flex items-center space-y-4 pt-2">
                 <Upload
                   onChange={({currentTarget}) => {
                     const file = currentTarget.files![0];
@@ -128,7 +122,7 @@ export const AvatarEditor: React.FC<AvatarEditorProps> = ({
                     }
                   }}
                 >
-                  <Button className="bg-accent-300 text-paper-contrast">
+                  <Button className="bg-accent-300 text-paper-contrast text-base">
                     Upload photo
                   </Button>
                 </Upload>
@@ -138,21 +132,18 @@ export const AvatarEditor: React.FC<AvatarEditorProps> = ({
         </div>
 
         <div className="flex space-x-4 items-center">
-          <Button
-            onClick={() => {
-              onClose();
-            }}
-            color="secondary"
-            type="button"
-            className="w-[50%]"
-          >
-            Cancel
-          </Button>
+          <Modal.Close>
+            <Button color="secondary" className="w-[50%]">
+              Cancel
+            </Button>
+          </Modal.Close>
 
           <Button
             onClick={() => {
-              editor?.getImage().toBlob((blob) => {
-                onSave && onSave(blob);
+              editor?.current!.getImage().toBlob((blob) => {
+                if (onSave) onSave(blob!);
+
+                close();
               });
             }}
             className="w-[50%]"
@@ -161,6 +152,6 @@ export const AvatarEditor: React.FC<AvatarEditorProps> = ({
           </Button>
         </div>
       </div>
-    </Modal>
+    </Modal.Window>
   );
 };

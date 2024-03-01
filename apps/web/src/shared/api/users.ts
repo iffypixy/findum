@@ -1,15 +1,16 @@
-import {request} from "@shared/lib/request";
-import {UserProfile} from "@shared/lib/types";
+import {GenericDto, request} from "@shared/lib/request";
+import {Id, UserProfile} from "@shared/lib/types";
 
-export interface GetUserParams {
-  id: string;
-}
+export type GetUserDto = GenericDto<
+  {
+    id: Id;
+  },
+  {
+    user: UserProfile;
+  }
+>;
 
-export interface GetUserResponse {
-  user: UserProfile;
-}
-
-export const getUser = (params: GetUserParams) =>
-  request<GetUserResponse>({
-    url: `/api/users/${params.id}`,
+export const getUser = (req: GetUserDto["req"]) =>
+  request<GetUserDto["res"]>({
+    url: `/api/users/${req.id}`,
   });

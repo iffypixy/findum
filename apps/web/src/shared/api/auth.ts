@@ -1,4 +1,4 @@
-import {request} from "@shared/lib/request";
+import {GenericDto, request} from "@shared/lib/request";
 import {Credentials, Location} from "@shared/lib/types";
 
 export type GetCredentialsParams = void;
@@ -7,55 +7,62 @@ export interface GetCredentialsResponse {
   credentials: Credentials;
 }
 
+export type GetCredentialsDto = GenericDto<
+  void,
+  {
+    credentials: Credentials;
+  }
+>;
+
 export const getCredentials = () =>
-  request<GetCredentialsResponse>({
+  request<GetCredentialsDto["res"]>({
     url: "/api/auth/credentials",
   });
 
-export interface RegisterParams {
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-  location: Location;
-}
+export type RegisterDto = GenericDto<
+  {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+    location: Location;
+  },
+  {
+    credentials: Credentials;
+  }
+>;
 
-export interface RegisterResponse {
-  credentials: Credentials;
-}
-
-export const register = (params: RegisterParams) =>
-  request<RegisterResponse>({
+export const register = (req: RegisterDto["req"]) =>
+  request<RegisterDto["res"]>({
     url: "/api/auth/register",
     method: "POST",
-    data: params,
+    data: req,
   });
 
-export interface LoginParams {
-  email: string;
-  password: string;
-}
+export type LoginDto = GenericDto<
+  {
+    email: string;
+    password: string;
+  },
+  {
+    credentials: Credentials;
+  }
+>;
 
-export interface LoginResponse {
-  credentials: Credentials;
-}
-
-export const login = (params: LoginParams) =>
-  request<LoginResponse>({
+export const login = (req: LoginDto["req"]) =>
+  request<LoginDto["res"]>({
     url: "/api/auth/login",
     method: "POST",
-    data: params,
+    data: req,
   });
 
-export type LogoutParams = void;
+export type LogoutDto = GenericDto<void, void>;
 
-export type LogoutResponse = void;
-
-export const logout = (params: LogoutParams) =>
-  request<LogoutResponse>({
+export const logout = (req: LogoutDto["req"]) =>
+  request<LogoutDto["res"]>({
     url: "/api/auth/logout",
     method: "POST",
-    data: params,
+    data: req,
   });
 
 export interface CheckIfEmailAvailableParams {

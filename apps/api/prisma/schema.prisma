@@ -87,6 +87,7 @@ model Project {
   startDate DateTime
   endDate DateTime?
   createdAt DateTime @default(now())
+  slots Int @default(0)
 
   founder User @relation(fields: [founderId], references: [id])
   founderId String
@@ -147,6 +148,7 @@ model ProjectMember {
 model ProjectRequest {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
+  isSeen Boolean @db.Boolean() @default(false)
 
   user User @relation(fields: [userId], references: [id])
   userId String
@@ -166,6 +168,7 @@ model ProjectTask {
   priority ProjectTaskPriority
   status ProjectTaskStatus
   createdAt DateTime @default(now())
+  isSeen Boolean @db.Boolean() @default(false)
 
   project Project @relation(fields: [projectId], references: [id])
   projectId String
@@ -257,3 +260,5 @@ model UserHistory {
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   projectId String?
 }
+
+

@@ -1,4 +1,3 @@
-export {AuthenticationTemplate} from "./ui";
-// export {useAuthStore} from "./store";
+export {AuthenticationTemplate, EmailConfirmationGuard} from "./ui";
 export {CredentialsLoader} from "./lib/credentials-loader";
-export {model as authModel} from "./model";
+export * from "./queries";

@@ -1,11 +1,23 @@
+import {PropsWithChildren} from "react";
+
+import {Navbar} from "@widgets/navbar";
+import {Header} from "@widgets/header";
+
 import {MainTemplate} from "./main";
-import {Navbar} from "./navbar";
-import {Header} from "./header";
 
-type ContentTemplate = React.PropsWithChildren;
+interface ContentTemplateProps extends PropsWithChildren {
+  preserveNoScroll?: boolean;
+}
 
-export const ContentTemplate: React.FC<ContentTemplate> = ({children}) => (
-  <MainTemplate header={<Header />} navbar={<Navbar />}>
+export const ContentTemplate: React.FC<ContentTemplateProps> = ({
+  children,
+  preserveNoScroll,
+}) => (
+  <MainTemplate
+    header={<Header />}
+    navbar={<Navbar />}
+    preserveNoScroll={preserveNoScroll}
+  >
     {children}
   </MainTemplate>
 );

@@ -1,36 +1,36 @@
-import {request} from "@shared/lib/request";
+import {GenericDto, request} from "@shared/lib/request";
 
-export interface GetPresignedUrlParams {
-  contentType: string;
-}
+export type GetPresignedUrlDto = GenericDto<
+  {
+    contentType: string;
+  },
+  {
+    url: string;
+    key: string;
+  }
+>;
 
-export interface GetPresignedUrlResponse {
-  url: string;
-  key: string;
-}
-
-export const getPresignedUrl = (params: GetPresignedUrlParams) =>
-  request<GetPresignedUrlResponse>({
+const getPresignedUrl = (req: GetPresignedUrlDto["req"]) =>
+  request<GetPresignedUrlDto["res"]>({
     url: "/api/upload/presigned",
-    params,
+    params: req,
   });
 
-export interface UploadImageParams {
-  image: File;
-}
+export type UploadImageDto = GenericDto<
+  {
+    image: File;
+  },
+  void
+>;
 
-export interface UploadImageResponse {}
-
-export const uploadImage = async (params: UploadImageParams) => {
-  const type = params.image.type;
-
+export const uploadImage = async (req: UploadImageDto["req"]) => {
   const {
     data: {url, key},
-  } = await getPresignedUrl({contentType: type});
+  } = await getPresignedUrl({contentType: req.image.type});
 
   await request({
     url,
-    data: params.image,
+    data: req.image,
     method: "PUT",
   });
 

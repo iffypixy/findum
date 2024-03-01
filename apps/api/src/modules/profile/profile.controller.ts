@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Put,
   Session,
 } from "@nestjs/common";
@@ -112,5 +113,56 @@ export class ProfileController {
     return {
       credentials: updated,
     };
+  }
+
+  @Get("progress")
+  async getProfileProgress(@Session() session: SessionWithData) {
+    enum PROFILE_PART {
+      CV = "cv",
+      AVATAR = "avatar",
+      PROJECTS = "projects",
+    }
+
+    const progress: PROFILE_PART[] = [];
+
+    const profile = await this.prisma.profile.findFirst({
+      where: {
+        userId: session.userId,
+      },
+    });
+
+    if (!profile?.cv) progress.push(PROFILE_PART.CV);
+
+    const initialPfp =
+      "https://storage.yandexcloud.net/s3metaorta/photo_2024-01-09%2017.01.19.jpeg";
+
+    if (!session.user.avatar || session.user.avatar === initialPfp)
+      progress.push(PROFILE_PART.AVATAR);
+
+    const projectsAsFounder = await this.prisma.project.count({
+      where: {
+        founderId: session.userId,
+      },
+    });
+
+    if (projectsAsFounder === 0) {
+      const projectsAsMember = await this.prisma.projectMember.count({
+        where: {
+          userId: session.userId,
+        },
+      });
+
+      if (projectsAsMember === 0) {
+        const requests = await this.prisma.projectRequest.count({
+          where: {
+            userId: session.userId,
+          },
+        });
+
+        if (requests === 0) progress.push(PROFILE_PART.PROJECTS);
+      }
+    }
+
+    return {progress};
   }
 }
