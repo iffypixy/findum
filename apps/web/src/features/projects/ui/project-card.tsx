@@ -137,6 +137,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({card}) => {
                             project: member.project,
                             cardId: card.id,
                             isOccupied: false,
+                            createdAt: member.createdAt,
                           }}
                           close={close}
                         />

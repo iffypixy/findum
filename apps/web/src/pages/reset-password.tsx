@@ -1,12 +1,11 @@
 import {useState} from "react";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {useForm} from "react-hook-form";
-
-import {AuthenticationTemplate, authModel} from "@features/auth";
-import {Button, H2, Link, TextField} from "@shared/ui";
 import {useParams} from "wouter";
-import {api} from "@shared/api";
-import {useDispatch} from "@shared/lib/store";
+
+import {AuthenticationTemplate, useResetPassword} from "@features/auth";
+import {Button, H2, Link, TextField} from "@shared/ui";
+import {queryClient} from "@shared/lib/query";
 
 interface ResetPasswordForm {
   password1: string;
@@ -14,9 +13,9 @@ interface ResetPasswordForm {
 }
 
 export const ResetPasswordPage: React.FC = () => {
-  const dispatch = useDispatch();
-
   const {register, handleSubmit, watch} = useForm<ResetPasswordForm>();
+
+  const {resetPassword} = useResetPassword();
 
   const [showPassword, setShowPassword] = useState({
     password1: false,
@@ -37,15 +36,12 @@ export const ResetPasswordPage: React.FC = () => {
           onSubmit={handleSubmit((form) => {
             if (form.password1 !== form.password2) return;
 
-            api.auth
-              .resetPassword({
-                code,
-                password: form.password1,
-              })
-              .then(({data}) => {
-                dispatch(authModel.actions.setCredentials(data.credentials));
-                dispatch(authModel.actions.setIsAuthetnicated(true));
-              });
+            resetPassword({
+              code,
+              password: form.password1,
+            }).then(({credentials}) => {
+              queryClient.setQueryData(["auth", "credentials"], {credentials});
+            });
           })}
           className="w-[25rem] flex flex-col space-y-4"
         >

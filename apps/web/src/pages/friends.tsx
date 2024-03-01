@@ -213,19 +213,19 @@ const MyFriendsTab: React.FC = () => {
       </div>
 
       {anyPotentialFriends && (
-        <div className="flex flex-col border-t border-[#D2D1D1] p-8">
+        <div className="flex flex-col border-t border-[#D2D1D1] space-y-4 p-8">
           <H5 className="text-[#000000] font-normal text-xl">
             {t("friends.potential-friends.title")}
           </H5>
 
-          <div className="flex">
+          <div className="flex space-x-8">
             {potentialFriends?.map((friend) => (
               <div key={friend.id} className="w-[14rem]">
                 <FriendCard user={friend}>
-                  <Button className="space-x-2">
+                  <Button className="space-x-2 px-0 text-center">
                     <Icon.Plus />
 
-                    <span>Add friend</span>
+                    <span>Add</span>
                   </Button>
                 </FriendCard>
               </div>

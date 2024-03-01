@@ -24,7 +24,7 @@ import {
 import {countries} from "@shared/lib/location";
 import {Id, Location, Nullable} from "@shared/lib/types";
 import {AvatarEditor} from "@shared/lib/avatar-editor";
-import {useCreateProject, useProject} from "@features/projects";
+import {useEditProject, useProject} from "@features/projects";
 import {useUploadImage} from "@features/upload";
 
 export const EditProjectPage: React.FC = () => {
@@ -35,7 +35,7 @@ export const EditProjectPage: React.FC = () => {
 
   const [{project}] = useProject({id: projectId});
 
-  const {createProject} = useCreateProject();
+  const {editProject} = useEditProject();
   const {uploadImage} = useUploadImage();
 
   const {
@@ -67,8 +67,6 @@ export const EditProjectPage: React.FC = () => {
       },
     },
   });
-
-  console.log(project);
 
   const [uploadedAvatar, setUploadedAvatar] = useState<Nullable<File>>(null);
 
@@ -112,7 +110,8 @@ export const EditProjectPage: React.FC = () => {
 
           <form
             onSubmit={handleSubmit((form) => {
-              createProject({
+              editProject({
+                id: project!.id,
                 name: form.name,
                 description: form.description,
                 avatar: avatar || undefined,
@@ -344,7 +343,7 @@ export const EditProjectPage: React.FC = () => {
                     </Link>
 
                     <Button type="submit" disabled={!isValid}>
-                      Create project
+                      Save
                     </Button>
                   </div>
                 </div>

@@ -99,18 +99,19 @@ export const sendRecovery = (params: SendRecoveryParams) =>
     data: params,
   });
 
-export interface ResetPasswordParams {
-  password: string;
-  code: string;
-}
+export type ResetPasswordDto = GenericDto<
+  {
+    password: string;
+    code: string;
+  },
+  {
+    credentials: Credentials;
+  }
+>;
 
-export interface ResetPasswordResponse {
-  credentials: Credentials;
-}
-
-export const resetPassword = (params: ResetPasswordParams) =>
-  request<ResetPasswordResponse>({
+export const resetPassword = (req: ResetPasswordDto["req"]) =>
+  request<ResetPasswordDto["res"]>({
     method: "POST",
     url: "/api/auth/recovery/reset",
-    data: params,
+    data: req,
   });

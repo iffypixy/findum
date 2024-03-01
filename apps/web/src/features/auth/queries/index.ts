@@ -1,7 +1,12 @@
 import {useMutation, useQuery} from "@tanstack/react-query";
 
 import {api} from "@shared/api";
-import {LoginDto, LogoutDto, RegisterDto} from "@shared/api/auth";
+import {
+  LoginDto,
+  LogoutDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from "@shared/api/auth";
 import {ChangePasswordDto, EditProfileDto} from "@shared/api/profile";
 
 export const useCredentials = () => {
@@ -81,6 +86,19 @@ export const useLogout = () => {
   });
 
   return {logout, ...mutation};
+};
+
+export const useResetPassword = () => {
+  const {mutateAsync: resetPassword, ...mutation} = useMutation({
+    mutationKey: ["auth", "reset-password"],
+    mutationFn: async (req: ResetPasswordDto["req"]) => {
+      const res = await api.auth.resetPassword(req);
+
+      return res.data;
+    },
+  });
+
+  return {resetPassword, ...mutation};
 };
 
 export const queryKeys = {

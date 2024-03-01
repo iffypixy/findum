@@ -10,6 +10,21 @@
     }
   },
   "common": {
+    "profile-completion": {
+      "title": "Profile completion steps",
+      "upload-resume": {
+        "title": "Upload your resume to be part of the desired project",
+        "text": "Upload resume"
+      },
+      "upload-avatar": {
+        "title": "Upload your profile picture to show off your profile",
+        "text": "Upload avatar"
+      },
+      "join-projects": {
+        "title": "Take part in projects",
+        "text": "Find projects"
+      }
+    },
     "auth": {
       "greeting": {
         "title": "Welcome to\nour community",

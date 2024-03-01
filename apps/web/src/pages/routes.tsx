@@ -14,6 +14,8 @@ import {EditProjectPage} from "./projects/edit";
 import {PrivateRoute, PublicOnlyRoute} from "@shared/lib/routing";
 import {SignInPage} from "./sign-in";
 import {SignUpPage} from "./sign-up";
+import {ForgotPasswordPage} from "./forgot-password";
+import {ResetPasswordPage} from "./reset-password";
 
 export const Routes: React.FC = () => (
   <Switch>
@@ -41,15 +43,10 @@ export const Routes: React.FC = () => (
       component={ProjectChatPage}
     />
 
-    {/*
-    <PrivateRoute path="/chat/private/:partnerId" component={PrivateChatPage} />
-    <PrivateRoute path="/chat/project/:projectId" component={ProjectChatPage} />
-    <PrivateRoute path="/chat" component={NoChatPage} />
     <PublicOnlyRoute path="/forgot-password" component={ForgotPasswordPage} />
     <PublicOnlyRoute
       path="/reset-password/:code"
       component={ResetPasswordPage}
     />
-   */}
   </Switch>
 );

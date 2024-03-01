@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import {cx} from "class-variance-authority";
 import {useTranslation} from "react-i18next";
@@ -160,11 +160,15 @@ const AllProjectsTab: React.FC = () => {
 
   const [search, setSearch] = useState("");
 
-  const [{projectCards}] = useSearchedProjectCards({
+  const [{projectCards}, {refetch}] = useSearchedProjectCards({
     limit: 10000000,
     page: 1,
     search,
   });
+
+  useEffect(() => {
+    refetch();
+  }, [search]);
 
   const anyProjectCards = projectCards && projectCards.length !== 0;
 

@@ -24,7 +24,7 @@ export const MainTemplate: React.FC<MainTemplateProps> = ({
       })}
     >
       <Container>
-        <div className="w-full h-full flex">
+        <div className="w-full h-full flex justify-between">
           {navbar && <nav className="w-[13rem] mr-[3rem]">{navbar}</nav>}
 
           <main className="flex h-full w-[calc(100%-18rem)]">{children}</main>

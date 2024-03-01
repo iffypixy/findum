@@ -66,6 +66,7 @@ export class ProjectController {
         members: {
           include: {
             user: true,
+            project: true,
           },
         },
         project: {
@@ -100,6 +101,29 @@ export class ProjectController {
 
       if (dto.location.country)
         where.project.location.country = dto.location.country;
+    }
+
+    if (dto.search) {
+      where.OR = [
+        {
+          project: {
+            name: {
+              startsWith: dto.search,
+              mode: "insensitive",
+            },
+          },
+        },
+        {
+          members: {
+            some: {
+              role: {
+                startsWith: dto.search,
+                mode: "insensitive",
+              },
+            },
+          },
+        },
+      ];
     }
 
     const currentDate = new Date();

@@ -1,8 +1,12 @@
+import {useTranslation} from "react-i18next";
+
 import {useProfileProgressQuery} from "@features/profile";
 import {ProfileProgressType} from "@shared/api/profile";
 import {Button, H4, H5, Link} from "@shared/ui";
 
 export const ProfileCompletion: React.FC = () => {
+  const {t} = useTranslation();
+
   const [{progress}] = useProfileProgressQuery();
 
   const map: Record<
@@ -16,24 +20,24 @@ export const ProfileCompletion: React.FC = () => {
     }
   > = {
     cv: {
-      text: "Upload your resume to be part of the desired project",
+      text: t("common.profile-completion.upload-resume.title"),
       button: {
         link: "/settings",
-        text: "Upload resume",
+        text: t("common.profile-completion.upload-resume.text"),
       },
     },
     avatar: {
-      text: "Upload your profile picture to ",
+      text: t("common.profile-completion.upload-avatar.title"),
       button: {
         link: "/settings",
-        text: "Upload avatar",
+        text: t("common.profile-completion.upload-avatar.text"),
       },
     },
     projects: {
-      text: "Take part in projects",
+      text: t("common.profile-completion.join-projects.title"),
       button: {
         link: "/projects",
-        text: "Find projects",
+        text: t("common.profile-completion.join-projects.text"),
       },
     },
   };
@@ -49,7 +53,9 @@ export const ProfileCompletion: React.FC = () => {
   return (
     <div className="w-full bg-paper-brand rounded-xl p-8 space-y-6 shadow-md">
       <div className="flex flex-col space-y-1">
-        <H4 className="text-[#112042]">Profile completion steps</H4>
+        <H4 className="text-[#112042]">
+          {t("common.profile-completion.title")}
+        </H4>
 
         <span className="text-[#817C7C]">{context?.text}</span>
       </div>

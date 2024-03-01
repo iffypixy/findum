@@ -98,7 +98,7 @@ export const SignUpPage: React.FC = () => {
           <span className="text-[#817C7C]">
             <Trans
               i18nKey="sign-up.helpers.sign-in"
-              components={[<Link href="/sign-in" />]}
+              components={[<Link href="/sign-in" underlined />]}
             />
           </span>
         </div>

@@ -113,6 +113,7 @@ const completeProject = (p: CompleteProject) => ({
 });
 
 const projectMember = (m: CompleteProjectMember) => ({
+  ...m,
   id: m.id,
   benefits: m.benefits,
   requirements: m.requirements,

@@ -1,8 +1,9 @@
+import {useState} from "react";
+import {useForm} from "react-hook-form";
+
 import {AuthenticationTemplate} from "@features/auth";
 import {api} from "@shared/api";
 import {Button, H2, H3, Link, TextField} from "@shared/ui";
-import {useState} from "react";
-import {useForm} from "react-hook-form";
 
 interface Form {
   email: string;

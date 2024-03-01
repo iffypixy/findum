@@ -34,13 +34,13 @@ export const Header: React.FC = () => {
 
           <div className="flex items-center space-x-14">
             <div className="flex items-center space-x-6">
-              <button>
+              {/* <button>
                 <Icon.Search className="w-6 h-6" />
               </button>
 
               <button>
                 <Icon.Bell className="w-7 h-7" />
-              </button>
+              </button> */}
 
               <button
                 onClick={() => {
@@ -59,9 +59,9 @@ export const Header: React.FC = () => {
               <div className="relative">
                 <Avatar src={credentials!.avatar} alt="Profile avatar" />
 
-                <span className="text-[#434343] absolute left-[125%] top-1/2 -translate-y-1/2 whitespace-nowrap">
+                {/* <span className="text-[#434343] absolute left-[125%] top-1/2 -translate-y-1/2 whitespace-nowrap">
                   {credentials?.firstName} {credentials?.lastName}
-                </span>
+                </span> */}
               </div>
             </Link>
           </div>

@@ -4,6 +4,7 @@ import {Trans, useTranslation} from "react-i18next";
 import {Button, Checkbox, H2, TextField, Link} from "@shared/ui";
 import {AuthenticationTemplate} from "@features/auth";
 import {useSignIn} from "@features/auth";
+import {queryClient} from "@shared/lib/query";
 
 export const SignInPage: React.FC = () => {
   const {t} = useTranslation();
@@ -25,11 +26,11 @@ export const SignInPage: React.FC = () => {
           <span>
             <Trans
               i18nKey="sign-in.helpers.sign-up"
-              components={[<Link href="/sign-up" />]}
+              components={[<Link href="/sign-up" underlined />]}
             />
           </span>
 
-          <Link href="/forgot-password">
+          <Link href="/forgot-password" underlined>
             {t("sign-in.helpers.forgot-password")}
           </Link>
         </div>
@@ -45,7 +46,7 @@ interface SignInForm {
 }
 
 const SignInForm: React.FC = () => {
-  const {mutate} = useSignIn();
+  const {mutateAsync: signIn} = useSignIn();
 
   const {t} = useTranslation();
 
@@ -58,9 +59,11 @@ const SignInForm: React.FC = () => {
   });
 
   const onFormSubmit = handleSubmit((form) => {
-    mutate({
+    signIn({
       email: form.email,
       password: form.password,
+    }).then(({credentials}) => {
+      queryClient.setQueryData(["auth", "credentials"], {credentials});
     });
   });
 

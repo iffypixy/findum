@@ -22,4 +22,8 @@ export class GetCardsDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   role: string;
+
+  @IsOptional()
+  @IsString()
+  search: string;
 }
