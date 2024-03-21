@@ -142,7 +142,6 @@ const Step1Form: React.FC<InterimFormProps<Step1Form>> = (props) => {
   const {
     handleSubmit,
     register,
-    control,
     formState: {isValid},
   } = useForm<Step1Form>({
     mode: "onChange",
@@ -171,25 +170,11 @@ const Step1Form: React.FC<InterimFormProps<Step1Form>> = (props) => {
           {...register("lastName")}
         />
 
-        <Controller
-          name="location.country"
-          control={control}
-          render={({field: {name, onChange, value, disabled}}) => (
-            <Select.Root
-              name={name}
-              value={value}
-              placeholder={t("sign-up.placeholders.country")}
-              label={t("common.fields.country")}
-              onValueChange={onChange}
-              disabled={disabled}
-            >
-              {countries.map((country) => (
-                <Select.Item key={country} value={country}>
-                  {country}
-                </Select.Item>
-              ))}
-            </Select.Root>
-          )}
+        <TextField
+          label={t("common.fields.country")}
+          placeholder={t("sign-up.placeholders.country")}
+          type="text"
+          {...register("location.country")}
         />
 
         <TextField
@@ -293,6 +278,14 @@ const Step2Form: React.FC<InterimFormProps<Step2Form>> = (props) => {
       <Button type="submit" disabled={!isValid}>
         Sign up
       </Button>
+
+      <span className="text-[#817C7C]">
+        By clicking the sign up button, you accept the{" "}
+        <a href="/docs/privacy.html" className="underline">
+          MetaOrta privacy policy
+        </a>
+        .
+      </span>
     </form>
   );
 };

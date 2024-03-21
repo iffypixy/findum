@@ -98,7 +98,7 @@ export const EditProjectPage: React.FC = () => {
         )}
       </Modal.RootFn>
 
-      <ContentTemplate>
+      <ContentTemplate preserveNoScroll>
         <div className="w-full h-full flex flex-col bg-paper-brand">
           <div className="flex flex-col bg-paper space-y-2 p-8">
             <H3>{t("edit-project.title")}</H3>

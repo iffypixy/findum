@@ -6,16 +6,22 @@ import {Container} from "./container";
 interface MainTemplateProps extends PropsWithChildren {
   navbar?: ReactNode;
   header?: ReactNode;
+  footer?: ReactNode;
   preserveNoScroll?: boolean;
 }
 
 export const MainTemplate: React.FC<MainTemplateProps> = ({
   navbar,
   header,
+  footer,
   preserveNoScroll,
   children,
 }) => (
-  <div className="w-full h-full flex flex-col">
+  <div
+    className={cx("w-full flex flex-col", {
+      "h-screen": preserveNoScroll,
+    })}
+  >
     {header && <header>{header}</header>}
 
     <div
@@ -31,5 +37,7 @@ export const MainTemplate: React.FC<MainTemplateProps> = ({
         </div>
       </Container>
     </div>
+
+    {footer && <footer>{footer}</footer>}
   </div>
 );

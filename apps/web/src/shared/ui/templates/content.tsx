@@ -2,6 +2,7 @@ import {PropsWithChildren} from "react";
 
 import {Navbar} from "@widgets/navbar";
 import {Header} from "@widgets/header";
+import {Footer} from "@widgets/footer";
 
 import {MainTemplate} from "./main";
 
@@ -16,6 +17,7 @@ export const ContentTemplate: React.FC<ContentTemplateProps> = ({
   <MainTemplate
     header={<Header />}
     navbar={<Navbar />}
+    footer={<Footer />}
     preserveNoScroll={preserveNoScroll}
   >
     {children}

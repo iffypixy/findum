@@ -43,7 +43,7 @@ export const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <ContentTemplate>
+    <ContentTemplate preserveNoScroll>
       <Tabs.Root
         value={currentTab}
         onValueChange={(tab) => {

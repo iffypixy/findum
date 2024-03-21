@@ -365,7 +365,7 @@ export const ProjectPage: React.FC = () => {
 
                       <AddMemberModal
                         close={close}
-                        showError={project.slots >= 4 || project.slots === 0}
+                        showError={project.slots < 1}
                         projectId={project.id}
                       />
                     </>

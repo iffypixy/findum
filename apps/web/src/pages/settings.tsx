@@ -101,7 +101,7 @@ export const SettingsPage: React.FC = () => {
         </Modal.RootFn>
       )}
 
-      <ContentTemplate>
+      <ContentTemplate preserveNoScroll>
         <Tabs.Root
           value={currentTab}
           onValueChange={(tab) => {

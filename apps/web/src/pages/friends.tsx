@@ -53,7 +53,7 @@ export const FriendsPage: React.FC = () => {
   ];
 
   return (
-    <ContentTemplate>
+    <ContentTemplate preserveNoScroll>
       <Tabs.Root
         value={currentTab}
         onValueChange={(tab) => {

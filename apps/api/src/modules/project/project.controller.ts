@@ -547,6 +547,7 @@ export class ProjectController {
         endDate: dto.endDate,
         founderId: session.userId,
         locationId: location.id,
+        slots: 50,
       },
     });
 

@@ -65,8 +65,6 @@ export const CreateProjectPage: React.FC = () => {
   const startDate = watch("startDate");
   const endDate = watch("endDate");
 
-  console.log(uploadedAvatar);
-
   return (
     <>
       <Modal.RootFn open={!!uploadedAvatar}>
@@ -95,7 +93,7 @@ export const CreateProjectPage: React.FC = () => {
         )}
       </Modal.RootFn>
 
-      <ContentTemplate>
+      <ContentTemplate preserveNoScroll>
         <div className="w-full h-full flex flex-col bg-paper-brand rounded-xl">
           <div className="flex flex-col space-y-2 p-8">
             <H4>{t("create-project.title")}</H4>
@@ -203,24 +201,10 @@ export const CreateProjectPage: React.FC = () => {
                     </div>
 
                     <div className="flex space-x-4">
-                      <Controller
-                        name="location.country"
-                        control={control}
-                        rules={{required: true}}
-                        render={({field}) => (
-                          <Select.Root
-                            placeholder="Country"
-                            onValueChange={field.onChange}
-                            value={field.value || undefined}
-                            className="w-1/2 h-auto"
-                          >
-                            {countries.map((country) => (
-                              <Select.Item key={country} value={country}>
-                                {country}
-                              </Select.Item>
-                            ))}
-                          </Select.Root>
-                        )}
+                      <TextField
+                        {...register("location.country", {required: true})}
+                        placeholder="Country"
+                        className="w-1/2 h-auto"
                       />
 
                       <TextField
