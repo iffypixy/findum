@@ -49,8 +49,12 @@ export const ProjectsPage: React.FC = () => {
         onValueChange={(tab) => {
           setCurrentTab(tab as Tab);
         }}
-        className="w-full h-full flex flex-col"
+        className="w-full h-full relative flex flex-col"
       >
+        <div className="absolute right-0 -top-4">
+          <Button>Create project</Button>
+        </div>
+
         <Tabs.List>
           {Object.entries(tabs).map(([tab, label]) => (
             <Tabs.Trigger
